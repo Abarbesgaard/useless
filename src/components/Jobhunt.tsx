@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useAuth from "../hooks/useAuth";
 import {
   Briefcase,
   Mail,
@@ -52,7 +53,7 @@ export default function JobSearchTracker() {
     },
   ]);
   const [editingAppId, setEditingAppId] = useState<number | null>(null);
-
+  const { user, signOut } = useAuth();
   // State for new application form
   const [newApp, setNewApp] = useState({
     company: "",
@@ -182,6 +183,15 @@ export default function JobSearchTracker() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
+      <div className="flex justify-between p-4">
+        <div>Hello, {user?.email}</div>
+        <button
+          onClick={signOut}
+          className="bg-red-500 px-2 py-1 rounded text-white"
+        >
+          Sign out
+        </button>
+      </div>
       <h1 className="text-2xl font-bold mb-6">Job Search Tracker</h1>
 
       {/* Add new application button */}
