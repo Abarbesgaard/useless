@@ -46,6 +46,8 @@ export default function JobSearchTracker() {
       position: "Frontend Developer",
       currentStage: 1,
       notes: "Sent resume and cover letter",
+      url: "https://techcorp.com/jobs/frontend-developer",
+      date: Date.now(),
       stages: [...defaultInitialStages],
     },
   ]);
@@ -56,6 +58,8 @@ export default function JobSearchTracker() {
     company: "",
     position: "",
     notes: "",
+    url: "",
+    date: Date.now(),
   });
 
   // Stage selector state
@@ -83,10 +87,18 @@ export default function JobSearchTracker() {
           position: newApp.position,
           currentStage: 0,
           notes: newApp.notes,
+          url: newApp.url,
+          date: newApp.date,
           stages: [...defaultInitialStages],
         },
       ]);
-      setNewApp({ company: "", position: "", notes: "" });
+      setNewApp({
+        company: "",
+        position: "",
+        notes: "",
+        url: "",
+        date: Date.now(),
+      });
       setShowAppForm(false);
     }
   };
@@ -207,6 +219,17 @@ export default function JobSearchTracker() {
                 placeholder="Job title"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">URL</label>
+              <input
+                type="url"
+                name="url"
+                value={newApp.url}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded-md"
+                placeholder="Job posting URL"
+              />
+            </div>
           </div>
           <div className="mt-4">
             <label className="block text-sm font-medium mb-1">Notes</label>
@@ -219,10 +242,6 @@ export default function JobSearchTracker() {
             />
           </div>
           <div className="mt-4 text-sm text-gray-600">
-            <p>
-              Your application will start with the default stages: Job Post →
-              Mail Sent → Call Made → First Meeting
-            </p>
             <p>You can customize stages after adding the application.</p>
           </div>
           <button
@@ -244,9 +263,17 @@ export default function JobSearchTracker() {
             className="border rounded-md p-4 bg-white shadow-sm"
           >
             <div className="flex justify-between items-center mb-4">
-              <div>
+              <div className="text-left items-center">
                 <h3 className="font-bold text-lg">{app.company}</h3>
                 <p className="text-gray-600">{app.position}</p>
+                <a
+                  href={app.url}
+                  className="text-sm text-gray-500 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {app.url}
+                </a>
               </div>
               <div className="flex items-center gap-2 ml-auto">
                 <button
