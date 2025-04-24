@@ -1,6 +1,6 @@
 import "./App.css";
 import JobSearchTracker from "./components/Jobhunt";
-import AuthProvider from "./contexts/authContext";
+import AuthProvider from "./contexts/authProvider";
 import Login from "./components/login";
 import useAuth from "./hooks/useAuth";
 
