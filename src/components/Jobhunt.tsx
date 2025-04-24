@@ -1,44 +1,25 @@
 import { useState } from "react";
+import { availableStages } from "../constants/availableStages";
+import { defaultInitialStages } from "../constants/defaultInitialStages";
 import useAuth from "../hooks/useAuth";
+import { addApplication } from "../data/applications";
 import {
-  Briefcase,
-  Mail,
-  Phone,
-  Users,
   PlusCircle,
   Trash2,
   SquarePen,
-  Calendar,
-  FileText,
-  DollarSign,
-  Award,
-  X,
   Check,
   MinusCircle,
 } from "lucide-react";
 
+import { LucideIcon } from "lucide-react";
+
+type Stage = {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+};
+
 export default function JobSearchTracker() {
-  // Available stages with icons
-  const availableStages = [
-    { id: "jobpost", name: "Job Post", icon: Briefcase },
-    { id: "mailsent", name: "Mail Sent", icon: Mail },
-    { id: "callmade", name: "Call Made", icon: Phone },
-    { id: "meeting", name: "Meeting", icon: Users },
-    { id: "techtest", name: "Technical Test", icon: FileText },
-    { id: "interview", name: "Interview", icon: Calendar },
-    { id: "offer", name: "Offer", icon: DollarSign },
-    { id: "acceptance", name: "Acceptance", icon: Award },
-    { id: "rejection", name: "Rejection", icon: X },
-  ];
-
-  // Initial default stages for new applications
-  const defaultInitialStages = [
-    { id: "jobpost", name: "Job Post", icon: Briefcase },
-    { id: "mailsent", name: "Mail Sent", icon: Mail },
-    { id: "callmade", name: "Call Made", icon: Phone },
-    { id: "meeting", name: "Meeting", icon: Users },
-  ];
-
   // Sample job application
   const [applications, setApplications] = useState([
     {
@@ -52,17 +33,19 @@ export default function JobSearchTracker() {
       stages: [...defaultInitialStages],
     },
   ]);
-  const [editingAppId, setEditingAppId] = useState<number | null>(null);
-  const { user, signOut } = useAuth();
+
   // State for new application form
   const [newApp, setNewApp] = useState({
-    company: "",
-    position: "",
+    company: "Company Name",
+    position: "Position Title",
     notes: "",
-    url: "",
+    url: "url for the job posting",
     date: Date.now(),
   });
 
+  const [editingAppId, setEditingAppId] = useState<number | null>(null);
+
+  const { user, signOut } = useAuth();
   // Stage selector state
   const [stageSelectorApp, setStageSelectorApp] = useState<number | null>(null);
 
@@ -77,30 +60,33 @@ export default function JobSearchTracker() {
     setNewApp({ ...newApp, [name]: value });
   };
 
-  // Add new application
-  const addApplication = () => {
-    if (newApp.company && newApp.position) {
-      setApplications([
-        ...applications,
+  const handleAddApplication = async () => {
+    if (!user) return;
+
+    try {
+      const newAppData = await addApplication(
         {
-          id: Date.now(),
-          company: newApp.company,
-          position: newApp.position,
+          ...newApp,
+          id: Date.now(), // Temporary unique ID
+          user_id: user.id,
           currentStage: 0,
-          notes: newApp.notes,
-          url: newApp.url,
-          date: newApp.date,
           stages: [...defaultInitialStages],
         },
-      ]);
-      setNewApp({
-        company: "",
-        position: "",
-        notes: "",
-        url: "",
-        date: Date.now(),
-      });
-      setShowAppForm(false);
+        user.id
+      );
+      if (newAppData) {
+        setApplications([...applications, newAppData]);
+        setNewApp({
+          company: "",
+          position: "",
+          notes: "",
+          url: "",
+          date: Date.now(),
+        });
+        setShowAppForm(false);
+      }
+    } catch (err) {
+      console.error("Failed to add application:", err);
     }
   };
 
@@ -137,7 +123,7 @@ export default function JobSearchTracker() {
   };
 
   // Add new stage to an application's workflow
-  const addStageToApplication = (appId: number, stageData: any) => {
+  const addStageToApplication = (appId: number, stageData: Stage) => {
     setApplications(
       applications.map((app) => {
         if (app.id === appId) {
@@ -192,7 +178,11 @@ export default function JobSearchTracker() {
           Sign out
         </button>
       </div>
-      <h1 className="text-2xl font-bold mb-6">Job Search Tracker</h1>
+      <h1 className="text-3xl font-bold mb-6">UseLess</h1>
+      <p className="text-lg font-semibold mb-4">
+        {" "}
+        The tool you should use less
+      </p>
 
       {/* Add new application button */}
       <button
@@ -255,7 +245,7 @@ export default function JobSearchTracker() {
             <p>You can customize stages after adding the application.</p>
           </div>
           <button
-            onClick={addApplication}
+            onClick={handleAddApplication}
             className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
           >
             Save Application
