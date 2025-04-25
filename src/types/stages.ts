@@ -4,5 +4,5 @@ export type Stage = {
   id: string;
   name: string;
   icon: LucideIcon;
-  position: number;
+  position: number | null;
 };

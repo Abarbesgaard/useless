@@ -149,3 +149,40 @@ export const deleteStage = async (stageId: string) => {
     throw error;
   }
 };
+export const deleteApplication = async (applicationId: string) => {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("Error fetching user:", userError);
+    return null;
+  }
+
+  // Delete the application from the 'applications' table
+  const { error } = await supabase
+    .from("applications")
+    .delete()
+    .eq("id", applicationId)
+    .eq("auth_user", user.id);
+
+  if (error) {
+    console.error("Error deleting application:", error);
+    throw error;
+  }
+
+  // Optionally, delete related stages for this application (if needed)
+  const { error: stageError } = await supabase
+    .from("application_stages")
+    .delete()
+    .eq("application_id", applicationId);
+
+  if (stageError) {
+    console.error("Error deleting stages:", stageError);
+    throw stageError;
+  }
+
+  // Return a success message or the id of the deleted application
+  return { success: true, applicationId };
+};

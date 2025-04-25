@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { availableStages } from "../constants/availableStages";
 import { defaultInitialStages } from "../constants/defaultInitialStages";
 import { Stage } from "../types/stages";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { Input } from "./ui/input";
 import useAuth from "../hooks/useAuth";
 import {
   addApplication,
   getApplicationsByUser,
   updateApplication,
+  deleteApplication,
 } from "../data/applications";
 import {
   PlusCircle,
@@ -15,10 +19,22 @@ import {
   Check,
   MinusCircle,
 } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Label } from "./ui/label";
+import { toast } from "sonner";
 
 export default function JobSearchTracker() {
   const { user, signOut } = useAuth();
-  // Removed unused application state
+  const [editingAppId, setEditingAppId] = useState<string | null>(null);
+  const [stageSelectorApp, setStageSelectorApp] = useState<string | null>(null);
+  const [showAppForm, setShowAppForm] = useState(false);
 
   useEffect(() => {
     const fetchApplications = async () => {
@@ -38,7 +54,7 @@ export default function JobSearchTracker() {
   // Sample job application
   const [applications, setApplications] = useState([
     {
-      id: 1,
+      id: "1",
       company: "TechCorp",
       position: "Frontend Developer",
       currentStage: 1,
@@ -58,14 +74,6 @@ export default function JobSearchTracker() {
     date: Date.now(),
   });
 
-  const [editingAppId, setEditingAppId] = useState<number | null>(null);
-
-  // Stage selector state
-  const [stageSelectorApp, setStageSelectorApp] = useState<number | null>(null);
-
-  // Form display toggle
-  const [showAppForm, setShowAppForm] = useState(false);
-
   // Handle form input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -74,13 +82,42 @@ export default function JobSearchTracker() {
     setNewApp({ ...newApp, [name]: value });
   };
 
+  const handleDeleteApplication = async (appId: string) => {
+    if (!user) return;
+
+    try {
+      console.log("Deleting application with ID:", appId);
+      const result = await deleteApplication(appId);
+      console.log("Delete result:", result);
+      if (result && result.success) {
+        // Remove the application from state if successfully deleted
+        setApplications(applications.filter((app) => app.id !== appId));
+        toast("Application deleted successfully!", {
+          description: "The application has been removed from your list.",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to delete application:", err);
+      toast.error("Failed to delete application. Please try again.");
+    }
+  };
+
   const handleAddApplication = async () => {
+    toast("Application added successfully!", {
+      description: "You can now track your application progress.",
+      action: {
+        label: "hi",
+        onClick: () => {
+          console.log("hi");
+        },
+      },
+    });
     if (!user) return;
     console.log("Adding application:", newApp);
     try {
       const newAppData = await addApplication({
         ...newApp,
-        id: Date.now(), // Temporary unique ID
+        id: "",
         user_id: user.id,
         currentStage: 0,
         stages: [...defaultInitialStages], // Ensure stages is initialized
@@ -108,7 +145,7 @@ export default function JobSearchTracker() {
     }
   };
 
-  const handleUpdateApplication = async (appId: number) => {
+  const handleUpdateApplication = async (appId: string) => {
     if (!user) return;
 
     try {
@@ -131,7 +168,7 @@ export default function JobSearchTracker() {
   };
 
   // Set stage as completed or uncompleted
-  const toggleStageCompletion = (appId: number, stageIndex: number) => {
+  const toggleStageCompletion = (appId: string, stageIndex: number) => {
     setApplications(
       applications.map((app) => {
         if (app.id === appId) {
@@ -149,21 +186,13 @@ export default function JobSearchTracker() {
     );
   };
 
-  // Delete an application
-  const deleteApplication = (id: number) => {
-    setApplications(applications.filter((app) => app.id !== id));
-    if (stageSelectorApp === id) {
-      setStageSelectorApp(null);
-    }
-  };
-
   // Toggle stage selector
-  const toggleStageSelector = (appId: number) => {
+  const toggleStageSelector = (appId: string) => {
     setStageSelectorApp(stageSelectorApp === appId ? null : appId);
   };
 
   // Add new stage to an application's workflow
-  const addStageToApplication = (appId: number, stageData: Stage) => {
+  const addStageToApplication = (appId: string, stageData: Stage) => {
     setApplications(
       applications.map((app) => {
         if (app.id === appId) {
@@ -180,7 +209,7 @@ export default function JobSearchTracker() {
   };
 
   // Delete a stage from an application's workflow
-  const deleteStage = (appId: number, stageIndex: number) => {
+  const deleteStage = (appId: string, stageIndex: number) => {
     setApplications(
       applications.map((app) => {
         if (app.id === appId) {
@@ -210,13 +239,10 @@ export default function JobSearchTracker() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between p-4">
-        <div>Hello, {user?.email}</div>
-        <button
-          onClick={signOut}
-          className="bg-red-500 px-2 py-1 rounded text-white"
-        >
+        <Label>Hello, {user?.email}</Label>
+        <Button onClick={signOut} value="outline">
           Sign out
-        </button>
+        </Button>
       </div>
       <h1 className="text-3xl font-bold mb-6">UseLess</h1>
       <p className="text-lg font-semibold mb-4">
@@ -225,21 +251,18 @@ export default function JobSearchTracker() {
       </p>
 
       {/* Add new application button */}
-      <button
-        onClick={() => setShowAppForm(!showAppForm)}
-        className="mb-6 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md"
-      >
+      <Button onClick={() => setShowAppForm(!showAppForm)} variant="outline">
         <PlusCircle size={16} />
         {showAppForm ? "Cancel" : "Add New Application"}
-      </button>
+      </Button>
 
       {/* New application form */}
       {showAppForm && (
-        <div className="mb-6 p-4 border rounded-md bg-gray-50">
+        <div className="mb-6 p-4 border rounded-md ">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Company</label>
-              <input
+              <Label className="block text-sm font-medium mb-1">Company</Label>
+              <Input
                 type="text"
                 name="company"
                 value={newApp.company}
@@ -249,8 +272,8 @@ export default function JobSearchTracker() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Position</label>
-              <input
+              <Label className="block text-sm font-medium mb-1">Position</Label>
+              <Input
                 type="text"
                 name="position"
                 value={newApp.position}
@@ -260,8 +283,8 @@ export default function JobSearchTracker() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">URL</label>
-              <input
+              <Label className="block text-sm font-medium mb-1">URL</Label>
+              <Input
                 type="url"
                 name="url"
                 value={newApp.url}
@@ -272,8 +295,8 @@ export default function JobSearchTracker() {
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium mb-1">Notes</label>
-            <textarea
+            <Label className="block text-sm font-medium mb-1">Notes</Label>
+            <Textarea
               name="notes"
               value={newApp.notes}
               onChange={handleInputChange}
@@ -284,12 +307,9 @@ export default function JobSearchTracker() {
           <div className="mt-4 text-sm text-gray-600">
             <p>You can customize stages after adding the application.</p>
           </div>
-          <button
-            onClick={handleAddApplication}
-            className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md"
-          >
+          <Button onClick={handleAddApplication} variant="outline">
             Save Application
-          </button>
+          </Button>
         </div>
       )}
 
@@ -298,223 +318,238 @@ export default function JobSearchTracker() {
         <h2 className="text-lg font-medium mb-2">Your Applications</h2>
 
         {applications.map((app) => (
-          <div
-            key={app.id}
-            className="border rounded-md p-4 bg-white shadow-sm"
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-left items-center">
-                <h3 className="font-bold text-lg">{app.company}</h3>
-                <p className="text-gray-600">{app.position}</p>
-                <a
-                  href={app.url}
-                  className="text-sm text-gray-500 underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {app.url}
-                </a>
-              </div>
-              <div className="flex items-center gap-2 ml-auto">
-                <button
-                  onClick={() =>
-                    setEditingAppId(app.id === editingAppId ? null : app.id)
-                  }
-                  className="text-blue-500 hover:text-blue-700"
-                  title="Edit"
-                >
-                  <SquarePen size={16} />
-                </button>
-                <button
-                  onClick={() => deleteApplication(app.id)}
-                  className="text-red-500 hover:text-red-700"
-                  title="Delete"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-            {editingAppId === app.id ? (
-              <div className="mb-6 p-4 border rounded-md bg-gray-50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Company
-                    </label>
-                    <input
-                      type="text"
-                      value={app.company}
-                      onChange={(e) => {
-                        const updatedApp = { ...app, company: e.target.value };
-                        setApplications(
-                          applications.map((a) =>
-                            a.id === app.id ? updatedApp : a
-                          )
-                        );
-                      }}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">
-                      Position
-                    </label>
-                    <input
-                      type="text"
-                      value={app.position}
-                      onChange={(e) => {
-                        const updatedApp = { ...app, position: e.target.value };
-                        setApplications(
-                          applications.map((a) =>
-                            a.id === app.id ? updatedApp : a
-                          )
-                        );
-                      }}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
+          <div key={app.id} className="">
+            <Card>
+              <div className="flex justify-between items-center mb-4">
+                <div className="text-left items-center">
+                  <CardHeader>
+                    <CardTitle>{app.company}</CardTitle>
+                    <CardDescription>{app.position}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <a
+                      href={app.url}
+                      className="text-sm text-gray-500 underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {app.url}
+                    </a>
+                  </CardContent>
                 </div>
-                <div className="mt-4">
-                  <label className="block text-sm font-medium mb-1">
-                    Notes
-                  </label>
-                  <textarea
-                    value={app.notes}
-                    onChange={(e) => {
-                      const updatedApp = { ...app, notes: e.target.value };
-                      setApplications(
-                        applications.map((a) =>
-                          a.id === app.id ? updatedApp : a
-                        )
-                      );
-                    }}
-                    className="w-full p-2 border rounded-md"
-                  />
-                </div>
-                <div className="mt-4">
+                <div className="flex items-center gap-2 ml-auto">
+                  {/* Edit button */}
                   <button
-                    onClick={() => handleUpdateApplication(app.id)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md"
+                    onClick={() =>
+                      setEditingAppId(app.id === editingAppId ? null : app.id)
+                    }
+                    className="text-blue-500 hover:text-blue-700"
+                    title="Edit"
                   >
-                    Save Changes
+                    <SquarePen size={16} />
+                  </button>
+                  {/* Delete button */}
+                  <button
+                    onClick={() => handleDeleteApplication(app.id)}
+                    className="text-red-500 hover:text-red-700"
+                    title="Delete"
+                  >
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
-            ) : (
-              // Default display when not editing
-              <div className="mt-2 text-sm text-gray-600"></div>
-            )}
-            {/* Application-specific progress stages visualization */}
-            <div className="flex flex-wrap items-center gap-2 mb-10 mt-4">
-              {app.stages.map((stage, index) => {
-                const IconComponent = stage.icon;
-                const isActive = index <= app.currentStage;
+              {editingAppId === app.id ? (
+                <div className="mb-6 p-4 border rounded-md bg-gray-50">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="block text-sm font-medium mb-1">
+                        Company
+                      </Label>
+                      <Input
+                        type="text"
+                        value={app.company}
+                        onChange={(e) => {
+                          const updatedApp = {
+                            ...app,
+                            company: e.target.value,
+                          };
+                          setApplications(
+                            applications.map((a) =>
+                              a.id === app.id ? updatedApp : a
+                            )
+                          );
+                        }}
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div>
+                      <Label className="block text-sm font-medium mb-1">
+                        Position
+                      </Label>
+                      <Input
+                        type="text"
+                        value={app.position}
+                        onChange={(e) => {
+                          const updatedApp = {
+                            ...app,
+                            position: e.target.value,
+                          };
+                          setApplications(
+                            applications.map((a) =>
+                              a.id === app.id ? updatedApp : a
+                            )
+                          );
+                        }}
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <Label className="block text-sm font-medium mb-1">
+                      Notes
+                    </Label>
+                    <Textarea
+                      value={app.notes}
+                      onChange={(e) => {
+                        const updatedApp = { ...app, notes: e.target.value };
+                        setApplications(
+                          applications.map((a) =>
+                            a.id === app.id ? updatedApp : a
+                          )
+                        );
+                      }}
+                      className="w-full p-2 border rounded-md"
+                    />
+                  </div>
+                  <div className="mt-4">
+                    <Button
+                      onClick={() => handleUpdateApplication(app.id)}
+                      variant="secondary"
+                    >
+                      Save Changes
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                // Default display when not editing
+                <div className="mt-2 text-sm text-gray-600"></div>
+              )}
+              {/* Application-specific progress stages visualization */}
+              <div className="flex flex-wrap items-center gap-2 mb-10 mt-4">
+                {app.stages.map((stage, index) => {
+                  const IconComponent = stage.icon;
+                  const isActive = index <= app.currentStage;
 
-                return (
-                  <div key={index} className="flex items-center">
-                    <div className="relative group">
-                      <button
-                        onClick={() => toggleStageCompletion(app.id, index)}
-                        className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
+                  return (
+                    <div key={index} className="flex items-center">
+                      <div className="relative group">
+                        <button
+                          onClick={() => toggleStageCompletion(app.id, index)}
+                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
                             ${
                               isActive
                                 ? "bg-blue-500"
                                 : "bg-gray-200 hover:bg-gray-300"
                             }`}
-                      >
-                        <IconComponent
-                          size={24}
-                          className={isActive ? "text-white" : "text-gray-500"}
-                        />
+                        >
+                          <IconComponent
+                            size={24}
+                            className={
+                              isActive ? "text-white" : "text-gray-500"
+                            }
+                          />
 
-                        {/* Checkmark overlay that appears on hover for incomplete stages */}
-                        {!isActive && (
-                          <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Check size={24} className="text-white" />
-                          </div>
-                        )}
-                      </button>
-                      <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                        {stage.name}
-                      </span>
+                          {/* Checkmark overlay that appears on hover for incomplete stages */}
+                          {!isActive && (
+                            <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Check size={24} className="text-white" />
+                            </div>
+                          )}
+                        </button>
+                        <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                          {stage.name}
+                        </span>
 
-                      {/* Delete node button - visible on hover */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteStage(app.id, index);
-                        }}
-                        className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
-                        title="Delete this stage"
-                      >
-                        <MinusCircle size={16} />
-                      </button>
+                        {/* Delete node button - visible on hover */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteStage(app.id, index);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
+                          title="Delete this stage"
+                        >
+                          <MinusCircle size={16} />
+                        </button>
+                      </div>
+                      {index < app.stages.length - 1 && (
+                        <div
+                          className={`h-0.5 w-8 ${
+                            index < app.currentStage
+                              ? "bg-blue-500"
+                              : "bg-gray-200"
+                          } mx-1`}
+                        ></div>
+                      )}
                     </div>
-                    {index < app.stages.length - 1 && (
-                      <div
-                        className={`h-0.5 w-8 ${
-                          index < app.currentStage
-                            ? "bg-blue-500"
-                            : "bg-gray-200"
-                        } mx-1`}
-                      ></div>
+                  );
+                })}
+
+                {/* Add stage button for this specific application */}
+                <div className="flex items-center">
+                  <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
+                  <div className="relative">
+                    <button
+                      onClick={() => toggleStageSelector(app.id)}
+                      className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                    >
+                      <PlusCircle size={24} className="text-gray-600" />
+                    </button>
+                    <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                      Add Stage
+                    </span>
+
+                    {/* Stage selector dropdown specific to this application */}
+                    {stageSelectorApp === app.id && (
+                      <div className="absolute top-full mt-8 right-0 w-56 bg-white border rounded-md shadow-lg z-10">
+                        <div className="py-1">
+                          <div className="px-4 py-2 text-sm font-medium border-b">
+                            Select a stage to add:
+                          </div>
+                          {/* Always show all available stages */}
+                          {availableStages.map((stage, index) => {
+                            const StageIcon = stage.icon;
+                            return (
+                              <button
+                                key={index}
+                                className="px-4 py-2 text-sm hover:bg-gray-100 flex items-center w-full"
+                                onClick={() =>
+                                  addStageToApplication(app.id, stage)
+                                }
+                              >
+                                <StageIcon size={16} className="mr-2" />
+                                {stage.name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
-                );
-              })}
-
-              {/* Add stage button for this specific application */}
-              <div className="flex items-center">
-                <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
-                <div className="relative">
-                  <button
-                    onClick={() => toggleStageSelector(app.id)}
-                    className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
-                  >
-                    <PlusCircle size={24} className="text-gray-600" />
-                  </button>
-                  <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                    Add Stage
-                  </span>
-
-                  {/* Stage selector dropdown specific to this application */}
-                  {stageSelectorApp === app.id && (
-                    <div className="absolute top-full mt-8 right-0 w-56 bg-white border rounded-md shadow-lg z-10">
-                      <div className="py-1">
-                        <div className="px-4 py-2 text-sm font-medium border-b">
-                          Select a stage to add:
-                        </div>
-                        {/* Always show all available stages */}
-                        {availableStages.map((stage, index) => {
-                          const StageIcon = stage.icon;
-                          return (
-                            <button
-                              key={index}
-                              className="px-4 py-2 text-sm hover:bg-gray-100 flex items-center w-full"
-                              onClick={() =>
-                                addStageToApplication(app.id, stage)
-                              }
-                            >
-                              <StageIcon size={16} className="mr-2" />
-                              {stage.name}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
-            </div>
 
-            {/* Notes section */}
-            {app.notes && (
-              <div className="mt-2 text-sm text-gray-600">
-                <p>
-                  <strong>Notes:</strong> {app.notes}
-                </p>
-              </div>
-            )}
+              {/* Notes section */}
+              <CardFooter>
+                {app.notes && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    <p>
+                      <strong>Notes:</strong> {app.notes}
+                    </p>
+                  </div>
+                )}
+              </CardFooter>
+            </Card>
           </div>
         ))}
 

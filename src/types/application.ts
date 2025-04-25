@@ -9,7 +9,7 @@ export interface NewApp {
 }
 
 export interface Application extends NewApp {
-  id: number;
+  id: string;
   user_id: string;
   currentStage: number;
   stages: Stage[];
