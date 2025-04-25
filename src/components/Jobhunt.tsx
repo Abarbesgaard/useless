@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { availableStages } from "../constants/availableStages";
 import { defaultInitialStages } from "../constants/defaultInitialStages";
+import { Stage } from "../types/stages";
 import useAuth from "../hooks/useAuth";
-import { addApplication } from "../data/applications";
+import {
+  addApplication,
+  getApplicationsByUser,
+  updateApplication,
+} from "../data/applications";
 import {
   PlusCircle,
   Trash2,
@@ -11,15 +16,25 @@ import {
   MinusCircle,
 } from "lucide-react";
 
-import { LucideIcon } from "lucide-react";
-
-type Stage = {
-  id: string;
-  name: string;
-  icon: LucideIcon;
-};
-
 export default function JobSearchTracker() {
+  const { user, signOut } = useAuth();
+  // Removed unused application state
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const apps = user ? await getApplicationsByUser(user.id) : [];
+        setApplications(apps || []); // Default to an empty array if no data
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        setApplications([]); // Set to an empty array on error
+      }
+    };
+
+    if (user) {
+      fetchApplications();
+    }
+  }, [user]);
   // Sample job application
   const [applications, setApplications] = useState([
     {
@@ -45,7 +60,6 @@ export default function JobSearchTracker() {
 
   const [editingAppId, setEditingAppId] = useState<number | null>(null);
 
-  const { user, signOut } = useAuth();
   // Stage selector state
   const [stageSelectorApp, setStageSelectorApp] = useState<number | null>(null);
 
@@ -62,20 +76,24 @@ export default function JobSearchTracker() {
 
   const handleAddApplication = async () => {
     if (!user) return;
-
+    console.log("Adding application:", newApp);
     try {
-      const newAppData = await addApplication(
-        {
-          ...newApp,
-          id: Date.now(), // Temporary unique ID
-          user_id: user.id,
-          currentStage: 0,
-          stages: [...defaultInitialStages],
-        },
-        user.id
-      );
+      const newAppData = await addApplication({
+        ...newApp,
+        id: Date.now(), // Temporary unique ID
+        user_id: user.id,
+        currentStage: 0,
+        stages: [...defaultInitialStages], // Ensure stages is initialized
+      });
       if (newAppData) {
-        setApplications([...applications, newAppData]);
+        setApplications([
+          ...applications,
+          {
+            ...newAppData,
+            date: new Date(newAppData.date).getTime(),
+            stages: [],
+          },
+        ]); // Ensure date is a number and stages default to an empty array if not provided
         setNewApp({
           company: "",
           position: "",
@@ -87,6 +105,28 @@ export default function JobSearchTracker() {
       }
     } catch (err) {
       console.error("Failed to add application:", err);
+    }
+  };
+
+  const handleUpdateApplication = async (appId: number) => {
+    if (!user) return;
+
+    try {
+      const appToUpdate = applications.find((app) => app.id === appId);
+      if (!appToUpdate) return;
+
+      // Here you would normally call your update API
+      // For now, we'll just update the state directly
+      // Assuming updateApplication is defined in your applications.js file
+      await updateApplication({
+        ...appToUpdate,
+        user_id: user.id,
+      });
+
+      // Exit editing mode
+      setEditingAppId(null);
+    } catch (err) {
+      console.error("Failed to update application:", err);
     }
   };
 
@@ -353,7 +393,7 @@ export default function JobSearchTracker() {
                 </div>
                 <div className="mt-4">
                   <button
-                    onClick={() => setEditingAppId(null)} // Save and exit editing mode
+                    onClick={() => handleUpdateApplication(app.id)}
                     className="bg-green-600 text-white px-4 py-2 rounded-md"
                   >
                     Save Changes
