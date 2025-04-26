@@ -29,29 +29,13 @@ import {
 } from "./ui/card";
 import { Label } from "./ui/label";
 import { toast } from "sonner";
+import JobApplicationForm from "./JobApplicationForm";
 
 export default function JobSearchTracker() {
   const { user, signOut } = useAuth();
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
   const [stageSelectorApp, setStageSelectorApp] = useState<string | null>(null);
   const [showAppForm, setShowAppForm] = useState(false);
-
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const apps = user ? await getApplicationsByUser(user.id) : [];
-        setApplications(apps || []); // Default to an empty array if no data
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-        setApplications([]); // Set to an empty array on error
-      }
-    };
-
-    if (user) {
-      fetchApplications();
-    }
-  }, [user]);
-  // Sample job application
   const [applications, setApplications] = useState([
     {
       id: "1",
@@ -64,8 +48,6 @@ export default function JobSearchTracker() {
       stages: [...defaultInitialStages],
     },
   ]);
-
-  // State for new application form
   const [newApp, setNewApp] = useState({
     company: "Company Name",
     position: "Position Title",
@@ -73,6 +55,23 @@ export default function JobSearchTracker() {
     url: "url for the job posting",
     date: Date.now(),
   });
+  useEffect(() => {
+    const fetchApplications = async () => {
+      console.log("Fetching applications for user:", user);
+      try {
+        const apps = user ? await getApplicationsByUser(user.id) : [];
+        console.log("Fetched applications:", apps);
+        setApplications(apps);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        setApplications([]);
+      }
+    };
+
+    if (user) {
+      fetchApplications();
+    }
+  }, [user]);
 
   // Handle form input changes
   const handleInputChange = (
@@ -103,17 +102,7 @@ export default function JobSearchTracker() {
   };
 
   const handleAddApplication = async () => {
-    toast("Application added successfully!", {
-      description: "You can now track your application progress.",
-      action: {
-        label: "hi",
-        onClick: () => {
-          console.log("hi");
-        },
-      },
-    });
     if (!user) return;
-    console.log("Adding application:", newApp);
     try {
       const newAppData = await addApplication({
         ...newApp,
@@ -262,59 +251,11 @@ export default function JobSearchTracker() {
 
       {/* New application form */}
       {showAppForm && (
-        <div className="mb-6 p-4 border rounded-md ">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label className="block text-sm font-medium mb-1">Company</Label>
-              <Input
-                type="text"
-                name="company"
-                value={newApp.company}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
-                placeholder="Company name"
-              />
-            </div>
-            <div>
-              <Label className="block text-sm font-medium mb-1">Position</Label>
-              <Input
-                type="text"
-                name="position"
-                value={newApp.position}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
-                placeholder="Job title"
-              />
-            </div>
-            <div>
-              <Label className="block text-sm font-medium mb-1">URL</Label>
-              <Input
-                type="url"
-                name="url"
-                value={newApp.url}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-md"
-                placeholder="Job posting URL"
-              />
-            </div>
-          </div>
-          <div className="mt-4">
-            <Label className="block text-sm font-medium mb-1">Notes</Label>
-            <Textarea
-              name="notes"
-              value={newApp.notes}
-              onChange={handleInputChange}
-              className="w-full p-2 border rounded-md"
-              placeholder="Additional notes"
-            />
-          </div>
-          <div className="mt-4 text-sm text-gray-600">
-            <p>You can customize stages after adding the application.</p>
-          </div>
-          <Button onClick={handleAddApplication} variant="outline">
-            Save Application
-          </Button>
-        </div>
+        <JobApplicationForm
+          newApp={newApp}
+          onChange={handleInputChange}
+          onSubmit={handleAddApplication}
+        />
       )}
 
       {/* Applications list */}

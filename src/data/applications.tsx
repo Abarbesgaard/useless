@@ -3,49 +3,54 @@ import supabase from "@/lib/supabase"; // or wherever your client lives
 import { Stage } from "../types/stages";
 import { Application } from "@/types/application";
 
-export const addApplication = async (newApp: Application) => {
+export const addApplication = async (app: Application, stages?: Stage[]) => {
   const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
+  if (userError || !user || !app.company || !app.position) return null;
 
-  if (userError || !user || !newApp.company || !newApp.position) return null;
-
-  // Prepare the application object without the 'stages' field
-  const application = {
+  const newApp = {
     auth_user: user.id,
-    company: newApp.company,
-    position: newApp.position,
-    notes: newApp.notes,
-    url: newApp.url,
-    date: new Date(newApp.date).toISOString(),
-    current_stage: 0, // Keep current_stage
+    company: app.company,
+    position: app.position,
+    notes: app.notes || "",
+    url: app.url || "",
+    date: new Date(app.date).toISOString(),
+    current_stage: 0,
   };
 
-  // Insert the application into the 'applications' table
-  const { data, error } = await supabase
+  const { data: insertedApp, error: insertError } = await supabase
     .from("applications")
-    .insert([application])
-    .select();
+    .insert([newApp])
+    .select()
+    .single();
 
-  if (error) {
-    console.error("Error adding application:", error);
-    throw error;
+  if (insertError || !insertedApp) throw insertError;
+
+  // Optional: insert stages
+  if (stages && stages.length > 0) {
+    const stageData = stages.map((s) => ({
+      ...s,
+      application_id: insertedApp.id,
+    }));
+
+    const { error: stageInsertError } = await supabase
+      .from("application_stages")
+      .insert(stageData);
+
+    if (stageInsertError) throw stageInsertError;
   }
 
-  // Return the inserted application data
-  return {
-    ...application,
-    id: data?.[0].id,
-    currentStage: application.current_stage,
-  };
+  return insertedApp;
 };
 
 export async function getApplicationsByUser(userId: string) {
   const { data: applications, error: appError } = await supabase
     .from("applications")
     .select("*")
-    .eq("auth_user", userId);
+    .eq("auth_user", userId)
+    .eq("is_deleted", "false"); // Ensure we only fetch non-deleted applications
 
   if (appError) {
     console.error("Error fetching applications:", appError);
@@ -58,6 +63,7 @@ export async function getApplicationsByUser(userId: string) {
         .from("application_stages")
         .select("*")
         .eq("application_id", app.id)
+        .eq("is_deleted", false) // Ensure we only fetch non-deleted stages
         .order("position", { ascending: true });
 
       if (stagesError) {
@@ -88,15 +94,21 @@ export const updateApplication = async (app: Application) => {
     error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user || !app.company || !app.position) return null;
+  if (userError || !user || !app.company || !app.position) {
+    console.error(
+      "Error fetching user or invalid application data:",
+      userError
+    );
+    return null;
+  }
 
   // Format application data for database
   const applicationUpdate = {
     company: app.company,
     position: app.position,
-    notes: app.notes,
-    url: app.url,
-    current_stage: app.currentStage,
+    notes: app.notes || "",
+    url: app.url || "",
+    current_stage: app.currentStage || 0,
   };
 
   // Update the record in Supabase
@@ -105,12 +117,14 @@ export const updateApplication = async (app: Application) => {
     .update(applicationUpdate)
     .eq("id", app.id)
     .eq("auth_user", user.id)
+    .eq("is_deleted", false) // Ensure we only update non-deleted applications
     .select();
 
   if (error) {
     console.error("Error updating application:", error);
     throw error;
   }
+
   return {
     ...app,
     ...(data?.[0] || {}),
@@ -149,6 +163,7 @@ export const deleteStage = async (stageId: string) => {
     throw error;
   }
 };
+
 export const deleteApplication = async (applicationId: string) => {
   const {
     data: { user },
@@ -160,29 +175,29 @@ export const deleteApplication = async (applicationId: string) => {
     return null;
   }
 
-  // Delete the application from the 'applications' table
+  // Update the 'is_deleted' field to true instead of deleting the application
   const { error } = await supabase
     .from("applications")
-    .delete()
+    .update({ is_deleted: true })
     .eq("id", applicationId)
     .eq("auth_user", user.id);
 
   if (error) {
-    console.error("Error deleting application:", error);
+    console.error("Error marking application as deleted:", error);
     throw error;
   }
 
-  // Optionally, delete related stages for this application (if needed)
+  // Optionally, mark related stages as deleted (if needed)
   const { error: stageError } = await supabase
     .from("application_stages")
-    .delete()
+    .update({ is_deleted: true })
     .eq("application_id", applicationId);
 
   if (stageError) {
-    console.error("Error deleting stages:", stageError);
+    console.error("Error marking stages as deleted:", stageError);
     throw stageError;
   }
 
-  // Return a success message or the id of the deleted application
+  // Return a success message or the id of the updated application
   return { success: true, applicationId };
 };
