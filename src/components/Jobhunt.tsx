@@ -121,6 +121,7 @@ export default function JobSearchTracker() {
         user_id: user.id,
         currentStage: 0,
         stages: [...defaultInitialStages], // Ensure stages is initialized
+        is_deleted: false,
       });
       if (newAppData) {
         setApplications([
@@ -158,6 +159,9 @@ export default function JobSearchTracker() {
       await updateApplication({
         ...appToUpdate,
         user_id: user.id,
+        currentStage: appToUpdate.currentStage,
+        stages: appToUpdate.stages,
+        is_deleted: false,
       });
 
       // Exit editing mode
@@ -435,7 +439,7 @@ export default function JobSearchTracker() {
                 <div className="mt-2 text-sm text-gray-600"></div>
               )}
               {/* Application-specific progress stages visualization */}
-              <div className="flex flex-wrap items-center gap-2 mb-10 mt-4">
+              <div className="flex flex-wrap items-center p-2 gap-2 mb-10 mt-4">
                 {app.stages.map((stage, index) => {
                   const IconComponent = stage.icon;
                   const isActive = index <= app.currentStage;
