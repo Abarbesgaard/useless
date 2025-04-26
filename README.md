@@ -1,54 +1,26 @@
-# React + TypeScript + Vite
+# Useless
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Useless is an open source project for tracking job applications in a simple and transparent way.
+It's built to help you stay organized during your job hunt without overcomplicating the process.
 
-Currently, two official plugins are available:
+    📄 Keep track of jobs you’ve applied for.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    🚀 Fork it and customize it to fit your needs — just remember, forks must stay open source under the GPLv3 License.
 
-## Expanding the ESLint configuration
+    🤝 Contributions are welcome but will be reviewed and approved before merging. See Community Standards.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+License
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+This project is licensed under the GNU General Public License v3.0 (GPLv3).
+Contributing
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Contributions to Useless are welcome — bug fixes, improvements, or new ideas are encouraged!
+However, to maintain quality:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+    All contributions must be reviewed and approved before being merged.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+    You can fork the project, but any derivative work must remain open source according to the GPLv3 License.
+
+    Please review the Community Standards before contributing.
+
+Ready to contribute? Open an issue or pull request — and let's make job tracking a little less useless together!
