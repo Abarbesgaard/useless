@@ -94,7 +94,7 @@ export default function JobSearchTracker() {
     url: "url for the job posting",
     date: Date.now(),
   });
-
+  //tst
   useEffect(() => {
     const fetchApplications = async () => {
       console.log("Fetching applications for user:", user);
