@@ -97,9 +97,15 @@ export default function JobSearchTracker() {
 
   useEffect(() => {
     const fetchApplications = async () => {
-      console.log("Fetching applications for user:", user);
       try {
+        if (applications !== null) return;
         const apps = user ? await getApplicationsByUser(user.id) : [];
+        if (!apps || !user) {
+          throw new Error(
+            "User is not authenticated or no applications found."
+          );
+        }
+
         console.log("Fetched applications:", apps);
         setApplications(apps);
       } catch (error) {
@@ -108,10 +114,10 @@ export default function JobSearchTracker() {
       }
     };
 
-    if (user) {
+    if (user && applications === null) {
       fetchApplications();
     }
-  }, [user]);
+  });
 
   // Handle form input changes
   const handleInputChange = (
