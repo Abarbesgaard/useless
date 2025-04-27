@@ -95,7 +95,8 @@ export default function JobSearchTracker() {
     date: Date.now(),
   });
 
-  //Works
+  //tst
+
   useEffect(() => {
     const fetchApplications = async () => {
       try {
