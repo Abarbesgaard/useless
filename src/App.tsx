@@ -3,6 +3,7 @@ import JobSearchTracker from "./components/Jobhunt";
 import AuthProvider from "./contexts/authProvider";
 import Login from "./components/login";
 import useAuth from "./hooks/useAuth";
+import { Analytics } from "@vercel/analytics/next";
 
 function AppContent() {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ export default function App() {
   return (
     <AuthProvider>
       <AppContent />
+      <Analytics />
     </AuthProvider>
   );
 }
