@@ -111,7 +111,7 @@ export default function JobSearchTracker() {
     if (user) {
       fetchApplications();
     }
-  }, [user]);
+  }, []);
 
   // Handle form input changes
   const handleInputChange = (
