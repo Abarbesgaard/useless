@@ -95,6 +95,7 @@ export default function JobSearchTracker() {
     date: Date.now(),
   });
 
+  //Works
   useEffect(() => {
     const fetchApplications = async () => {
       console.log("Fetching applications for user:", user);
