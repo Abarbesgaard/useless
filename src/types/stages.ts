@@ -5,7 +5,6 @@ export type Stage = {
   name: string;
   icon: LucideIcon | string;
   position: number | null;
-  application_id: string;
-  created_at?: string;
-  auth_user?: string;
+  application_id: string | null;
+  auth_user?: string | null;
 };
