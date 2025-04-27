@@ -242,7 +242,7 @@ export default function JobSearchTracker() {
         icon:
           typeof stageData.icon === "string"
             ? stageData.icon
-            : stageData.icon.name, // Use icon name
+            : stageData.icon.name || "", // Use icon name
         position,
         application_id: appId,
         is_deleted: false,

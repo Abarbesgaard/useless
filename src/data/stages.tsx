@@ -61,8 +61,8 @@ export const softDeleteStage = async (stageId: string) => {
     }
 
     return { success: true };
-  } catch (error: Error) {
+  } catch (error) {
     console.error("Error in softDeleteStage:", error);
-    return { success: false, error: error.message };
+    return { success: false };
   }
 };
