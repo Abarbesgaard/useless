@@ -95,6 +95,7 @@ export default function JobSearchTracker() {
     date: Date.now(),
   });
 
+  //Works
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -117,7 +118,9 @@ export default function JobSearchTracker() {
     if (user && applications === null) {
       fetchApplications();
     }
-  });
+
+  }, []);
+
 
   // Handle form input changes
   const handleInputChange = (
