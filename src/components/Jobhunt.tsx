@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { availableStages } from "../constants/availableStages";
 import { defaultInitialStages } from "../constants/defaultInitialStages";
-import { Stage } from "../types/stages";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import useAuth from "../hooks/useAuth";
+import { addStage, softDeleteStage } from "../data/stages";
 import {
   addApplication,
   getApplicationsByUser,
@@ -18,6 +18,18 @@ import {
   SquarePen,
   Check,
   MinusCircle,
+  // Import all icons that might be used in the stages
+  FileText,
+  Phone,
+  Users,
+  Video,
+  Calendar,
+  CheckSquare,
+  MessageSquare,
+  Mail,
+  Send,
+  Clock,
+  X,
 } from "lucide-react";
 import {
   Card,
@@ -30,6 +42,33 @@ import {
 import { Label } from "./ui/label";
 import { toast } from "sonner";
 import JobApplicationForm from "./JobApplicationForm";
+import { Stage } from "@/types/stages";
+
+// Map string icon names to actual icon components
+const iconMap = {
+  PlusCircle,
+  Trash2,
+  SquarePen,
+  Check,
+  MinusCircle,
+  FileText,
+  Phone,
+  Users,
+  Video,
+  Calendar,
+  CheckSquare,
+  MessageSquare,
+  Mail,
+  Send,
+  Clock,
+  X,
+};
+
+// Function to resolve icon string to component
+const resolveIcon = (iconName: string) => {
+  // Default to FileText if icon is not found
+  return iconMap[iconName as keyof typeof iconMap] || FileText;
+};
 
 export default function JobSearchTracker() {
   const { user, signOut } = useAuth();
@@ -55,6 +94,7 @@ export default function JobSearchTracker() {
     url: "url for the job posting",
     date: Date.now(),
   });
+
   useEffect(() => {
     const fetchApplications = async () => {
       console.log("Fetching applications for user:", user);
@@ -118,9 +158,9 @@ export default function JobSearchTracker() {
           {
             ...newAppData,
             date: new Date(newAppData.date).getTime(),
-            stages: [],
+            stages: newAppData.stages || [], // Ensure stages is initialized
           },
-        ]); // Ensure date is a number and stages default to an empty array if not provided
+        ]);
         setNewApp({
           company: "",
           position: "",
@@ -142,9 +182,6 @@ export default function JobSearchTracker() {
       const appToUpdate = applications.find((app) => app.id === appId);
       if (!appToUpdate) return;
 
-      // Here you would normally call your update API
-      // For now, we'll just update the state directly
-      // Assuming updateApplication is defined in your applications.js file
       await updateApplication({
         ...appToUpdate,
         user_id: user.id,
@@ -185,48 +222,112 @@ export default function JobSearchTracker() {
   };
 
   // Add new stage to an application's workflow
-  const addStageToApplication = (appId: string, stageData: Stage) => {
-    setApplications(
-      applications.map((app) => {
-        if (app.id === appId) {
-          // No longer checking if stage already exists - always add it
-          return {
-            ...app,
-            stages: [...app.stages, stageData],
-          };
-        }
-        return app;
-      })
-    );
-    setStageSelectorApp(null);
+  const addStageToApplication = async (appId: string, stageData: Stage) => {
+    if (!user) return;
+    try {
+      // Calculate position based on current stages
+      const app = applications.find((app) => app.id === appId);
+      if (!app) return;
+
+      const positions = app.stages
+        .map((stage) => stage.position)
+        .filter((pos) => pos !== null && pos !== undefined);
+
+      const maxPosition = positions.length > 0 ? Math.max(...positions) : -1;
+      const position = maxPosition + 1;
+
+      // Convert the icon to a string name before sending to the database
+      const stageToAdd = {
+        name: stageData.name,
+        icon:
+          typeof stageData.icon === "string"
+            ? stageData.icon
+            : stageData.icon.name, // Use icon name
+        position,
+        application_id: appId,
+        is_deleted: false,
+      };
+
+      // Call the backend function to add the stage
+      const newStage = await addStage(stageToAdd, appId);
+
+      // Update the local state
+      setApplications(
+        applications.map((app) => {
+          if (app.id === appId) {
+            return {
+              ...app,
+              stages: [...app.stages, newStage],
+            };
+          }
+          return app;
+        })
+      );
+
+      toast("Stage added successfully!", {
+        description: `"${stageData.name}" has been added to your application process.`,
+      });
+
+      setStageSelectorApp(null);
+    } catch (err) {
+      console.error("Failed to add stage:", err);
+      toast.error("Failed to add stage. Please try again.");
+    }
   };
 
-  // Delete a stage from an application's workflow
-  const deleteStage = (appId: string, stageIndex: number) => {
-    setApplications(
-      applications.map((app) => {
-        if (app.id === appId) {
-          // Don't allow deleting if there's only one stage left
-          if (app.stages.length <= 1) return app;
+  const deleteStage = async (appId: string, stageIndex: number) => {
+    if (!user) return;
+    console.log("Deleting stage at index:", stageIndex);
+    console.log("Application ID:", appId);
+    try {
+      // Find the application
+      const app = applications.find((a) => a.id === appId);
+      if (!app || app.stages.length <= 1) return; // Don't allow deleting if there's only one stage left
 
-          const newStages = [...app.stages];
-          newStages.splice(stageIndex, 1);
+      // Get the stage to delete
+      const stageToDelete = app.stages[stageIndex];
+      console.log("Stage to delete:", stageToDelete);
+      if (!stageToDelete || !stageToDelete.id) {
+        console.error("Invalid stage or missing id");
+        return;
+      }
 
-          // Adjust currentStage if needed
-          let newCurrentStage = app.currentStage;
-          if (stageIndex <= app.currentStage) {
-            newCurrentStage = Math.max(0, app.currentStage - 1);
+      // Call the backend to soft delete the stage
+      await softDeleteStage(stageToDelete.id);
+
+      // Update the local state by removing the stage
+      setApplications(
+        applications.map((app) => {
+          if (app.id === appId) {
+            const newStages = app.stages.filter(
+              (_, index) => index !== stageIndex
+            );
+
+            // Adjust currentStage if needed
+            let newCurrentStage = app.currentStage;
+            if (stageIndex <= app.currentStage) {
+              newCurrentStage = Math.max(0, app.currentStage - 1);
+            }
+
+            return {
+              ...app,
+              stages: newStages,
+              currentStage: newCurrentStage,
+            };
           }
+          return app;
+        })
+      );
 
-          return {
-            ...app,
-            stages: newStages,
-            currentStage: newCurrentStage,
-          };
-        }
-        return app;
-      })
-    );
+      // Show success message
+      toast("Stage removed successfully!", {
+        description:
+          "The stage has been removed from your application process.",
+      });
+    } catch (err) {
+      console.error("Failed to delete stage:", err);
+      toast.error("Failed to delete stage. Please try again.");
+    }
   };
 
   return (
@@ -381,64 +482,72 @@ export default function JobSearchTracker() {
               )}
               {/* Application-specific progress stages visualization */}
               <div className="flex flex-wrap items-center p-2 gap-2 mb-10 mt-4">
-                {app.stages.map((stage, index) => {
-                  const IconComponent = stage.icon;
-                  const isActive = index <= app.currentStage;
+                {app.stages &&
+                  app.stages.map((stage, index) => {
+                    // Here's the important part: Resolve string icon names to actual components
+                    const IconComponent =
+                      typeof stage.icon === "string"
+                        ? resolveIcon(stage.icon)
+                        : stage.icon || FileText;
 
-                  return (
-                    <div key={index} className="flex items-center">
-                      <div className="relative group">
-                        <button
-                          onClick={() => toggleStageCompletion(app.id, index)}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
+                    const isActive = index <= app.currentStage;
+
+                    return (
+                      <div key={index} className="flex items-center">
+                        <div className="relative group">
+                          <button
+                            onClick={() => toggleStageCompletion(app.id, index)}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
                             ${
                               isActive
                                 ? "bg-blue-500"
                                 : "bg-gray-200 hover:bg-gray-300"
                             }`}
-                        >
-                          <IconComponent
-                            size={24}
-                            className={
-                              isActive ? "text-white" : "text-gray-500"
-                            }
-                          />
+                          >
+                            {IconComponent && (
+                              <IconComponent
+                                size={24}
+                                className={
+                                  isActive ? "text-white" : "text-gray-500"
+                                }
+                              />
+                            )}
 
-                          {/* Checkmark overlay that appears on hover for incomplete stages */}
-                          {!isActive && (
-                            <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Check size={24} className="text-white" />
-                            </div>
-                          )}
-                        </button>
-                        <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                          {stage.name}
-                        </span>
+                            {/* Checkmark overlay that appears on hover for incomplete stages */}
+                            {!isActive && (
+                              <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Check size={24} className="text-white" />
+                              </div>
+                            )}
+                          </button>
+                          <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                            {stage.name}
+                          </span>
 
-                        {/* Delete node button - visible on hover */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteStage(app.id, index);
-                          }}
-                          className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
-                          title="Delete this stage"
-                        >
-                          <MinusCircle size={16} />
-                        </button>
+                          {/* Delete node button - visible on hover */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteStage(app.id, index);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
+                            title="Delete this stage"
+                          >
+                            <MinusCircle size={16} />
+                          </button>
+                        </div>
+                        {index < app.stages.length - 1 && (
+                          <div
+                            className={`h-0.5 w-8 ${
+                              index < app.currentStage
+                                ? "bg-blue-500"
+                                : "bg-gray-200"
+                            } mx-1`}
+                          ></div>
+                        )}
                       </div>
-                      {index < app.stages.length - 1 && (
-                        <div
-                          className={`h-0.5 w-8 ${
-                            index < app.currentStage
-                              ? "bg-blue-500"
-                              : "bg-gray-200"
-                          } mx-1`}
-                        ></div>
-                      )}
-                    </div>
-                  );
-                })}
+                    );
+                  })}
 
                 {/* Add stage button for this specific application */}
                 <div className="flex items-center">
