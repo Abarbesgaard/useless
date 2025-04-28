@@ -18,6 +18,7 @@ export const addApplication = async (app: Application, stages?: Stage[]) => {
     url: app.url || "",
     date: new Date(app.date).toISOString(),
     current_stage: 0,
+    is_deleted: false,
   };
 
   const { data: insertedApp, error: insertError } = await supabase
