@@ -411,7 +411,7 @@ export default function JobSearchTracker() {
       </p>
 
       {/* Add new application button */}
-      <Button onClick={() => setShowAppForm(!showAppForm)} variant="outline">
+      <Button onClick={() => setShowAppForm(!showAppForm)} variant="default">
         <PlusCircle size={16} />
         {showAppForm ? "Cancel" : "Add New Application"}
       </Button>

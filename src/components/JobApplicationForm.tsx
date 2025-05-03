@@ -69,10 +69,10 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({
           placeholder="Additional notes"
         />
       </div>
-      <div className="mt-4 text-sm text-gray-600">
+      <div className="mt-4 text-sm text-gray-600 pb-2">
         <p>You can customize stages after adding the application.</p>
       </div>
-      <Button onClick={onSubmit} variant="outline">
+      <Button onClick={onSubmit} variant="default" className="">
         Save Application
       </Button>
     </div>
