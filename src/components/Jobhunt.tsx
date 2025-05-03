@@ -449,7 +449,7 @@ export default function JobSearchTracker() {
                     </a>
                   </CardContent>
                 </div>
-                <div className="flex items-center gap-2 ml-auto">
+                <div className="flex items-center gap-2 ml-auto p-2">
                   {/* Edit button */}
                   <button
                     onClick={() =>
@@ -463,7 +463,7 @@ export default function JobSearchTracker() {
                   {/* Delete button */}
                   <button
                     onClick={() => handleDeleteApplication(app.id)}
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-500 hover:text-red-700 p-3"
                     title="Delete"
                   >
                     <Trash2 size={16} />
@@ -547,7 +547,7 @@ export default function JobSearchTracker() {
                 <div className="mt-2 text-sm text-gray-600"></div>
               )}
               {/* Application-specific progress stages visualization */}
-              <div className="flex flex-wrap items-center p-2 gap-2 mb-10 mt-4">
+              <div className="flex flex-wrap items-center pl-6">
                 {app.stages &&
                   app.stages.map((stage, index) => {
                     // Here's the important part: Resolve string icon names to actual components
@@ -559,7 +559,7 @@ export default function JobSearchTracker() {
                     const isActive = index <= app.currentStage;
 
                     return (
-                      <div key={index} className="flex items-center">
+                      <div key={index} className="flex items-center ">
                         <div className="relative group">
                           <button
                             onClick={() => toggleStageCompletion(app.id, index)}
