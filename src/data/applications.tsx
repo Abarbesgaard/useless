@@ -181,7 +181,8 @@ export const deleteApplication = async (applicationId: string) => {
     .from("applications")
     .update({ is_deleted: true })
     .eq("id", applicationId)
-    .eq("auth_user", user.id);
+    .eq("auth_user", user.id)
+    .select(); // Add this to get back the updated row
 
   if (error) {
     console.error("Error marking application as deleted:", error);

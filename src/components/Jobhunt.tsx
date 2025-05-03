@@ -16,6 +16,7 @@ import {
   PlusCircle,
   Trash2,
   SquarePen,
+  Briefcase,
   Check,
   MinusCircle,
   // Import all icons that might be used in the stages
@@ -43,10 +44,12 @@ import { Label } from "./ui/label";
 import { toast } from "sonner";
 import JobApplicationForm from "./JobApplicationForm";
 import { Stage } from "@/types/stages";
+import { LucideIcon } from "lucide-react";
 
 // Map string icon names to actual icon components
-const iconMap = {
+const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
+  Briefcase,
   Trash2,
   SquarePen,
   Check,
@@ -63,11 +66,35 @@ const iconMap = {
   Clock,
   X,
 };
+const resolveIcon = (iconName: string | LucideIcon): LucideIcon => {
+  if (typeof iconName !== "string") {
+    return iconName || FileText;
+  }
 
-// Function to resolve icon string to component
-const resolveIcon = (iconName: string) => {
-  // Default to FileText if icon is not found
-  return iconMap[iconName as keyof typeof iconMap] || FileText;
+  if (!iconName) {
+    return FileText;
+  }
+
+  return iconMap[iconName] || FileText;
+};
+
+// Helper function to consistently get icon name as string
+const getIconName = (icon: string | LucideIcon | undefined): string => {
+  if (typeof icon === "string") {
+    // If it's already a string (icon name), return it directly
+    return icon;
+  }
+
+  // For icon components, we need to extract the displayName or name property
+  if (icon) {
+    // Try to get the component name
+    const componentName = icon.displayName || icon.name;
+    if (componentName) {
+      return componentName;
+    }
+  }
+
+  return "FileText"; // Default fallback
 };
 
 export default function JobSearchTracker() {
@@ -95,33 +122,27 @@ export default function JobSearchTracker() {
     date: Date.now(),
   });
 
-  //tst
-
   useEffect(() => {
     const fetchApplications = async () => {
+      console.log("Fetching applications...");
       try {
-        if (applications !== null) return;
-        const apps = user ? await getApplicationsByUser(user.id) : [];
-        if (!apps || !user) {
-          throw new Error(
-            "User is not authenticated or no applications found."
-          );
+        console.log("User:", user);
+        if (!user) {
+          throw new Error("User is not authenticated.");
         }
-
+        const apps = await getApplicationsByUser(user.id);
         console.log("Fetched applications:", apps);
         setApplications(apps);
       } catch (error) {
         console.error("Error fetching applications:", error);
-        setApplications([]);
+        setApplications([]); // Set to empty array on error
       }
     };
 
-    if (user && applications === null) {
+    if (user) {
       fetchApplications();
     }
-
-  }, []);
-
+  }, [user]);
 
   // Handle form input changes
   const handleInputChange = (
@@ -153,6 +174,7 @@ export default function JobSearchTracker() {
 
   const handleAddApplication = async () => {
     if (!user) return;
+    console.log("Adding new application:", newApp);
     try {
       const newAppData = await addApplication({
         ...newApp,
@@ -232,7 +254,10 @@ export default function JobSearchTracker() {
   };
 
   // Add new stage to an application's workflow
-  const addStageToApplication = async (appId: string, stageData: Stage) => {
+  const addStageToApplication = async (
+    appId: string,
+    stageData: Stage
+  ): Promise<void> => {
     if (!user) return;
     try {
       // Calculate position based on current stages
@@ -241,18 +266,18 @@ export default function JobSearchTracker() {
 
       const positions = app.stages
         .map((stage) => stage.position)
-        .filter((pos) => pos !== null && pos !== undefined);
+        .filter((pos): pos is number => pos !== null && pos !== undefined);
 
       const maxPosition = positions.length > 0 ? Math.max(...positions) : -1;
       const position = maxPosition + 1;
 
-      // Convert the icon to a string name before sending to the database
+      // FIXED: Get a consistent icon name to store in the database
+      const iconName = getIconName(stageData.icon);
+
+      // Prepare the stage data for the backend
       const stageToAdd = {
         name: stageData.name,
-        icon:
-          typeof stageData.icon === "string"
-            ? stageData.icon
-            : stageData.icon.name || "", // Use icon name
+        icon: iconName, // Store just the string name
         position,
         application_id: appId,
         is_deleted: false,
