@@ -10,7 +10,12 @@ export const addStage = async (stage: Stage, applicationId: string) => {
 
   const { data, error } = await supabase
     .from("application_stages")
-    .insert([{ ...stage, application_id: applicationId, auth_user: user.id }])
+    .insert([{
+      ...stage,
+      application_id: applicationId,
+      auth_user: user.id,
+      is_active: false,
+    }])
     .select()
     .single();
 
@@ -21,7 +26,7 @@ export const addStage = async (stage: Stage, applicationId: string) => {
 // Update Stage
 export const updateStage = async (
   stageId: string,
-  updatedStage: Partial<Stage>
+  updatedStage: Partial<Stage>,
 ) => {
   const { data, error } = await supabase
     .from("application_stages")

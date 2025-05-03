@@ -7,4 +7,5 @@ export type Stage = {
   position: number | null;
   application_id: string | null;
   auth_user?: string | null;
+  is_active?: boolean | null;
 };

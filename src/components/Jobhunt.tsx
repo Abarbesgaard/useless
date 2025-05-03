@@ -19,7 +19,6 @@ import {
   Briefcase,
   Check,
   MinusCircle,
-  // Import all icons that might be used in the stages
   FileText,
   Phone,
   Users,
@@ -46,7 +45,6 @@ import JobApplicationForm from "./JobApplicationForm";
 import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
 
-// Map string icon names to actual icon components
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
   Briefcase,
@@ -78,7 +76,6 @@ const resolveIcon = (iconName: string | LucideIcon): LucideIcon => {
   return iconMap[iconName] || FileText;
 };
 
-// Helper function to consistently get icon name as string
 const getIconName = (icon: string | LucideIcon | undefined): string => {
   if (typeof icon === "string") {
     // If it's already a string (icon name), return it directly
@@ -144,7 +141,6 @@ export default function JobSearchTracker() {
     }
   }, [user]);
 
-  // Handle form input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -230,22 +226,54 @@ export default function JobSearchTracker() {
   };
 
   // Set stage as completed or uncompleted
-  const toggleStageCompletion = (appId: string, stageIndex: number) => {
+  const toggleStageCompletion = async (appId: string, stageIndex: number) => {
+    if (!user) return;
+
+    // Find the current application
+    const currentApp = applications.find((app) => app.id === appId);
+    if (!currentApp) return;
+
+    // Calculate new currentStage value
+    let newCurrentStage = currentApp.currentStage;
+    if (stageIndex <= currentApp.currentStage) {
+      // If clicking on already completed stage, uncomplete it and all after it
+      newCurrentStage = stageIndex - 1;
+    } else {
+      // If clicking on future stage, complete it and all before it
+      newCurrentStage = stageIndex;
+    }
+
+    // Create updated application object
+    const updatedApp = { ...currentApp, currentStage: newCurrentStage };
+
+    // Update local state for immediate UI feedback
     setApplications(
-      applications.map((app) => {
-        if (app.id === appId) {
-          // If clicking on already completed stage, uncomplete it and all after it
-          if (stageIndex <= app.currentStage) {
-            return { ...app, currentStage: stageIndex - 1 };
-          }
-          // If clicking on future stage, complete it and all before it
-          else {
-            return { ...app, currentStage: stageIndex };
-          }
-        }
-        return app;
-      })
+      applications.map((app) => (app.id === appId ? updatedApp : app))
     );
+
+    try {
+      // Persist changes to the database
+      await updateApplication({
+        ...updatedApp,
+        user_id: user.id,
+        is_deleted: false,
+      });
+
+      // Optional: Show success toast
+      toast.success("Progress updated!", {
+        description: "Your application progress has been saved.",
+      });
+    } catch (error) {
+      console.error("Failed to update application progress:", error);
+
+      // Show error message
+      toast.error("Failed to save progress. Please try again.");
+
+      // Revert local state if API call fails
+      setApplications(
+        applications.map((app) => (app.id === appId ? currentApp : app))
+      );
+    }
   };
 
   // Toggle stage selector
