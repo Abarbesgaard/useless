@@ -4,6 +4,7 @@ import AuthProvider from "./contexts/authProvider";
 import Login from "./components/login";
 import useAuth from "./hooks/useAuth";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/sonner";
 
 function AppContent() {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ export default function App() {
   return (
     <AuthProvider>
       <AppContent />
+      <Toaster />
       <Analytics />
     </AuthProvider>
   );

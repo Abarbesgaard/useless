@@ -196,6 +196,9 @@ export default function JobSearchTracker() {
           url: "",
           date: Date.now(),
         });
+        toast("Application added successfully!", {
+          description: `"${newApp.company}" has been added to your applications.`,
+        });
         setShowAppForm(false);
       }
     } catch (err) {
