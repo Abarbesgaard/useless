@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { availableStages } from "../constants/availableStages";
 import { defaultInitialStages } from "../constants/defaultInitialStages";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
-import { Input } from "./ui/input";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
+import { Input } from "../components/ui/input";
 import useAuth from "../hooks/useAuth";
 import { addStage, softDeleteStage } from "../data/stages";
-import { EditButton } from "./custom/EditButton";
-import { DeleteButton } from "./custom/DeleteButton";
+import { EditButton } from "../components/custom/EditButton";
+import { DeleteButton } from "../components/custom/DeleteButton";
 import {
   addApplication,
   getApplicationsByUser,
@@ -40,10 +40,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Label } from "./ui/label";
+} from "../components/ui/card";
+import { Label } from "../components/ui/label";
 import { toast } from "sonner";
-import JobApplicationForm from "./JobApplicationForm";
+import JobApplicationForm from "../components/custom/JobApplicationForm";
 import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
 
