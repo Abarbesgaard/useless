@@ -6,6 +6,8 @@ import { Textarea } from "./ui/textarea";
 import { Input } from "./ui/input";
 import useAuth from "../hooks/useAuth";
 import { addStage, softDeleteStage } from "../data/stages";
+import { EditButton } from "./custom/EditButton";
+import { DeleteButton } from "./custom/DeleteButton";
 import {
   addApplication,
   getApplicationsByUser,
@@ -170,7 +172,6 @@ export default function JobSearchTracker() {
 
   const handleAddApplication = async () => {
     if (!user) return;
-    console.log("Adding new application:", newApp);
     try {
       const newAppData = await addApplication({
         ...newApp,
@@ -180,29 +181,29 @@ export default function JobSearchTracker() {
         stages: [...defaultInitialStages], // Ensure stages is initialized
         is_deleted: false,
       });
+
       if (newAppData) {
-        setApplications([
-          ...applications,
+        console.log("New application added:", newAppData);
+        // Update the state with the new application
+        setApplications((prevApplications) => [
+          ...prevApplications,
           {
             ...newAppData,
             date: new Date(newAppData.date).getTime(),
             stages: newAppData.stages || [], // Ensure stages is initialized
           },
         ]);
-        setNewApp({
-          company: "",
-          position: "",
-          notes: "",
-          url: "",
-          date: Date.now(),
-        });
+
+        setShowAppForm(false);
+
+        // Show success toast
         toast("Application added successfully!", {
           description: `"${newApp.company}" has been added to your applications.`,
         });
-        setShowAppForm(false);
       }
     } catch (err) {
       console.error("Failed to add application:", err);
+      toast.error("Failed to add application. Please try again.");
     }
   };
 
@@ -400,7 +401,7 @@ export default function JobSearchTracker() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between p-4">
         <Label>Hello, {user?.email}</Label>
-        <Button onClick={signOut} value="outline">
+        <Button onClick={signOut} variant="outline">
           Sign out
         </Button>
       </div>
@@ -415,7 +416,6 @@ export default function JobSearchTracker() {
         <PlusCircle size={16} />
         {showAppForm ? "Cancel" : "Add New Application"}
       </Button>
-
       {/* New application form */}
       {showAppForm && (
         <JobApplicationForm
@@ -450,24 +450,15 @@ export default function JobSearchTracker() {
                   </CardContent>
                 </div>
                 <div className="flex items-center gap-2 ml-auto p-2">
-                  {/* Edit button */}
-                  <button
+                  <EditButton
                     onClick={() =>
                       setEditingAppId(app.id === editingAppId ? null : app.id)
                     }
-                    className="text-blue-500 hover:text-blue-700"
-                    title="Edit"
-                  >
-                    <SquarePen size={16} />
-                  </button>
-                  {/* Delete button */}
-                  <button
+                    isEditing={app.id === editingAppId}
+                  />
+                  <DeleteButton
                     onClick={() => handleDeleteApplication(app.id)}
-                    className="text-red-500 hover:text-red-700 p-3"
-                    title="Delete"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  />
                 </div>
               </div>
               {editingAppId === app.id ? (
