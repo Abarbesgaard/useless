@@ -6,7 +6,7 @@
 
 ![License](https://img.shields.io/github/license/Abarbesgaard/useless)
 
-A useless project that does, that aims to be used less!
+UseLess, a project that aims to be used less!
 
 # About
 
