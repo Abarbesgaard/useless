@@ -6,8 +6,6 @@ import { Textarea } from "../components/ui/textarea";
 import { Input } from "../components/ui/input";
 import useAuth from "../hooks/useAuth";
 import { addStage, softDeleteStage } from "../data/stages";
-import { EditButton } from "../components/custom/EditButton";
-import { DeleteButton } from "../components/custom/DeleteButton";
 import {
   addApplication,
   getApplicationsByUser,
@@ -33,19 +31,13 @@ import {
   Clock,
   X,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
+import { Card, CardFooter } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { toast } from "sonner";
 import JobApplicationForm from "../components/custom/JobApplicationForm";
 import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
+import ApplicationHeader from "@/components/custom/ApplicationHeader";
 
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
@@ -432,35 +424,12 @@ export default function JobSearchTracker() {
         {applications.map((app) => (
           <div key={app.id} className="">
             <Card>
-              <div className="flex justify-between items-center mb-4">
-                <div className="text-left items-center">
-                  <CardHeader>
-                    <CardTitle>{app.company}</CardTitle>
-                    <CardDescription>{app.position}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <a
-                      href={app.url}
-                      className="text-sm text-gray-500 underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {app.url}
-                    </a>
-                  </CardContent>
-                </div>
-                <div className="flex items-center gap-2 ml-auto p-2">
-                  <EditButton
-                    onClick={() =>
-                      setEditingAppId(app.id === editingAppId ? null : app.id)
-                    }
-                    isEditing={app.id === editingAppId}
-                  />
-                  <DeleteButton
-                    onClick={() => handleDeleteApplication(app.id)}
-                  />
-                </div>
-              </div>
+              <ApplicationHeader
+                app={app}
+                editingAppId={editingAppId}
+                setEditingAppId={setEditingAppId}
+                handleDeleteApplication={handleDeleteApplication}
+              />
               {editingAppId === app.id ? (
                 <div className="mb-6 p-4 border rounded-md bg-gray-50">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

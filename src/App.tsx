@@ -1,7 +1,7 @@
 import "./App.css";
-import JobSearchTracker from "./components/Jobhunt";
+import JobSearchTracker from "./pages/Jobhunt";
 import AuthProvider from "./contexts/authProvider";
-import Login from "./components/login";
+import Login from "./pages/Login";
 import useAuth from "./hooks/useAuth";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
