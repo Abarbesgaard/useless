@@ -397,11 +397,6 @@ export default function JobSearchTracker() {
           Sign out
         </Button>
       </div>
-      <h1 className="text-3xl font-bold mb-6">UseLess</h1>
-      <p className="text-lg font-semibold mb-4">
-        {" "}
-        The tool you should use less
-      </p>
 
       {/* Add new application button */}
       <Button onClick={() => setShowAppForm(!showAppForm)} variant="default">
@@ -418,8 +413,8 @@ export default function JobSearchTracker() {
       )}
 
       {/* Applications list */}
-      <div className="space-y-6">
-        <h2 className="text-lg font-medium mb-2">Your Applications</h2>
+      <div className="space-y-6 pt-3">
+        <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
 
         {applications.map((app) => (
           <div key={app.id} className="">
