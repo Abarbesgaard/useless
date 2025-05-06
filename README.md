@@ -32,8 +32,9 @@ It's built to help you stay organized during your job hunt without overcomplicat
    
 # License
 
-This project is licensed under the GNU General Public License v3.0 (GPLv3).
-Contributing
+This project is licensed under the [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+
+# Contributing
 
 Contributions to Useless are welcome — bug fixes, improvements, or new ideas are encouraged!
 However, to maintain quality:
