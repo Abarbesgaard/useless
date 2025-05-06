@@ -450,6 +450,25 @@ export default function JobSearchTracker() {
                         }}
                         className="w-full p-2 border rounded-md"
                       />
+                      <Label className="block text-sm font-medium mb-1 mt-2">
+                        URL
+                      </Label>
+                      <Input
+                        type="url"
+                        value={app.url}
+                        onChange={(e) => {
+                          const updatedApp = {
+                            ...app,
+                            url: e.target.value,
+                          };
+                          setApplications(
+                            applications.map((a) =>
+                              a.id === app.id ? updatedApp : a
+                            )
+                          );
+                        }}
+                        className="w-full p-2 border rounded-md"
+                      />
                     </div>
                     <div>
                       <Label className="block text-sm font-medium mb-1">
