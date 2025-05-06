@@ -3,7 +3,7 @@ import JobSearchTracker from "./pages/Jobhunt";
 import AuthProvider from "./contexts/authProvider";
 import Login from "./pages/Login";
 import useAuth from "./hooks/useAuth";
-import { Analytics } from "@vercel/analytics/next";
+import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
 
