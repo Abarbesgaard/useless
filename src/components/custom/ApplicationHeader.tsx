@@ -29,15 +29,13 @@ export default function ApplicationHeader({
   handleDeleteApplication,
 }: ApplicationHeaderProps) {
   return (
-    <div className="relative flex justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+    <div className="relative flex justify-between items-center mb-4 p-4  rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="text-left flex-grow">
         <CardHeader className="mb-2">
-          <CardTitle className="text-xl font-semibold text-gray-800">
+          <CardTitle className="text-xl font-semibold ">
             {app.company}
           </CardTitle>
-          <CardDescription className="text-sm text-gray-500">
-            {app.position}
-          </CardDescription>
+          <CardDescription className="text-sm">{app.position}</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center gap-2">
           <a

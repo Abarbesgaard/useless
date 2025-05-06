@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import useAuth from "./hooks/useAuth";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "./components/custom/ThemeProvider";
 
 function AppContent() {
   const { user } = useAuth();
@@ -15,9 +16,11 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
-      <Toaster />
-      <Analytics />
+      <ThemeProvider defaultTheme="system">
+        <AppContent />
+        <Toaster />
+        <Analytics />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

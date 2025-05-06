@@ -40,6 +40,7 @@ import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
 import { StageSelector } from "@/components/custom/StageSelector";
+import { ModeToggle } from "@/components/custom/ModeToggle";
 
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
@@ -455,27 +456,39 @@ export default function JobSearchTracker() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex justify-between p-4">
-        <Label>Hello, {user?.email}</Label>
-        <Button onClick={signOut} variant="outline">
-          Sign out
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">Hello, {user?.email}</h1>
+        </div>
+        <div className="flex gap-2">
+          <ModeToggle />
+          <Button onClick={signOut} variant="outline">
+            Sign out
+          </Button>
+        </div>
+      </div>
+
+      {/* Add New Application Button */}
+      <div>
+        <Button
+          onClick={() => setShowAppForm(!showAppForm)}
+          className="flex items-center gap-2"
+        >
+          <PlusCircle size={16} />
+          {showAppForm ? "Cancel" : "Add New Application"}
         </Button>
       </div>
 
-      {/* Add new application button */}
-
-      <Button onClick={() => setShowAppForm(!showAppForm)} variant="default">
-        <PlusCircle size={16} />
-        {showAppForm ? "Cancel" : "Add New Application"}
-      </Button>
-
-      {/* New application form */}
+      {/* Application Form */}
       {showAppForm && (
-        <JobApplicationForm
-          newApp={newApp}
-          onChange={handleInputChange}
-          onSubmit={handleAddApplication}
-        />
+        <div className="mt-4">
+          <JobApplicationForm
+            newApp={newApp}
+            onChange={handleInputChange}
+            onSubmit={handleAddApplication}
+          />
+        </div>
       )}
 
       {/* Applications list */}
