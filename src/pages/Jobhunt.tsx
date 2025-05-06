@@ -96,7 +96,19 @@ export default function JobSearchTracker() {
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
   const [stageSelectorApp, setStageSelectorApp] = useState<string | null>(null);
   const [showAppForm, setShowAppForm] = useState(false);
-  const [applications, setApplications] = useState([
+  const [applications, setApplications] = useState<
+    {
+      id: string;
+      company: string;
+      position: string;
+      currentStage: number;
+      notes: string;
+      url: string;
+      date: number;
+      stages: Stage[];
+      favorite: boolean; // Added favorite property
+    }[]
+  >([
     {
       id: "1",
       company: "TechCorp",
@@ -106,6 +118,7 @@ export default function JobSearchTracker() {
       url: "https://techcorp.com/jobs/frontend-developer",
       date: Date.now(),
       stages: [...defaultInitialStages],
+      favorite: false, // Initialize favorite property
     },
   ]);
   const [newApp, setNewApp] = useState({
@@ -125,8 +138,15 @@ export default function JobSearchTracker() {
           throw new Error("User is not authenticated.");
         }
         const apps = await getApplicationsByUser(user.id);
-        console.log("Fetched applications:", apps);
-        setApplications(apps);
+        const sortedApps = apps.sort((a, b) => {
+          // If app 'a' is favorited and 'b' is not, 'a' comes first
+          if (a.favorite && !b.favorite) return -1;
+          // If app 'b' is favorited and 'a' is not, 'b' comes first
+          if (!a.favorite && b.favorite) return 1;
+          return 0; // Otherwise, keep the same order
+        });
+
+        setApplications(sortedApps);
       } catch (error) {
         console.error("Error fetching applications:", error);
         setApplications([]); // Set to empty array on error
@@ -175,6 +195,7 @@ export default function JobSearchTracker() {
         currentStage: 0,
         stages: [...defaultInitialStages], // Ensure stages is initialized
         is_deleted: false,
+        favorite: false,
       });
 
       if (newAppData) {
@@ -215,6 +236,7 @@ export default function JobSearchTracker() {
         currentStage: appToUpdate.currentStage,
         stages: appToUpdate.stages,
         is_deleted: false,
+        favorite: appToUpdate.favorite,
       });
 
       // Exit editing mode
@@ -225,6 +247,46 @@ export default function JobSearchTracker() {
   };
 
   // Set stage as completed or uncompleted
+  const handleToggleFavorite = (appId: string) => {
+    if (!user) return;
+
+    // Update the favorite state for the application locally
+    const updatedApps = applications.map((app) => {
+      if (app.id === appId) {
+        const updatedApp = { ...app, favorite: !app.favorite };
+        // Persist the favorite change to the database
+        updateApplication({
+          ...updatedApp,
+          user_id: user.id,
+          is_deleted: false,
+          stages: updatedApp.stages,
+          favorite: updatedApp.favorite,
+        });
+        return updatedApp;
+      }
+      return app;
+    });
+
+    // Re-sort the applications to keep the favorited ones at the top
+    const sortedApps = updatedApps.sort((a, b) => {
+      if (a.favorite && !b.favorite) return -1;
+      if (!a.favorite && b.favorite) return 1;
+      return 0; // Keep the original order if both are in the same state
+    });
+
+    // Update the local state with the sorted applications
+    setApplications(sortedApps);
+
+    // Show a toast to indicate success
+    toast(
+      `Application ${
+        updatedApps.find((app) => app.id === appId)?.favorite
+          ? "added to"
+          : "removed from"
+      } favorites!`
+    );
+  };
+  // Toggle stage completion
   const toggleStageCompletion = async (appId: string, stageIndex: number) => {
     if (!user) return;
 
@@ -274,7 +336,6 @@ export default function JobSearchTracker() {
       );
     }
   };
-
   // Toggle stage selector
   const toggleStageSelector = (appId: string) => {
     setStageSelectorApp(stageSelectorApp === appId ? null : appId);
@@ -402,10 +463,12 @@ export default function JobSearchTracker() {
       </div>
 
       {/* Add new application button */}
+
       <Button onClick={() => setShowAppForm(!showAppForm)} variant="default">
         <PlusCircle size={16} />
         {showAppForm ? "Cancel" : "Add New Application"}
       </Button>
+
       {/* New application form */}
       {showAppForm && (
         <JobApplicationForm
@@ -426,6 +489,7 @@ export default function JobSearchTracker() {
                 app={app}
                 editingAppId={editingAppId}
                 setEditingAppId={setEditingAppId}
+                toggleFavorite={handleToggleFavorite}
                 handleDeleteApplication={handleDeleteApplication}
               />
               {editingAppId === app.id ? (

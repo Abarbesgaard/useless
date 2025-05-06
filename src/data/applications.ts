@@ -82,8 +82,9 @@ export async function getApplicationsByUser(userId: string) {
         currentStage: app.current_stage || 0,
         stages: stages || [],
         user_id: app.auth_user,
+        favorite: app.favorite || false,
       };
-    })
+    }),
   );
 
   return transformedData.filter((app) => app !== null) || [];
@@ -98,7 +99,7 @@ export const updateApplication = async (app: Application) => {
   if (userError || !user || !app.company || !app.position) {
     console.error(
       "Error fetching user or invalid application data:",
-      userError
+      userError,
     );
     return null;
   }
@@ -110,6 +111,7 @@ export const updateApplication = async (app: Application) => {
     notes: app.notes || "",
     url: app.url || "",
     current_stage: app.currentStage || 0,
+    favorite: app.favorite,
   };
 
   // Update the record in Supabase
@@ -134,7 +136,7 @@ export const updateApplication = async (app: Application) => {
 
 export const addStageToApplication = async (
   applicationId: string,
-  stage: Stage
+  stage: Stage,
 ) => {
   const { data, error } = await supabase.from("application_stages").insert([
     {

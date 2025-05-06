@@ -1,4 +1,4 @@
-import { Link } from "lucide-react";
+import { Heart, Link } from "lucide-react";
 import {
   CardContent,
   CardDescription,
@@ -13,20 +13,23 @@ interface ApplicationHeaderProps {
     company: string;
     position: string;
     url: string;
+    favorite: boolean;
   };
   editingAppId: string | null;
   setEditingAppId: (id: string | null) => void;
   handleDeleteApplication: (id: string) => void;
+  toggleFavorite: (id: string) => void;
 }
 
 export default function ApplicationHeader({
   app,
   editingAppId,
   setEditingAppId,
+  toggleFavorite,
   handleDeleteApplication,
 }: ApplicationHeaderProps) {
   return (
-    <div className="flex justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+    <div className="relative flex justify-between items-center mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="text-left flex-grow">
         <CardHeader className="mb-2">
           <CardTitle className="text-xl font-semibold text-gray-800">
@@ -47,6 +50,19 @@ export default function ApplicationHeader({
           </a>
         </CardContent>
       </div>
+
+      {/* Heart icon positioned at the top-right corner */}
+      <button
+        onClick={() => toggleFavorite(app.id)}
+        className="absolute top-2 right-2 p-2"
+      >
+        <Heart
+          className={`w-6 h-6 ${
+            app.favorite ? "text-red-500" : "text-gray-400"
+          } transition-colors`}
+        />
+      </button>
+
       <div className="flex-col items-center gap-2 ml-auto p-2">
         <EditButton
           onClick={() =>
