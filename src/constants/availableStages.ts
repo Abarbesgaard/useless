@@ -1,12 +1,13 @@
 import {
+  Award,
   Briefcase,
+  Calendar,
+  DollarSign,
+  FileText,
+  Linkedin,
   Mail,
   Phone,
   Users,
-  FileText,
-  Calendar,
-  DollarSign,
-  Award,
   X,
 } from "lucide-react";
 import { Stage } from "../types/stages";
@@ -80,6 +81,14 @@ export const availableStages: Stage[] = [
     id: "rejection",
     name: "Rejection",
     icon: X,
+    position: null,
+    application_id: null,
+    auth_user: null,
+  },
+  {
+    id: "linkedin-easyapply",
+    name: "Easy Apply",
+    icon: Linkedin,
     position: null,
     application_id: null,
     auth_user: null,
