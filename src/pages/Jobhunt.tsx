@@ -429,7 +429,7 @@ export default function JobSearchTracker() {
                 handleDeleteApplication={handleDeleteApplication}
               />
               {editingAppId === app.id ? (
-                <div className="mb-6 p-4 border rounded-md bg-gray-50">
+                <div className="mb-6 p-4 ">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label className="block text-sm font-medium mb-1">
@@ -520,14 +520,11 @@ export default function JobSearchTracker() {
                   </div>
                 </div>
               ) : (
-                // Default display when not editing
                 <div className="mt-2 text-sm text-gray-600"></div>
               )}
-              {/* Application-specific progress stages visualization */}
               <div className="flex flex-wrap items-center pl-6">
                 {app.stages &&
                   app.stages.map((stage, index) => {
-                    // Here's the important part: Resolve string icon names to actual components
                     const IconComponent =
                       typeof stage.icon === "string"
                         ? resolveIcon(stage.icon)
@@ -556,7 +553,6 @@ export default function JobSearchTracker() {
                               />
                             )}
 
-                            {/* Checkmark overlay that appears on hover for incomplete stages */}
                             {!isActive && (
                               <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <Check size={24} className="text-white" />
@@ -567,7 +563,6 @@ export default function JobSearchTracker() {
                             {stage.name}
                           </span>
 
-                          {/* Delete node button - visible on hover */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -592,7 +587,6 @@ export default function JobSearchTracker() {
                     );
                   })}
 
-                {/* Add stage button for this specific application */}
                 <div className="flex items-center">
                   <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
                   <div className="relative">
