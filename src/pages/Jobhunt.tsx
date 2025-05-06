@@ -30,6 +30,7 @@ import {
   Send,
   Clock,
   X,
+  Linkedin,
 } from "lucide-react";
 import { Card, CardFooter } from "../components/ui/card";
 import { Label } from "../components/ui/label";
@@ -45,6 +46,7 @@ const iconMap: Record<string, LucideIcon> = {
   Trash2,
   SquarePen,
   Check,
+  Linkedin,
   MinusCircle,
   FileText,
   Phone,
