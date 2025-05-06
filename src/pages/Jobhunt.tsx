@@ -39,6 +39,11 @@ import JobApplicationForm from "../components/custom/JobApplicationForm";
 import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
@@ -595,42 +600,46 @@ export default function JobSearchTracker() {
                 <div className="flex items-center">
                   <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
                   <div className="relative">
-                    <button
-                      onClick={() => toggleStageSelector(app.id)}
-                      className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                    <Popover
+                      open={stageSelectorApp === app.id}
+                      onOpenChange={() => toggleStageSelector(app.id)}
                     >
-                      <PlusCircle size={24} className="text-gray-600" />
-                    </button>
-                    <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                      Add Stage
-                    </span>
-
-                    {/* Stage selector dropdown specific to this application */}
-                    {stageSelectorApp === app.id && (
-                      <div className="absolute top-full mt-8 right-0 w-56 bg-white border rounded-md shadow-lg z-10">
-                        <div className="py-1">
-                          <div className="px-4 py-2 text-sm font-medium border-b">
-                            Select a stage to add:
-                          </div>
-                          {/* Always show all available stages */}
+                      <PopoverTrigger asChild>
+                        <div>
+                          <Button
+                            onClick={() => toggleStageSelector(app.id)}
+                            className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                          >
+                            <PlusCircle size={24} className="text-gray-600" />
+                          </Button>
+                          <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                            Add Stage
+                          </span>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64">
+                        <p className="mb-2 text-sm font-semibold">
+                          Select a stage to add:
+                        </p>
+                        <div className="space-y-1">
                           {availableStages.map((stage, index) => {
                             const StageIcon = stage.icon;
                             return (
-                              <button
+                              <div
                                 key={index}
-                                className="px-4 py-2 text-sm hover:bg-gray-100 flex items-center w-full"
                                 onClick={() =>
                                   addStageToApplication(app.id, stage)
                                 }
+                                className="flex items-center gap-2 p-2 rounded hover:bg-gray-100 cursor-pointer"
                               >
-                                <StageIcon size={16} className="mr-2" />
+                                <StageIcon className="w-4 h-4" />
                                 {stage.name}
-                              </button>
+                              </div>
                             );
                           })}
                         </div>
-                      </div>
-                    )}
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
