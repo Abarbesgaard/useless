@@ -40,7 +40,7 @@ import { Stage } from "@/types/stages";
 import { LucideIcon } from "lucide-react";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
 import { StageSelector } from "@/components/custom/StageSelector";
-import { ModeToggle } from "@/components/custom/ModeToggle";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
@@ -93,7 +93,7 @@ const getIconName = (icon: string | LucideIcon | undefined): string => {
 };
 
 export default function JobSearchTracker() {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
   const [stageSelectorApp, setStageSelectorApp] = useState<string | null>(null);
   const [showAppForm, setShowAppForm] = useState(false);
@@ -455,90 +455,120 @@ export default function JobSearchTracker() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="flex  h-screen w-screen overflow-hidden">
+      {/* Sidebar */}
+      <SidebarTrigger />
+      {/* Main Content */}
+      <div className=" w-full h-full overflow-y-auto">
+        {/* Add New Application Button */}
         <div>
-          <h1 className="text-xl font-semibold">Hello, {user?.email}</h1>
-        </div>
-        <div className="flex gap-2">
-          <ModeToggle />
-          <Button onClick={signOut} variant="outline">
-            Sign out
+          <Button
+            onClick={() => setShowAppForm(!showAppForm)}
+            className="flex items-center gap-2"
+          >
+            <PlusCircle size={16} />
+            {showAppForm ? "Cancel" : "Add New Application"}
           </Button>
         </div>
-      </div>
 
-      {/* Add New Application Button */}
-      <div>
-        <Button
-          onClick={() => setShowAppForm(!showAppForm)}
-          className="flex items-center gap-2"
-        >
-          <PlusCircle size={16} />
-          {showAppForm ? "Cancel" : "Add New Application"}
-        </Button>
-      </div>
+        {/* Application Form */}
+        {showAppForm && (
+          <div className="mt-4">
+            <JobApplicationForm
+              newApp={newApp}
+              onChange={handleInputChange}
+              onSubmit={handleAddApplication}
+            />
+          </div>
+        )}
 
-      {/* Application Form */}
-      {showAppForm && (
-        <div className="mt-4">
-          <JobApplicationForm
-            newApp={newApp}
-            onChange={handleInputChange}
-            onSubmit={handleAddApplication}
-          />
-        </div>
-      )}
+        {/* Applications list */}
+        <div className="space-y-2 pt-3 pb-16">
+          <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
 
-      {/* Applications list */}
-      <div className="space-y-6 pt-3">
-        <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
-
-        {applications.map((app) => (
-          <div key={app.id} className="">
-            <Card>
-              <ApplicationHeader
-                app={app}
-                editingAppId={editingAppId}
-                setEditingAppId={setEditingAppId}
-                toggleFavorite={handleToggleFavorite}
-                handleDeleteApplication={handleDeleteApplication}
-              />
-              {editingAppId === app.id ? (
-                <div className="mb-6 p-4 ">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+          {applications.map((app) => (
+            <div key={app.id} className="w-4xl p-3 overflow-y-auto">
+              <Card>
+                <ApplicationHeader
+                  app={app}
+                  editingAppId={editingAppId}
+                  setEditingAppId={setEditingAppId}
+                  toggleFavorite={handleToggleFavorite}
+                  handleDeleteApplication={handleDeleteApplication}
+                />
+                {editingAppId === app.id ? (
+                  <div className="mb-6 p-4 ">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className="block text-sm font-medium mb-1">
+                          Company
+                        </Label>
+                        <Input
+                          type="text"
+                          value={app.company}
+                          onChange={(e) => {
+                            const updatedApp = {
+                              ...app,
+                              company: e.target.value,
+                            };
+                            setApplications(
+                              applications.map((a) =>
+                                a.id === app.id ? updatedApp : a
+                              )
+                            );
+                          }}
+                          className="w-full p-2 border rounded-md"
+                        />
+                        <Label className="block text-sm font-medium mb-1 mt-2">
+                          URL
+                        </Label>
+                        <Input
+                          type="url"
+                          value={app.url}
+                          onChange={(e) => {
+                            const updatedApp = {
+                              ...app,
+                              url: e.target.value,
+                            };
+                            setApplications(
+                              applications.map((a) =>
+                                a.id === app.id ? updatedApp : a
+                              )
+                            );
+                          }}
+                          className="w-full p-2 border rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <Label className="block text-sm font-medium mb-1">
+                          Position
+                        </Label>
+                        <Input
+                          type="text"
+                          value={app.position}
+                          onChange={(e) => {
+                            const updatedApp = {
+                              ...app,
+                              position: e.target.value,
+                            };
+                            setApplications(
+                              applications.map((a) =>
+                                a.id === app.id ? updatedApp : a
+                              )
+                            );
+                          }}
+                          className="w-full p-2 border rounded-md"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-4">
                       <Label className="block text-sm font-medium mb-1">
-                        Company
+                        Notes
                       </Label>
-                      <Input
-                        type="text"
-                        value={app.company}
+                      <Textarea
+                        value={app.notes}
                         onChange={(e) => {
-                          const updatedApp = {
-                            ...app,
-                            company: e.target.value,
-                          };
-                          setApplications(
-                            applications.map((a) =>
-                              a.id === app.id ? updatedApp : a
-                            )
-                          );
-                        }}
-                        className="w-full p-2 border rounded-md"
-                      />
-                      <Label className="block text-sm font-medium mb-1 mt-2">
-                        URL
-                      </Label>
-                      <Input
-                        type="url"
-                        value={app.url}
-                        onChange={(e) => {
-                          const updatedApp = {
-                            ...app,
-                            url: e.target.value,
-                          };
+                          const updatedApp = { ...app, notes: e.target.value };
                           setApplications(
                             applications.map((a) =>
                               a.id === app.id ? updatedApp : a
@@ -548,155 +578,119 @@ export default function JobSearchTracker() {
                         className="w-full p-2 border rounded-md"
                       />
                     </div>
-                    <div>
-                      <Label className="block text-sm font-medium mb-1">
-                        Position
-                      </Label>
-                      <Input
-                        type="text"
-                        value={app.position}
-                        onChange={(e) => {
-                          const updatedApp = {
-                            ...app,
-                            position: e.target.value,
-                          };
-                          setApplications(
-                            applications.map((a) =>
-                              a.id === app.id ? updatedApp : a
-                            )
-                          );
-                        }}
-                        className="w-full p-2 border rounded-md"
-                      />
+                    <div className="mt-4">
+                      <Button
+                        onClick={() => handleUpdateApplication(app.id)}
+                        variant="secondary"
+                      >
+                        Save Changes
+                      </Button>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <Label className="block text-sm font-medium mb-1">
-                      Notes
-                    </Label>
-                    <Textarea
-                      value={app.notes}
-                      onChange={(e) => {
-                        const updatedApp = { ...app, notes: e.target.value };
-                        setApplications(
-                          applications.map((a) =>
-                            a.id === app.id ? updatedApp : a
-                          )
-                        );
-                      }}
-                      className="w-full p-2 border rounded-md"
-                    />
-                  </div>
-                  <div className="mt-4">
-                    <Button
-                      onClick={() => handleUpdateApplication(app.id)}
-                      variant="secondary"
-                    >
-                      Save Changes
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-2 text-sm text-gray-600"></div>
-              )}
-              <div className="flex flex-wrap items-center pl-6">
-                {app.stages &&
-                  app.stages.map((stage, index) => {
-                    const IconComponent =
-                      typeof stage.icon === "string"
-                        ? resolveIcon(stage.icon)
-                        : stage.icon || FileText;
+                ) : (
+                  <div className="mt-2 text-sm text-gray-600"></div>
+                )}
+                <div className="flex flex-wrap items-center pl-6">
+                  {app.stages &&
+                    app.stages.map((stage, index) => {
+                      const IconComponent =
+                        typeof stage.icon === "string"
+                          ? resolveIcon(stage.icon)
+                          : stage.icon || FileText;
 
-                    const isActive = index <= app.currentStage;
+                      const isActive = index <= app.currentStage;
 
-                    return (
-                      <div key={index} className="flex items-center ">
-                        <div className="relative group">
-                          <button
-                            onClick={() => toggleStageCompletion(app.id, index)}
-                            className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
+                      return (
+                        <div key={index} className="flex items-center ">
+                          <div className="relative group">
+                            <button
+                              onClick={() =>
+                                toggleStageCompletion(app.id, index)
+                              }
+                              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
                             ${
                               isActive
                                 ? "bg-blue-500"
                                 : "bg-gray-200 hover:bg-gray-300"
                             }`}
-                          >
-                            {IconComponent && (
-                              <IconComponent
-                                size={24}
-                                className={
-                                  isActive ? "text-white" : "text-gray-500"
-                                }
-                              />
-                            )}
+                            >
+                              {IconComponent && (
+                                <IconComponent
+                                  size={24}
+                                  className={
+                                    isActive ? "text-white" : "text-gray-500"
+                                  }
+                                />
+                              )}
 
-                            {!isActive && (
-                              <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Check size={24} className="text-white" />
-                              </div>
-                            )}
-                          </button>
-                          <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                            {stage.name}
-                          </span>
+                              {!isActive && (
+                                <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Check size={24} className="text-white" />
+                                </div>
+                              )}
+                            </button>
+                            <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                              {stage.name}
+                            </span>
 
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteStage(app.id, index);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
-                            title="Delete this stage"
-                          >
-                            <MinusCircle size={16} />
-                          </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteStage(app.id, index);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
+                              title="Delete this stage"
+                            >
+                              <MinusCircle size={16} />
+                            </button>
+                          </div>
+                          {index < app.stages.length - 1 && (
+                            <div
+                              className={`h-0.5 w-8 ${
+                                index < app.currentStage
+                                  ? "bg-blue-500"
+                                  : "bg-gray-200"
+                              } mx-1`}
+                            ></div>
+                          )}
                         </div>
-                        {index < app.stages.length - 1 && (
-                          <div
-                            className={`h-0.5 w-8 ${
-                              index < app.currentStage
-                                ? "bg-blue-500"
-                                : "bg-gray-200"
-                            } mx-1`}
-                          ></div>
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
 
-                <div className="flex items-center">
-                  <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
-                  <div className="relative">
-                    <StageSelector
-                      appId={app.id}
-                      stageSelectorApp={stageSelectorApp}
-                      toggleStageSelector={toggleStageSelector}
-                      addStageToApplication={addStageToApplication}
-                      availableStages={availableStages}
-                    />
+                  <div className="flex items-center">
+                    <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
+                    <div className="relative">
+                      <StageSelector
+                        appId={app.id}
+                        stageSelectorApp={stageSelectorApp}
+                        toggleStageSelector={toggleStageSelector}
+                        addStageToApplication={addStageToApplication}
+                        availableStages={availableStages}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Notes section */}
-              <CardFooter>
-                {app.notes && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    <p>
-                      <strong>Notes:</strong> {app.notes}
-                    </p>
-                  </div>
-                )}
-              </CardFooter>
-            </Card>
-          </div>
-        ))}
+                {/* Notes section */}
+                <CardFooter>
+                  {app.notes && (
+                    <div className="mt-2 text-sm text-gray-600">
+                      <p>
+                        <strong>Notes:</strong> {app.notes}
+                      </p>
+                    </div>
+                  )}
+                </CardFooter>
+              </Card>
+            </div>
+          ))}
 
-        {applications.length === 0 && (
-          <div className="text-center p-8 text-gray-500">
-            No applications yet. Click "Add New Application" to get started.
-          </div>
-        )}
+          {applications.length === 0 && (
+            <div className="text-center p-8 text-gray-500">
+              No applications yet. Click "Add New Application" to get started.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,23 +1,21 @@
 import "./App.css";
-import JobSearchTracker from "./pages/Jobhunt";
 import AuthProvider from "./contexts/authProvider";
-import Login from "./pages/Login";
-import useAuth from "./hooks/useAuth";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "./components/custom/ThemeProvider";
-
-function AppContent() {
-  const { user } = useAuth();
-
-  return user ? <JobSearchTracker /> : <Login />;
-}
+import { BrowserRouter } from "react-router";
+import { SidebarProvider } from "./components/ui/sidebar";
+import AppLayout from "./shared/layout";
 
 export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider defaultTheme="system">
-        <AppContent />
+        <SidebarProvider>
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </SidebarProvider>
         <Toaster />
         <Analytics />
       </ThemeProvider>

@@ -27,7 +27,7 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({
     onSubmit();
   };
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-lg">
       <div className="mb-6 p-4 border rounded-md">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
