@@ -10,26 +10,7 @@ import {
   updateApplication,
   deleteApplication,
 } from "../data/applications";
-import {
-  PlusCircle,
-  Trash2,
-  SquarePen,
-  Briefcase,
-  Check,
-  MinusCircle,
-  FileText,
-  Phone,
-  Users,
-  Video,
-  Calendar,
-  CheckSquare,
-  MessageSquare,
-  Mail,
-  Send,
-  Clock,
-  X,
-  Linkedin,
-} from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Card, CardFooter } from "../components/ui/card";
 import { toast } from "sonner";
 import JobApplicationForm from "../components/custom/JobApplicationForm";
@@ -40,38 +21,7 @@ import { StageSelector } from "@/components/custom/StageSelector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import ApplicationEditor from "@/components/custom/ApplicationEditor";
 import { Application } from "@/types/application";
-
-const iconMap: Record<string, LucideIcon> = {
-  PlusCircle,
-  Briefcase,
-  Trash2,
-  SquarePen,
-  Check,
-  Linkedin,
-  MinusCircle,
-  FileText,
-  Phone,
-  Users,
-  Video,
-  Calendar,
-  CheckSquare,
-  MessageSquare,
-  Mail,
-  Send,
-  Clock,
-  X,
-};
-const resolveIcon = (iconName: string | LucideIcon): LucideIcon => {
-  if (typeof iconName !== "string") {
-    return iconName || FileText;
-  }
-
-  if (!iconName) {
-    return FileText;
-  }
-
-  return iconMap[iconName] || FileText;
-};
+import StageToggle from "@/components/custom/StageToggle";
 
 const getIconName = (icon: string | LucideIcon | undefined): string => {
   if (typeof icon === "string") {
@@ -488,71 +438,11 @@ export default function JobSearchTracker() {
                   onApplicationUpdate={handleApplicationUpdate}
                 />
                 <div className="flex flex-wrap items-center pl-6">
-                  {app.stages &&
-                    app.stages.map((stage, index) => {
-                      const IconComponent =
-                        typeof stage.icon === "string"
-                          ? resolveIcon(stage.icon)
-                          : stage.icon || FileText;
-
-                      const isActive = index <= app.currentStage;
-
-                      return (
-                        <div key={index} className="flex items-center ">
-                          <div className="relative group">
-                            <button
-                              onClick={() =>
-                                toggleStageCompletion(app.id, index)
-                              }
-                              className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
-                            ${
-                              isActive
-                                ? "bg-blue-500"
-                                : "bg-gray-200 hover:bg-gray-300"
-                            }`}
-                            >
-                              {IconComponent && (
-                                <IconComponent
-                                  size={24}
-                                  className={
-                                    isActive ? "text-white" : "text-gray-500"
-                                  }
-                                />
-                              )}
-
-                              {!isActive && (
-                                <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Check size={24} className="text-white" />
-                                </div>
-                              )}
-                            </button>
-                            <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
-                              {stage.name}
-                            </span>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteStage(app.id, index);
-                              }}
-                              className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
-                              title="Delete this stage"
-                            >
-                              <MinusCircle size={16} />
-                            </button>
-                          </div>
-                          {index < app.stages.length - 1 && (
-                            <div
-                              className={`h-0.5 w-8 ${
-                                index < app.currentStage
-                                  ? "bg-blue-500"
-                                  : "bg-gray-200"
-                              } mx-1`}
-                            ></div>
-                          )}
-                        </div>
-                      );
-                    })}
+                  <StageToggle
+                    app={app}
+                    toggleStageCompletion={toggleStageCompletion}
+                    deleteStage={deleteStage}
+                  />
 
                   <div className="flex items-center">
                     <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
