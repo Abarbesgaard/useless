@@ -51,7 +51,7 @@ export async function getApplicationsByUser(userId: string) {
     .from("applications")
     .select("*")
     .eq("auth_user", userId)
-    .eq("is_deleted", "false"); // Ensure we only fetch non-deleted applications
+    .eq("is_deleted", "false");
 
   if (appError) {
     console.error("Error fetching applications:", appError);
@@ -74,6 +74,7 @@ export async function getApplicationsByUser(userId: string) {
 
       return {
         id: app.id,
+
         company: app.company,
         position: app.position,
         notes: app.notes || "",
@@ -82,6 +83,7 @@ export async function getApplicationsByUser(userId: string) {
         currentStage: app.current_stage || 0,
         stages: stages || [],
         user_id: app.auth_user,
+        is_deleted: app.is_deleted || false,
         favorite: app.favorite || false,
       };
     }),

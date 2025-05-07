@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { availableStages } from "../constants/availableStages";
 import { defaultInitialStages } from "../constants/defaultInitialStages";
 import { Button } from "../components/ui/button";
-import { Textarea } from "../components/ui/textarea";
-import { Input } from "../components/ui/input";
 import useAuth from "../hooks/useAuth";
 import { addStage, softDeleteStage } from "../data/stages";
 import {
@@ -33,7 +31,6 @@ import {
   Linkedin,
 } from "lucide-react";
 import { Card, CardFooter } from "../components/ui/card";
-import { Label } from "../components/ui/label";
 import { toast } from "sonner";
 import JobApplicationForm from "../components/custom/JobApplicationForm";
 import { Stage } from "@/types/stages";
@@ -41,6 +38,8 @@ import { LucideIcon } from "lucide-react";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
 import { StageSelector } from "@/components/custom/StageSelector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import ApplicationEditor from "@/components/custom/ApplicationEditor";
+import { Application } from "@/types/application";
 
 const iconMap: Record<string, LucideIcon> = {
   PlusCircle,
@@ -108,6 +107,8 @@ export default function JobSearchTracker() {
       date: number;
       stages: Stage[];
       favorite: boolean; // Added favorite property
+      user_id: string; // Added user_id property
+      is_deleted: boolean; // Added is_deleted property
     }[]
   >([
     {
@@ -120,6 +121,8 @@ export default function JobSearchTracker() {
       date: Date.now(),
       stages: [...defaultInitialStages],
       favorite: false, // Initialize favorite property
+      user_id: user?.id || "", // Initialize user_id
+      is_deleted: false, // Initialize is_deleted
     },
   ]);
   const [newApp, setNewApp] = useState({
@@ -224,29 +227,6 @@ export default function JobSearchTracker() {
     }
   };
 
-  const handleUpdateApplication = async (appId: string) => {
-    if (!user) return;
-
-    try {
-      const appToUpdate = applications.find((app) => app.id === appId);
-      if (!appToUpdate) return;
-
-      await updateApplication({
-        ...appToUpdate,
-        user_id: user.id,
-        currentStage: appToUpdate.currentStage,
-        stages: appToUpdate.stages,
-        is_deleted: false,
-        favorite: appToUpdate.favorite,
-      });
-
-      // Exit editing mode
-      setEditingAppId(null);
-    } catch (err) {
-      console.error("Failed to update application:", err);
-    }
-  };
-
   // Set stage as completed or uncompleted
   const handleToggleFavorite = (appId: string) => {
     if (!user) return;
@@ -285,6 +265,11 @@ export default function JobSearchTracker() {
           ? "added to"
           : "removed from"
       } favorites!`
+    );
+  };
+  const handleApplicationUpdate = (updatedApp: Application) => {
+    setApplications(
+      applications.map((app) => (app.id === updatedApp.id ? updatedApp : app))
     );
   };
   // Toggle stage completion
@@ -496,100 +481,12 @@ export default function JobSearchTracker() {
                   toggleFavorite={handleToggleFavorite}
                   handleDeleteApplication={handleDeleteApplication}
                 />
-                {editingAppId === app.id ? (
-                  <div className="mb-6 p-4 ">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="block text-sm font-medium mb-1">
-                          Company
-                        </Label>
-                        <Input
-                          type="text"
-                          value={app.company}
-                          onChange={(e) => {
-                            const updatedApp = {
-                              ...app,
-                              company: e.target.value,
-                            };
-                            setApplications(
-                              applications.map((a) =>
-                                a.id === app.id ? updatedApp : a
-                              )
-                            );
-                          }}
-                          className="w-full p-2 border rounded-md"
-                        />
-                        <Label className="block text-sm font-medium mb-1 mt-2">
-                          URL
-                        </Label>
-                        <Input
-                          type="url"
-                          value={app.url}
-                          onChange={(e) => {
-                            const updatedApp = {
-                              ...app,
-                              url: e.target.value,
-                            };
-                            setApplications(
-                              applications.map((a) =>
-                                a.id === app.id ? updatedApp : a
-                              )
-                            );
-                          }}
-                          className="w-full p-2 border rounded-md"
-                        />
-                      </div>
-                      <div>
-                        <Label className="block text-sm font-medium mb-1">
-                          Position
-                        </Label>
-                        <Input
-                          type="text"
-                          value={app.position}
-                          onChange={(e) => {
-                            const updatedApp = {
-                              ...app,
-                              position: e.target.value,
-                            };
-                            setApplications(
-                              applications.map((a) =>
-                                a.id === app.id ? updatedApp : a
-                              )
-                            );
-                          }}
-                          className="w-full p-2 border rounded-md"
-                        />
-                      </div>
-                    </div>
-                    <div className="mt-4">
-                      <Label className="block text-sm font-medium mb-1">
-                        Notes
-                      </Label>
-                      <Textarea
-                        value={app.notes}
-                        onChange={(e) => {
-                          const updatedApp = { ...app, notes: e.target.value };
-                          setApplications(
-                            applications.map((a) =>
-                              a.id === app.id ? updatedApp : a
-                            )
-                          );
-                        }}
-                        className="w-full p-2 border rounded-md"
-                      />
-                    </div>
-                    <div className="mt-4">
-                      <Button
-                        onClick={() => handleUpdateApplication(app.id)}
-                        variant="secondary"
-                      >
-                        Save Changes
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mt-2 text-sm text-gray-600"></div>
-                )}
+                <ApplicationEditor
+                  app={app}
+                  editingAppId={editingAppId}
+                  setEditingAppId={setEditingAppId}
+                  onApplicationUpdate={handleApplicationUpdate}
+                />
                 <div className="flex flex-wrap items-center pl-6">
                   {app.stages &&
                     app.stages.map((stage, index) => {
