@@ -1,3 +1,4 @@
+import React from "react";
 import { SquarePen } from "lucide-react";
 
 interface EditButtonProps {
@@ -5,15 +6,21 @@ interface EditButtonProps {
   isEditing?: boolean;
 }
 
-export const EditButton: React.FC<EditButtonProps> = ({
-  onClick,
-  isEditing,
-}) => (
-  <button
-    onClick={onClick}
-    className="text-blue-500 hover:text-blue-700"
-    title={isEditing ? "Cancel Edit" : "Edit"}
-  >
-    <SquarePen size={16} />
-  </button>
+// Convert to forwardRef to properly handle refs
+export const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(
+  ({ onClick, isEditing }, ref) => (
+    <button
+      ref={ref}
+      onClick={onClick}
+      title={isEditing ? "Cancel Edit" : "Edit"}
+    >
+      <SquarePen
+        className={`w-6 h-6 ${
+          isEditing ? "text-blue-600" : "text-gray-400"
+        } transition-colors`}
+      />
+    </button>
+  )
 );
+
+EditButton.displayName = "EditButton";

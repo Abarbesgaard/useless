@@ -31,6 +31,7 @@ function FavoritesPage() {
     toggleFavorite,
     toggleStageCompletion,
     fetchFavoriteApplications,
+    toggleArchived,
   } = useApplicationManagement();
 
   const {
@@ -99,6 +100,7 @@ function FavoritesPage() {
                   setEditingAppId={setEditingAppId}
                   toggleFavorite={toggleFavorite}
                   handleDeleteApplication={deleteApplication}
+                  toggleArchived={toggleArchived}
                 />
                 <ApplicationEditor
                   app={app}

@@ -5,7 +5,9 @@ import {
     addApplication as addApplicationApi,
     deleteApplication as deleteApplicationApi,
     getApplicationsByUser,
+    getArchivedApplicationsByUser,
     updateApplication as updateApplicationApi,
+    updateArchiveStatus,
 } from "../data/applications";
 import { toast } from "sonner";
 import { Application } from "@/types/application";
@@ -67,6 +69,7 @@ export function useApplicationManagement() {
                 stages: [...defaultInitialStages], // Ensure stages is initialized
                 is_deleted: false,
                 favorite: false,
+                is_archived: false,
             });
 
             if (newAppData) {
@@ -154,6 +157,7 @@ export function useApplicationManagement() {
                     is_deleted: false,
                     stages: updatedApp.stages,
                     favorite: updatedApp.favorite,
+                    is_archived: updatedApp.is_archived,
                 });
                 return updatedApp;
             }
@@ -250,6 +254,54 @@ export function useApplicationManagement() {
         }
     };
 
+    const fetchArchivedApplications = async () => {
+        if (!user) return;
+        try {
+            console.log("Fetching archived applications...");
+            const archivedApps = await getArchivedApplicationsByUser(user.id);
+
+            const sortedApps = archivedApps.sort((a, b) => {
+                // Sort by newest first
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            });
+
+            // Directly set applications to the archived apps
+            setApplications(sortedApps);
+            console.log("Archived applications loaded:", sortedApps.length);
+        } catch (error) {
+            console.error("Error fetching archived applications:", error);
+            setApplications([]); // Set to empty array on error
+            toast.error(
+                "Failed to load archived applications. Please try again.",
+            );
+        }
+    };
+
+    const toggleArchived = async (app: Application) => {
+        if (!user) return;
+        try {
+            const updatedApp = await updateArchiveStatus(app);
+
+            setApplications(
+                applications.map((a) => (a.id === app.id ? updatedApp : a)),
+            );
+
+            toast(
+                `Application ${
+                    updatedApp.is_archived ? "archived" : "unarchived"
+                }!`,
+                {
+                    description: `The application has been ${
+                        updatedApp.is_archived ? "archived" : "unarchived"
+                    } successfully.`,
+                },
+            );
+        } catch (error) {
+            console.error("Failed to update archive status:", error);
+            toast.error("Failed to update archive status. Please try again.");
+        }
+    };
+
     return {
         applications,
         setApplications,
@@ -264,5 +316,7 @@ export function useApplicationManagement() {
         toggleStageCompletion,
         fetchApplications,
         fetchFavoriteApplications,
+        toggleArchived,
+        fetchArchivedApplications,
     };
 }

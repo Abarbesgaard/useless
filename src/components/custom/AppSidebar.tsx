@@ -27,8 +27,8 @@ const items = [
     icon: Heart,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Archived",
+    url: "/archived",
     icon: Calendar,
   },
 ];

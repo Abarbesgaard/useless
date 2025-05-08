@@ -1,4 +1,4 @@
-import { Heart, Link } from "lucide-react";
+import { Archive, Heart, Link } from "lucide-react";
 import {
   CardContent,
   CardDescription,
@@ -7,18 +7,20 @@ import {
 } from "../ui/card";
 import { DeleteButton } from "./DeleteButton";
 import { EditButton } from "./EditButton";
+import { Application } from "@/types/application";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 interface ApplicationHeaderProps {
-  app: {
-    id: string;
-    company: string;
-    position: string;
-    url: string;
-    favorite: boolean;
-  };
+  app: Application;
   editingAppId: string | null;
   setEditingAppId: (id: string | null) => void;
   handleDeleteApplication: (id: string) => void;
   toggleFavorite: (id: string) => void;
+  toggleArchived: (app: Application) => void;
 }
 
 export default function ApplicationHeader({
@@ -27,6 +29,7 @@ export default function ApplicationHeader({
   setEditingAppId,
   toggleFavorite,
   handleDeleteApplication,
+  toggleArchived,
 }: ApplicationHeaderProps) {
   return (
     <div className="relative flex justify-between items-center mb-4 p-4  rounded-lg shadow-md hover:shadow-lg transition-shadow">
@@ -48,27 +51,78 @@ export default function ApplicationHeader({
           </a>
         </CardContent>
       </div>
+      {/* Action buttons positioned at the top-right corner */}
+      <div className="absolute top-2 right-2 flex space-x-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={() => toggleFavorite(app.id)} className="p-2">
+                <Heart
+                  className={`w-6 h-6 ${
+                    app.favorite ? "text-red-500 fill-red-500" : "text-gray-400"
+                  } transition-colors`}
+                />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {app.favorite ? "Remove from favorites" : "Add to favorites"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-      {/* Heart icon positioned at the top-right corner */}
-      <button
-        onClick={() => toggleFavorite(app.id)}
-        className="absolute top-2 right-2 p-2"
-      >
-        <Heart
-          className={`w-6 h-6 ${
-            app.favorite ? "text-red-500" : "text-gray-400"
-          } transition-colors`}
-        />
-      </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={() => toggleArchived(app)} className="p-2">
+                <Archive
+                  className={`w-6 h-6 ${
+                    app.is_archived ? "text-yellow-500" : "text-gray-400"
+                  } transition-colors`}
+                />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {app.is_archived
+                  ? "Unarchive application"
+                  : "Archive application"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-      <div className="flex-col items-center gap-2 ml-auto p-2">
-        <EditButton
-          onClick={() =>
-            setEditingAppId(app.id === editingAppId ? null : app.id)
-          }
-          isEditing={app.id === editingAppId}
-        />
-        <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <EditButton
+                isEditing={app.id === editingAppId}
+                onClick={() =>
+                  setEditingAppId(app.id === editingAppId ? null : app.id)
+                }
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                {app.id === editingAppId
+                  ? "Cancel editing"
+                  : "Edit application"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete application</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

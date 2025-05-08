@@ -1,3 +1,4 @@
+import React from "react";
 import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -15,12 +16,20 @@ interface DeleteButtonProps {
   onClick: () => void;
 }
 
-export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick }) => {
+// Convert to forwardRef to properly handle refs
+export const DeleteButton = React.forwardRef<
+  HTMLButtonElement,
+  DeleteButtonProps
+>(({ onClick }, ref) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <button className="text-red-500 hover:text-red-700 p-3" title="Delete">
-          <Trash2 size={16} />
+        <button
+          ref={ref}
+          className="text-red-500 hover:text-red-700 p-3"
+          title="Delete"
+        >
+          <Trash2 size={20} />
         </button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -45,4 +54,6 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({ onClick }) => {
       </AlertDialogContent>
     </AlertDialog>
   );
-};
+});
+
+DeleteButton.displayName = "DeleteButton";

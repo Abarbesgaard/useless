@@ -1,24 +1,28 @@
-import { useState } from "react";
-import { availableStages } from "../constants/availableStages";
-import { Button } from "../components/ui/button";
-import { PlusCircle } from "lucide-react";
-import { Card, CardFooter } from "../components/ui/card";
-import JobApplicationForm from "../components/custom/JobApplicationForm";
-import ApplicationHeader from "@/components/custom/ApplicationHeader";
-import { StageSelector } from "@/components/custom/StageSelector";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import ApplicationEditor from "@/components/custom/ApplicationEditor";
-import { Application } from "@/types/application";
+import ApplicationHeader from "@/components/custom/ApplicationHeader";
+import JobApplicationForm from "@/components/custom/JobApplicationForm";
+import { StageSelector } from "@/components/custom/StageSelector";
 import StageToggle from "@/components/custom/StageToggle";
-import { useStageManagement } from "@/hooks/useStageManagement";
+import { Button } from "@/components/ui/button";
+import { Card, CardFooter } from "@/components/ui/card";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { availableStages } from "@/constants/availableStages";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
+import { useStageManagement } from "@/hooks/useStageManagement";
+import { Application } from "@/types/application";
+import { PlusCircle } from "lucide-react";
+import { ap } from "node_modules/react-router/dist/development/route-data-C12CLHiN.d.mts";
+import { useState, useEffect } from "react";
 
-export default function JobSearchTracker() {
+function ArchivedPage() {
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
+  const [archivedApplications, setArchivedApplications] = useState<
+    Application[]
+  >([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const {
     applications,
-    setApplications,
     newApp,
     showAppForm,
     setShowAppForm,
@@ -28,6 +32,7 @@ export default function JobSearchTracker() {
     updateApplication,
     toggleFavorite,
     toggleStageCompletion,
+    fetchArchivedApplications,
     toggleArchived,
   } = useApplicationManagement();
 
@@ -36,7 +41,21 @@ export default function JobSearchTracker() {
     toggleStageSelector,
     addStageToApplication,
     deleteStage,
-  } = useStageManagement(applications, setApplications);
+  } = useStageManagement(archivedApplications, setArchivedApplications);
+
+  // First fetch archived applications on mount
+  useEffect(() => {
+    const fetchArchivedApps = applications.filter(
+      (app) => app.is_archived === true
+    );
+    setArchivedApplications(fetchArchivedApps);
+  }, [applications]);
+
+  // Update archivedApplications when applications state changes
+  // But only after initial load to prevent flashing
+  useEffect(() => {
+    fetchArchivedApplications();
+  }, []);
 
   const handleApplicationUpdate = (updatedApp: Application) => {
     updateApplication(updatedApp);
@@ -70,11 +89,13 @@ export default function JobSearchTracker() {
           </div>
         )}
 
-        {/* Applications list */}
+        {/* Applications list - Only showing archived */}
         <div className="space-y-2 pt-3 pb-16">
-          <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
+          <h2 className="text-lg font-medium mb-2 flex">
+            Your Archived Applications
+          </h2>
 
-          {applications.map((app) => (
+          {archivedApplications.map((app) => (
             <div key={app.id} className="w-4xl p-3 overflow-y-auto">
               <Card>
                 <ApplicationHeader
@@ -126,9 +147,10 @@ export default function JobSearchTracker() {
             </div>
           ))}
 
-          {applications.length === 0 && (
+          {archivedApplications.length === 0 && (
             <div className="text-center p-8 text-gray-500">
-              No applications yet. Click "Add New Application" to get started.
+              No archived applications yet. Mark applications as Archived to see
+              them here.
             </div>
           )}
         </div>
@@ -136,3 +158,5 @@ export default function JobSearchTracker() {
     </div>
   );
 }
+
+export default ArchivedPage;

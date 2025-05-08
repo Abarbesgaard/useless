@@ -45,13 +45,13 @@ export const addApplication = async (app: Application, stages?: Stage[]) => {
 
   return insertedApp;
 };
-
-export async function getApplicationsByUser(userId: string) {
+export async function getArchivedApplicationsByUser(userId: string) {
   const { data: applications, error: appError } = await supabase
     .from("applications")
     .select("*")
     .eq("auth_user", userId)
-    .eq("is_deleted", "false");
+    .eq("is_deleted", false)
+    .eq("is_archived", true);
 
   if (appError) {
     console.error("Error fetching applications:", appError);
@@ -64,7 +64,53 @@ export async function getApplicationsByUser(userId: string) {
         .from("application_stages")
         .select("*")
         .eq("application_id", app.id)
-        .eq("is_deleted", false) // Ensure we only fetch non-deleted stages
+        .eq("is_deleted", false)
+        .order("position", { ascending: true });
+
+      if (stagesError) {
+        console.error("Error fetching stages:", stagesError);
+        return null;
+      }
+
+      return {
+        id: app.id,
+        company: app.company,
+        position: app.position,
+        notes: app.notes || "",
+        url: app.url || "",
+        date: app.date || Date.now(),
+        currentStage: app.current_stage || 0,
+        stages: stages || [],
+        user_id: app.auth_user,
+        is_deleted: app.is_deleted || false,
+        favorite: app.favorite || false,
+        is_archived: app.is_archived || true, // Note: Using true as fallback since we're querying for archived
+      };
+    }),
+  );
+
+  return transformedData.filter((app) => app !== null) || [];
+}
+export async function getApplicationsByUser(userId: string) {
+  const { data: applications, error: appError } = await supabase
+    .from("applications")
+    .select("*")
+    .eq("auth_user", userId)
+    .eq("is_deleted", false)
+    .eq("is_archived", false);
+
+  if (appError) {
+    console.error("Error fetching applications:", appError);
+    return [];
+  }
+
+  const transformedData = await Promise.all(
+    applications.map(async (app) => {
+      const { data: stages, error: stagesError } = await supabase
+        .from("application_stages")
+        .select("*")
+        .eq("application_id", app.id)
+        .eq("is_deleted", false)
         .order("position", { ascending: true });
 
       if (stagesError) {
@@ -85,6 +131,7 @@ export async function getApplicationsByUser(userId: string) {
         user_id: app.auth_user,
         is_deleted: app.is_deleted || false,
         favorite: app.favorite || false,
+        is_archived: app.is_archived || false,
       };
     }),
   );
@@ -206,4 +253,49 @@ export const deleteApplication = async (applicationId: string) => {
 
   // Return a success message or the id of the updated application
   return { success: true, applicationId };
+};
+
+export const updateArchiveStatus = async (app: Application) => {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user || !app.company || !app.position) {
+    console.error(
+      "Error fetching user or invalid application data:",
+      userError,
+    );
+    return null;
+  }
+
+  // Format application data for database
+  const applicationUpdate = {
+    company: app.company,
+    position: app.position,
+    notes: app.notes || "",
+    url: app.url || "",
+    current_stage: app.currentStage || 0,
+    favorite: app.favorite,
+    is_archived: !app.is_archived, // Toggle the archive status
+  };
+
+  // Update the record in Supabase - REMOVED the is_archived filter
+  const { data, error } = await supabase
+    .from("applications")
+    .update(applicationUpdate)
+    .eq("id", app.id)
+    .eq("auth_user", user.id)
+    .eq("is_deleted", false)
+    .select();
+
+  if (error) {
+    console.error("Error updating application:", error);
+    throw error;
+  }
+
+  return {
+    ...app,
+    ...(data?.[0] || {}),
+  };
 };

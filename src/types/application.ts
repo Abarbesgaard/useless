@@ -14,5 +14,6 @@ export interface Application extends NewApp {
   currentStage: number;
   stages: Stage[];
   is_deleted: boolean;
+  is_archived: boolean;
   favorite: boolean;
 }
