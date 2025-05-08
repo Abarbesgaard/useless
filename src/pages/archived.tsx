@@ -11,7 +11,6 @@ import { useApplicationManagement } from "@/hooks/useApplicationManagement";
 import { useStageManagement } from "@/hooks/useStageManagement";
 import { Application } from "@/types/application";
 import { PlusCircle } from "lucide-react";
-import { ap } from "node_modules/react-router/dist/development/route-data-C12CLHiN.d.mts";
 import { useState, useEffect } from "react";
 
 function ArchivedPage() {
@@ -19,7 +18,6 @@ function ArchivedPage() {
   const [archivedApplications, setArchivedApplications] = useState<
     Application[]
   >([]);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const {
     applications,
@@ -51,11 +49,9 @@ function ArchivedPage() {
     setArchivedApplications(fetchArchivedApps);
   }, [applications]);
 
-  // Update archivedApplications when applications state changes
-  // But only after initial load to prevent flashing
   useEffect(() => {
     fetchArchivedApplications();
-  }, []);
+  }, [applications]);
 
   const handleApplicationUpdate = (updatedApp: Application) => {
     updateApplication(updatedApp);

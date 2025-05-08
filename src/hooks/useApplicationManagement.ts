@@ -241,9 +241,7 @@ export function useApplicationManagement() {
         try {
             const favoriteApps = await getApplicationsByUser(user.id);
             const sortedApps = favoriteApps.sort((a, b) => {
-                // If app 'a' is favorited and 'b' is not, 'a' comes first
                 if (a.favorite && !b.favorite) return -1;
-                // If app 'b' is favorited and 'a' is not, 'b' comes first
                 if (!a.favorite && b.favorite) return 1;
                 return 0; // Otherwise, keep the same order
             });
@@ -251,23 +249,23 @@ export function useApplicationManagement() {
         } catch (error) {
             console.error("Error fetching favorite applications:", error);
             setApplications([]); // Set to empty array on error
+            toast.error(
+                "Failed to load favorite applications. Please try again.",
+            );
         }
     };
 
     const fetchArchivedApplications = async () => {
         if (!user) return;
         try {
-            console.log("Fetching archived applications...");
             const archivedApps = await getArchivedApplicationsByUser(user.id);
 
             const sortedApps = archivedApps.sort((a, b) => {
-                // Sort by newest first
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
+                if (a.is_archived && !b.is_archived) return -1;
+                if (!a.is_archived && b.is_archived) return 1;
+                return 0; // Otherwise, keep the same order
             });
-
-            // Directly set applications to the archived apps
             setApplications(sortedApps);
-            console.log("Archived applications loaded:", sortedApps.length);
         } catch (error) {
             console.error("Error fetching archived applications:", error);
             setApplications([]); // Set to empty array on error
