@@ -13,7 +13,7 @@ import {
 import { Home, Calendar, Heart } from "lucide-react";
 import { Button } from "../ui/button";
 import useAuth from "@/hooks/useAuth";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ModeToggle } from "./ModeToggle";
 const items = [
   {
@@ -34,6 +34,8 @@ const items = [
 ];
 export default function AppSidebar() {
   const { user, signOut } = useAuth();
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
     <Sidebar className=" h-full">
@@ -47,16 +49,25 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = currentPath === item.url;
+
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={
+                        isActive ? "bg-muted font-semibold text-primary" : ""
+                      }
+                    >
+                      <Link to={item.url} className="flex items-center gap-2">
+                        <item.icon className={isActive ? "text-primary" : ""} />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
