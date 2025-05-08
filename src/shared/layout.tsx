@@ -9,7 +9,11 @@ export default function AppLayout() {
   const { user } = useAuth();
 
   if (!user) {
-    return <Login />;
+    return (
+      <div className="flex justify-center items-center w-screen h-screen">
+        <Login />
+      </div>
+    );
   }
 
   return (
