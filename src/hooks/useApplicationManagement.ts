@@ -232,6 +232,24 @@ export function useApplicationManagement() {
         }
     };
 
+    const fetchFavoriteApplications = async () => {
+        if (!user) return;
+        try {
+            const favoriteApps = await getApplicationsByUser(user.id);
+            const sortedApps = favoriteApps.sort((a, b) => {
+                // If app 'a' is favorited and 'b' is not, 'a' comes first
+                if (a.favorite && !b.favorite) return -1;
+                // If app 'b' is favorited and 'a' is not, 'b' comes first
+                if (!a.favorite && b.favorite) return 1;
+                return 0; // Otherwise, keep the same order
+            });
+            setApplications(sortedApps);
+        } catch (error) {
+            console.error("Error fetching favorite applications:", error);
+            setApplications([]); // Set to empty array on error
+        }
+    };
+
     return {
         applications,
         setApplications,
@@ -245,5 +263,6 @@ export function useApplicationManagement() {
         toggleFavorite,
         toggleStageCompletion,
         fetchApplications,
+        fetchFavoriteApplications,
     };
 }
