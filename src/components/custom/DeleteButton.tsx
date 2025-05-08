@@ -44,7 +44,6 @@ export const DeleteButton = React.forwardRef<
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              console.log("Delete confirmed");
               onClick();
             }}
           >

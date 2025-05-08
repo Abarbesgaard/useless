@@ -29,9 +29,7 @@ export function useApplicationManagement() {
     }, [user]);
 
     const fetchApplications = async () => {
-        console.log("Fetching applications...");
         try {
-            console.log("User:", user);
             if (!user) {
                 throw new Error("User is not authenticated.");
             }
@@ -73,7 +71,6 @@ export function useApplicationManagement() {
             });
 
             if (newAppData) {
-                console.log("New application added:", newAppData);
                 // Update the state with the new application
                 setApplications((prevApplications) => [
                     ...prevApplications,
@@ -102,11 +99,8 @@ export function useApplicationManagement() {
         if (!user) return;
 
         try {
-            console.log("Deleting application with ID:", appId);
             const result = await deleteApplicationApi(appId);
-            console.log("Delete result:", result);
             if (result && result.success) {
-                // Remove the application from state if successfully deleted
                 setApplications(applications.filter((app) => app.id !== appId));
                 toast("Application deleted successfully!", {
                     description:
