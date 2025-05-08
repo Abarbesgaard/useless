@@ -263,7 +263,7 @@ export function useApplicationManagement() {
             const sortedApps = archivedApps.sort((a, b) => {
                 if (a.is_archived && !b.is_archived) return -1;
                 if (!a.is_archived && b.is_archived) return 1;
-                return 0; // Otherwise, keep the same order
+                return 0;
             });
             setApplications(sortedApps);
         } catch (error) {
