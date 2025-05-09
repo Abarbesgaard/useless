@@ -41,14 +41,11 @@ function FavoritesPage() {
     deleteStage,
   } = useStageManagement(favoriteApplications, setFavoriteApplications);
 
-  // Filter applications to only show favorites
   useEffect(() => {
-    // When applications state changes, update favoriteApplications
     const favApps = applications.filter((app) => app.favorite === true);
     setFavoriteApplications(favApps);
   }, [applications]);
 
-  // Use fetchFavoriteApplications on component mount
   useEffect(() => {
     fetchFavoriteApplications();
   }, []);

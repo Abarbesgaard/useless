@@ -6,6 +6,7 @@ import {
     deleteApplication as deleteApplicationApi,
     getApplicationsByUser,
     getArchivedApplicationsByUser,
+    getFavoriteApplicationsByUser,
     updateApplication as updateApplicationApi,
     updateArchiveStatus,
 } from "../data/applications";
@@ -120,7 +121,10 @@ export function useApplicationManagement() {
             await updateApplicationApi({
                 ...updatedApp,
                 user_id: user.id,
-                is_deleted: false,
+                is_deleted: updatedApp.is_deleted,
+                stages: updatedApp.stages,
+                favorite: updatedApp.favorite,
+                is_archived: updatedApp.is_archived,
             });
 
             setApplications(
@@ -148,7 +152,7 @@ export function useApplicationManagement() {
                 updateApplicationApi({
                     ...updatedApp,
                     user_id: user.id,
-                    is_deleted: false,
+                    is_deleted: updatedApp.is_deleted,
                     stages: updatedApp.stages,
                     favorite: updatedApp.favorite,
                     is_archived: updatedApp.is_archived,
@@ -233,7 +237,7 @@ export function useApplicationManagement() {
     const fetchFavoriteApplications = async () => {
         if (!user) return;
         try {
-            const favoriteApps = await getApplicationsByUser(user.id);
+            const favoriteApps = await getFavoriteApplicationsByUser(user.id);
             const sortedApps = favoriteApps.sort((a, b) => {
                 if (a.favorite && !b.favorite) return -1;
                 if (!a.favorite && b.favorite) return 1;
