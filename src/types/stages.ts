@@ -8,4 +8,5 @@ export type Stage = {
   application_id: string | null;
   auth_user?: string | null;
   is_active?: boolean | null;
+  is_deleted?: boolean | null;
 };

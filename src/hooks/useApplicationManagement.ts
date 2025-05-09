@@ -35,6 +35,7 @@ export function useApplicationManagement() {
                 throw new Error("User is not authenticated.");
             }
             const apps = await getApplicationsByUser(user.id);
+            console.log("Fetched applications:", apps);
             const sortedApps = apps.sort((a, b) => {
                 // If app 'a' is favorited and 'b' is not, 'a' comes first
                 if (a.favorite && !b.favorite) return -1;

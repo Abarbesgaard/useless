@@ -200,17 +200,15 @@ export const updateApplication = async (app: Application) => {
     );
     return null;
   }
-
   // Format application data for database
   const applicationUpdate = {
     company: app.company,
     position: app.position,
     notes: app.notes || "",
     url: app.url || "",
-    current_stage: app.currentStage || 0,
+    current_stage: app.currentStage,
     favorite: app.favorite,
   };
-
   // Update the record in Supabase
   const { data, error } = await supabase
     .from("applications")
@@ -241,6 +239,7 @@ export const addStageToApplication = async (
       name: stage.name,
       icon: stage.icon,
       position: stage.position,
+      is_deleted: false,
     },
   ]);
 

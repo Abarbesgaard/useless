@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { updateApplication as updateApplicationApi } from "../data/applications";
+import { updateApplication } from "../data/applications";
+import { addStage } from "../data/stages";
 import useAuth from "./useAuth";
 import { toast } from "sonner";
 import { Application } from "@/types/application";
@@ -22,7 +23,6 @@ export function useStageManagement(
     // Add a new stage to an application
     const addStageToApplication = async (appId: string, stage: Stage) => {
         if (!user) return;
-
         // Find the application to update
         const application = applications.find((app) => app.id === appId);
         if (!application) return;
@@ -30,22 +30,22 @@ export function useStageManagement(
         // Create the new stage object with a unique ID if it doesn't have one
         const newStage: Stage = {
             ...stage,
-            id: stage.id || `stage-${Date.now()}`,
-        };
-
-        // Create updated application with new stage
-        const updatedApp = {
-            ...application,
-            stages: [...application.stages, newStage],
+            id: crypto.randomUUID(), // Generate a random UUID if no ID is provided
+            position: application.stages.length, // Set position to be after existing stages
+            is_active: false,
+            is_deleted: false,
         };
 
         try {
-            // Update in database
-            await updateApplicationApi({
-                ...updatedApp,
-                user_id: user.id,
-                is_deleted: false,
-            });
+            console.log(appId);
+            // First, save the stage to the database
+            await addStage(newStage, appId);
+
+            // Create updated application with new stage for local state
+            const updatedApp = {
+                ...application,
+                stages: [...application.stages, newStage],
+            };
 
             // Update local state
             setApplications(
@@ -102,7 +102,7 @@ export function useStageManagement(
 
         try {
             // Update in database
-            await updateApplicationApi({
+            await updateApplication({
                 ...updatedApp,
                 user_id: user.id,
                 is_deleted: false,

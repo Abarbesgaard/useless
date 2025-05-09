@@ -2,6 +2,7 @@ import supabase from "@/lib/supabase"; // or wherever your client lives
 import { Stage } from "@/types/stages";
 // Create Stage
 export const addStage = async (stage: Stage, applicationId: string) => {
+  console.log("Adding stage:", stage, applicationId);
   const {
     data: { user },
     error: userError,
