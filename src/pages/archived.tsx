@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { availableStages } from "@/constants/availableStages";
+import { getArchivedApplicationsByUser } from "@/data/applications";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
+import useAuth from "@/hooks/useAuth";
 import { useStageManagement } from "@/hooks/useStageManagement";
 import { Application } from "@/types/application";
 import { PlusCircle } from "lucide-react";
@@ -18,9 +20,9 @@ function ArchivedPage() {
   const [archivedApplications, setArchivedApplications] = useState<
     Application[]
   >([]);
+  const { user } = useAuth();
 
   const {
-    applications,
     newApp,
     showAppForm,
     setShowAppForm,
@@ -30,7 +32,6 @@ function ArchivedPage() {
     updateApplication,
     toggleFavorite,
     toggleStageCompletion,
-    fetchArchivedApplications,
     toggleArchived,
   } = useApplicationManagement();
 
@@ -41,17 +42,24 @@ function ArchivedPage() {
     deleteStage,
   } = useStageManagement(archivedApplications, setArchivedApplications);
 
-  // First fetch archived applications on mount
-  useEffect(() => {
-    const fetchArchivedApps = applications.filter(
-      (app) => app.is_archived === true
-    );
-    setArchivedApplications(fetchArchivedApps);
-  }, [applications]);
+  const fetchAndSetArchivedApplications = async () => {
+    if (!user) {
+      setArchivedApplications([]); // Clear if no user
+      return;
+    }
+    try {
+      const apps = await getArchivedApplicationsByUser(user.id);
+      setArchivedApplications(apps);
+    } catch (error) {
+      console.error("Failed to fetch archived applications:", error);
+      setArchivedApplications([]); // Set to empty array on error
+    }
+  };
 
+  // Fetch archived applications on mount or when user changes
   useEffect(() => {
-    fetchArchivedApplications();
-  }, []);
+    fetchAndSetArchivedApplications();
+  }, [user]);
 
   const handleApplicationUpdate = (updatedApp: Application) => {
     updateApplication(updatedApp);
