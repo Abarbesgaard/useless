@@ -18,10 +18,10 @@ export function useApplicationManagement() {
     const [applications, setApplications] = useState<Application[]>([]);
     const [showAppForm, setShowAppForm] = useState(false);
     const [newApp, setNewApp] = useState({
-        company: "Company Name",
-        position: "Position Title",
+        company: "",
+        position: "",
         notes: "",
-        url: "url for the job posting",
+        url: "",
         date: Date.now(),
     });
 
