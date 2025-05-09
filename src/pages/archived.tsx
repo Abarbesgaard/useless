@@ -42,16 +42,16 @@ function ArchivedPage() {
   } = useStageManagement(archivedApplications, setArchivedApplications);
 
   // First fetch archived applications on mount
-  useEffect(() => {
+  /*  useEffect(() => {
     const fetchArchivedApps = applications.filter(
       (app) => app.is_archived === true
     );
     setArchivedApplications(fetchArchivedApps);
   }, [applications]);
-
+ */
   useEffect(() => {
     fetchArchivedApplications();
-  }, [applications]);
+  }, []);
 
   const handleApplicationUpdate = (updatedApp: Application) => {
     updateApplication(updatedApp);
@@ -91,7 +91,7 @@ function ArchivedPage() {
             Your Archived Applications
           </h2>
 
-          {archivedApplications.map((app) => (
+          {applications.map((app) => (
             <div key={app.id} className="w-4xl p-3 overflow-y-auto">
               <Card>
                 <ApplicationHeader

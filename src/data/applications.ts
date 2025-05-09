@@ -66,7 +66,6 @@ export async function getArchivedApplicationsByUser(userId: string) {
         .eq("application_id", app.id)
         .eq("is_deleted", false)
         .order("position", { ascending: true });
-
       if (stagesError) {
         console.error("Error fetching stages:", stagesError);
         return null;
@@ -84,7 +83,7 @@ export async function getArchivedApplicationsByUser(userId: string) {
         user_id: app.auth_user,
         is_deleted: app.is_deleted || false,
         favorite: app.favorite || false,
-        is_archived: app.is_archived || true, // Note: Using true as fallback since we're querying for archived
+        is_archived: app.is_archived || true,
       };
     }),
   );
