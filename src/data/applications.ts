@@ -103,7 +103,6 @@ export async function getFavoriteApplicationsByUser(userId: string) {
     console.error("Error fetching applications:", appError);
     return [];
   }
-
   const transformedData = await Promise.all(
     applications.map(async (app) => {
       const { data: stages, error: stagesError } = await supabase

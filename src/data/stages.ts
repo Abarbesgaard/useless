@@ -41,7 +41,7 @@ export const updateStage = async (
 };
 
 // Delete Stage (soft)
-export const softDeleteStage = async (stageId: string) => {
+export const softDeleteStage = async (stageId: string | undefined) => {
   try {
     // Check if the stage exists before updating
     const { error: selectError } = await supabase

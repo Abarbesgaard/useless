@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { updateApplication } from "../data/applications";
-import { addStage } from "../data/stages";
+import { addStage, softDeleteStage } from "../data/stages";
 import useAuth from "./useAuth";
 import { toast } from "sonner";
 import { Application } from "@/types/application";
@@ -82,6 +82,7 @@ export function useStageManagement(
         // Get the stage to delete
         const stageToDelete = application.stages[stageIndex];
 
+        softDeleteStage(stageToDelete.id);
         // Create new stages array without the deleted stage
         const updatedStages = [...application.stages];
         updatedStages.splice(stageIndex, 1);
