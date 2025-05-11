@@ -1,12 +1,46 @@
-import { Check, MinusCircle } from "lucide-react";
 import { Application } from "@/types/application";
 import { LucideIcon } from "lucide-react";
-import { FileText } from "lucide-react";
 
-const iconMap: Record<string, LucideIcon> = {
+import {
   Check,
   MinusCircle,
   FileText,
+  // Import all icons you're using in your application
+  Mail,
+  Phone,
+  Calendar,
+  User,
+  Clock,
+  Video,
+  MessageSquare,
+  FileCheck,
+  Building,
+  Briefcase,
+  ClipboardCheck,
+  Send,
+  AlertCircle,
+  // Add any other icons you might be using
+} from "lucide-react";
+
+const iconMap: Record<string, LucideIcon> = {
+  // Include all icons with exact matching names
+  Check,
+  MinusCircle,
+  FileText,
+  Mail,
+  Phone,
+  Calendar,
+  User,
+  Clock,
+  Video,
+  MessageSquare,
+  FileCheck,
+  Building,
+  Briefcase,
+  ClipboardCheck,
+  Send,
+  AlertCircle,
+  // Add more icons as needed
 };
 
 const resolveIcon = (iconName: string | LucideIcon): LucideIcon => {

@@ -32,9 +32,11 @@ export function useStageManagement(
             ...stage,
             id: crypto.randomUUID(), // Generate a random UUID if no ID is provided
             position: application.stages.length, // Set position to be after existing stages
+            icon: stage.icon,
             is_active: false,
             is_deleted: false,
         };
+        console.log(newStage.icon);
 
         try {
             console.log(appId);
