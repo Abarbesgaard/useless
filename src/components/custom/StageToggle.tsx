@@ -19,6 +19,7 @@ import {
   ClipboardCheck,
   Send,
   AlertCircle,
+  Linkedin,
   // Add any other icons you might be using
 } from "lucide-react";
 
@@ -40,6 +41,7 @@ const iconMap: Record<string, LucideIcon> = {
   ClipboardCheck,
   Send,
   AlertCircle,
+  Linkedin,
   // Add more icons as needed
 };
 
