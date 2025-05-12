@@ -1,14 +1,14 @@
-import React from "react";
+import { forwardRef } from "react";
 import { SquarePen } from "lucide-react";
 
 interface EditButtonProps {
-  onClick: () => void;
   isEditing?: boolean;
+  onClick: () => void;
 }
 
 // Convert to forwardRef to properly handle refs
-export const EditButton = React.forwardRef<HTMLButtonElement, EditButtonProps>(
-  ({ onClick, isEditing }, ref) => (
+export const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
+  ({ isEditing, onClick }, ref) => (
     <button
       ref={ref}
       onClick={onClick}
