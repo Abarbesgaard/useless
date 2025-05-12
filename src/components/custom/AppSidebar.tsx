@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, Calendar, Heart } from "lucide-react";
+import { Home, Heart, Archive } from "lucide-react";
 import { Button } from "../ui/button";
 import useAuth from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router";
@@ -29,7 +29,7 @@ const items = [
   {
     title: "Archived",
     url: "/archived",
-    icon: Calendar,
+    icon: Archive,
   },
 ];
 export default function AppSidebar() {
