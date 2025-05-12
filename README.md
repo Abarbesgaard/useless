@@ -4,8 +4,6 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-![License](https://img.shields.io/github/license/Abarbesgaard/useless)
-
 UseLess, a project that aims to be used less!
 
 # About
