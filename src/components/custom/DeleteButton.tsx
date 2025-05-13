@@ -24,10 +24,10 @@ export const DeleteButton = forwardRef<HTMLButtonElement, DeleteButtonProps>(
         <AlertDialogTrigger asChild>
           <button
             ref={ref}
-            className="bg-[--chart-5] hover:bg-[--chart-4] p-3"
+            className="text-destructive hover:text-chart-5 ml-1"
             title="Delete"
           >
-            <Trash2 size={20} />
+            <Trash2 />
           </button>
         </AlertDialogTrigger>
         <AlertDialogContent>

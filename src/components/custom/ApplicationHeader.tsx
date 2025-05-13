@@ -59,7 +59,9 @@ export default function ApplicationHeader({
               <button onClick={() => toggleFavorite(app.id)} className="p-2">
                 <Heart
                   className={`w-6 h-6 ${
-                    app.favorite ? "text-red-500 fill-red-500" : "text-gray-400"
+                    app.favorite
+                      ? "text-chart-5 fill-chart-5"
+                      : "text-sidebar-ring"
                   } transition-colors`}
                 />
               </button>
@@ -78,7 +80,7 @@ export default function ApplicationHeader({
               <button onClick={() => toggleArchived(app)} className="p-2">
                 <Archive
                   className={`w-6 h-6 ${
-                    app.is_archived ? "text-yellow-500" : "text-gray-400"
+                    app.is_archived ? "text-chart-3" : "text-sidebar-ring"
                   } transition-colors`}
                 />
               </button>

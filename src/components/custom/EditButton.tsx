@@ -16,7 +16,7 @@ export const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
     >
       <SquarePen
         className={`w-6 h-6 ${
-          isEditing ? "text-blue-600" : "text-gray-400"
+          isEditing ? "text-chart-1" : "text-sidebar-ring"
         } transition-colors`}
       />
     </button>
