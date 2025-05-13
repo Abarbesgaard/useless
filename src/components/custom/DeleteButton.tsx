@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { TooltipTrigger } from "../ui/tooltip";
 
 interface DeleteButtonProps {
   onClick: () => void;
@@ -22,13 +23,15 @@ export const DeleteButton = forwardRef<HTMLButtonElement, DeleteButtonProps>(
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <button
-            ref={ref}
-            className="text-destructive hover:text-chart-5 ml-1"
-            title="Delete"
-          >
-            <Trash2 />
-          </button>
+          <TooltipTrigger asChild>
+            <button
+              ref={ref}
+              className="text-destructive hover:text-chart-5 ml-1"
+              title="Delete"
+            >
+              <Trash2 />
+            </button>
+          </TooltipTrigger>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

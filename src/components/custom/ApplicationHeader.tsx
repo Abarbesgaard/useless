@@ -56,7 +56,7 @@ export default function ApplicationHeader({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => toggleFavorite(app.id)} className="p-2">
+              <button onClick={() => toggleFavorite(app.id)}>
                 <Heart
                   className={`w-6 h-6 ${
                     app.favorite
@@ -117,9 +117,7 @@ export default function ApplicationHeader({
 
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
-            </TooltipTrigger>
+            <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
             <TooltipContent>
               <p>Delete application</p>
             </TooltipContent>
