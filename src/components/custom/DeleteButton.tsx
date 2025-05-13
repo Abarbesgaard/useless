@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -9,30 +9,41 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { TooltipTrigger } from "../ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface DeleteButtonProps {
   onClick: () => void;
 }
 
-// Convert to forwardRef to properly handle refs
-export const DeleteButton = forwardRef<HTMLButtonElement, DeleteButtonProps>(
-  ({ onClick }, ref) => {
-    return (
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
+export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
           <TooltipTrigger asChild>
             <button
-              ref={ref}
               className="text-destructive hover:text-chart-5 ml-1"
               title="Delete"
+              onClick={() => setIsDialogOpen(true)}
             >
               <Trash2 />
             </button>
           </TooltipTrigger>
-        </AlertDialogTrigger>
+          <TooltipContent>
+            <p className="text-xs">Delete</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
@@ -46,6 +57,7 @@ export const DeleteButton = forwardRef<HTMLButtonElement, DeleteButtonProps>(
             <AlertDialogAction
               onClick={() => {
                 onClick();
+                setIsDialogOpen(false);
               }}
             >
               Continue
@@ -53,8 +65,6 @@ export const DeleteButton = forwardRef<HTMLButtonElement, DeleteButtonProps>(
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    );
-  }
-);
-
-DeleteButton.displayName = "DeleteButton";
+    </>
+  );
+};

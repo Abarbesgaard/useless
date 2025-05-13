@@ -20,6 +20,7 @@ import {
   Send,
   AlertCircle,
   Linkedin,
+  Ghost,
   // Add any other icons you might be using
 } from "lucide-react";
 
@@ -42,6 +43,7 @@ const iconMap: Record<string, LucideIcon> = {
   Send,
   AlertCircle,
   Linkedin,
+  Ghost,
   // Add more icons as needed
 };
 
@@ -87,20 +89,22 @@ export default function StageToggle({
                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
                             ${
                               isActive
-                                ? "bg-blue-500"
-                                : "bg-gray-200 hover:bg-gray-300"
+                                ? "bg-chart-1"
+                                : "bg-sidebar-foreground hover:bg-primary"
                             }`}
                 >
                   {IconComponent && (
                     <IconComponent
                       size={24}
-                      className={isActive ? "text-white" : "text-gray-500"}
+                      className={
+                        isActive ? "text-foreground" : "text-sidebar-ring"
+                      }
                     />
                   )}
 
                   {!isActive && (
-                    <div className="absolute inset-0 bg-blue-500 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Check size={24} className="text-white" />
+                    <div className="absolute inset-0 bg-chart-1 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Check size={24} className="text-foreground" />
                     </div>
                   )}
                 </button>
@@ -123,8 +127,8 @@ export default function StageToggle({
                 <div
                   className={`h-0.5 w-8 ${
                     stageIndex < app.currentStage
-                      ? "bg-blue-500"
-                      : "bg-gray-200"
+                      ? "bg-sidebar-primary"
+                      : "bg-muted-foreground"
                   } mx-1`}
                 ></div>
               )}

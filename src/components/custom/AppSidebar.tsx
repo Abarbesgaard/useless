@@ -41,7 +41,7 @@ export default function AppSidebar() {
     <Sidebar className=" h-full">
       <SidebarHeader>
         <h1 className="text-lg font-bold">UseLess</h1>
-        <p className="text-sm text-gray-500">Job Search Tracker</p>
+        <p className="text-sm ">Job Search Tracker</p>
         <p className="text-xl font-semibold">Hello, {user?.email}</p>
       </SidebarHeader>
       <SidebarContent>

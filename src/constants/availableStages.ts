@@ -4,6 +4,7 @@ import {
   Calendar,
   DollarSign,
   FileText,
+  Ghost,
   Linkedin,
   Mail,
   Phone,
@@ -76,6 +77,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Closer",
   },
   {
     id: "rejection",
@@ -84,6 +86,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Closer",
   },
   {
     id: "linkedin-easyapply",
@@ -92,5 +95,14 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+  },
+  {
+    id: "ghosted",
+    name: "Ghosted",
+    icon: Ghost,
+    position: null,
+    application_id: null,
+    auth_user: null,
+    category: "Closer",
   },
 ];

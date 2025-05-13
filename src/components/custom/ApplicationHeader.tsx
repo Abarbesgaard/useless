@@ -43,7 +43,7 @@ export default function ApplicationHeader({
         <CardContent className="flex items-center gap-2">
           <a
             href={app.url}
-            className="text-sm text-blue-600 underline hover:text-blue-800"
+            className="text-sm text-chart-1 underline hover:text-sidebar-primary"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -115,14 +115,7 @@ export default function ApplicationHeader({
           </Tooltip>
         </TooltipProvider>
 
-        <TooltipProvider>
-          <Tooltip>
-            <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
-            <TooltipContent>
-              <p>Delete application</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <DeleteButton onClick={() => handleDeleteApplication(app.id)} />
       </div>
     </div>
   );
