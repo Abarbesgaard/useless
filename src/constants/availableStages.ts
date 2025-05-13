@@ -21,6 +21,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Application",
   },
   {
     id: "mailsent",
@@ -29,6 +30,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Application",
   },
   {
     id: "callmade",
@@ -37,6 +39,7 @@ export const availableStages: Stage[] = [
     position: null,
     auth_user: null,
     application_id: null,
+    category: "Interview",
   },
   {
     id: "meeting",
@@ -45,6 +48,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Interview",
   },
   {
     id: "techtest",
@@ -53,6 +57,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Interview",
   },
   {
     id: "interview",
@@ -61,6 +66,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Interview",
   },
   {
     id: "offer",
@@ -69,6 +75,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Decision",
   },
   {
     id: "acceptance",
@@ -77,7 +84,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
-    category: "Closer",
+    category: "Decision",
   },
   {
     id: "rejection",
@@ -86,7 +93,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
-    category: "Closer",
+    category: "Decision",
   },
   {
     id: "linkedin-easyapply",
@@ -95,6 +102,7 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
+    category: "Application",
   },
   {
     id: "ghosted",
@@ -103,6 +111,6 @@ export const availableStages: Stage[] = [
     position: null,
     application_id: null,
     auth_user: null,
-    category: "Closer",
+    category: "Decision",
   },
 ];
