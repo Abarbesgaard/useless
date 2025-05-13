@@ -4,7 +4,7 @@ import { addStage, softDeleteStage } from "../data/stages";
 import useAuth from "./useAuth";
 import { toast } from "sonner";
 import { Application } from "@/types/application";
-import { Stage } from "@/types/stages";
+import { Stage, StageForPersistence } from "@/types/stages";
 
 export function useStageManagement(
     applications: Application[],
@@ -23,15 +23,13 @@ export function useStageManagement(
     // Add a new stage to an application
     const addStageToApplication = async (appId: string, stage: Stage) => {
         if (!user) return;
-        // Find the application to update
         const application = applications.find((app) => app.id === appId);
         if (!application) return;
 
-        // Create the new stage object with a unique ID if it doesn't have one
         const newStage: Stage = {
             ...stage,
-            id: crypto.randomUUID(), // Generate a random UUID if no ID is provided
-            position: application.stages.length, // Set position to be after existing stages
+            id: crypto.randomUUID(),
+            position: application.stages.length,
             icon: stage.icon,
             is_active: false,
             is_deleted: false,
@@ -40,10 +38,11 @@ export function useStageManagement(
 
         try {
             console.log(appId);
-            // First, save the stage to the database
-            await addStage(newStage, appId);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { category, ...stageForPersistence } = newStage;
 
-            // Create updated application with new stage for local state
+            await addStage(stageForPersistence as StageForPersistence, appId);
+
             const updatedApp = {
                 ...application,
                 stages: [...application.stages, newStage],

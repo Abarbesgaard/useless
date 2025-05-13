@@ -11,3 +11,4 @@ export type Stage = {
   is_active?: boolean | null;
   is_deleted?: boolean | null;
 };
+export type StageForPersistence = Omit<Stage, "category">;
