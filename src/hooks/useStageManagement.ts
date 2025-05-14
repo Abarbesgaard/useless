@@ -34,10 +34,8 @@ export function useStageManagement(
             is_active: false,
             is_deleted: false,
         };
-        console.log(newStage.icon);
 
         try {
-            console.log(appId);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { category, ...stageForPersistence } = newStage;
 
