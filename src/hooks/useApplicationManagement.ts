@@ -32,6 +32,7 @@ export function useApplicationManagement() {
 
     const fetchApplications = async () => {
         if (!user) return;
+
         setIsLoading(true);
         try {
             if (!user) {
@@ -40,17 +41,15 @@ export function useApplicationManagement() {
             const apps = await getApplicationsByUser(user.id);
             console.log("Fetched applications:", apps);
             const sortedApps = apps.sort((a, b) => {
-                // If app 'a' is favorited and 'b' is not, 'a' comes first
                 if (a.favorite && !b.favorite) return -1;
-                // If app 'b' is favorited and 'a' is not, 'b' comes first
                 if (!a.favorite && b.favorite) return 1;
-                return 0; // Otherwise, keep the same order
+                return 0;
             });
 
             setApplications(sortedApps);
         } catch (error) {
             console.error("Error fetching applications:", error);
-            setApplications([]); // Set to empty array on error
+            setApplications([]);
         } finally {
             setIsLoading(false);
         }
@@ -71,20 +70,19 @@ export function useApplicationManagement() {
                 id: "",
                 user_id: user.id,
                 currentStage: 0,
-                stages: [...defaultInitialStages], // Ensure stages is initialized
+                stages: [...defaultInitialStages],
                 is_deleted: false,
                 favorite: false,
                 is_archived: false,
             });
 
             if (newAppData) {
-                // Update the state with the new application
                 setApplications((prevApplications) => [
                     ...prevApplications,
                     {
                         ...newAppData,
                         date: new Date(newAppData.date).getTime(),
-                        stages: newAppData.stages || [], // Ensure stages is initialized
+                        stages: newAppData.stages || [],
                     },
                 ]);
 

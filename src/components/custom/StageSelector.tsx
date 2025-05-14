@@ -3,6 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { PlusCircle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import confetti from "canvas-confetti";
 
 interface StageSelectorProps {
   appId: string;
@@ -11,6 +12,7 @@ interface StageSelectorProps {
   addStageToApplication: (appId: string, stage: Stage) => void;
   availableStages: Stage[];
 }
+
 export const StageSelector: React.FC<StageSelectorProps> = ({
   appId,
   stageSelectorApp,
@@ -28,6 +30,37 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
   }, {} as Record<string, Stage[]>);
   const categories = Object.keys(stagesByCategory);
   const defaultCategory = categories[0] || "General";
+
+  const handleStageClick = (stage: Stage) => {
+    if (stage.id === "acceptance") {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+        });
+      }, 250);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+        });
+      }, 400);
+    }
+
+    // Add the stage to application
+    addStageToApplication(appId, stage);
+  };
 
   return (
     <Popover
@@ -67,7 +100,7 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
                   return (
                     <div
                       key={index}
-                      onClick={() => addStageToApplication(appId, stage)}
+                      onClick={() => handleStageClick(stage)}
                       className="flex items-center gap-2 p-2 rounded hover:text-primary hover:bg-chart-5 cursor-pointer"
                     >
                       <StageIcon className="w-4 h-4" />

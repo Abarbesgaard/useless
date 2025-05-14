@@ -2,6 +2,7 @@ import { Application } from "@/types/application";
 import { LucideIcon } from "lucide-react";
 
 import {
+  Award,
   Check,
   MinusCircle,
   FileText,
@@ -26,6 +27,7 @@ import {
 
 const iconMap: Record<string, LucideIcon> = {
   // Include all icons with exact matching names
+  Award,
   Check,
   MinusCircle,
   FileText,
