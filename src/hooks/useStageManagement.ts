@@ -19,8 +19,12 @@ export function useStageManagement(
     const toggleStageSelector = (appId: string | null) => {
         setStageSelectorApp(appId === stageSelectorApp ? null : appId);
     };
-
-    // Add a new stage to an application
+    /**
+     * This function adds a new stage to an application.
+     * @param appId - The ID of the application to which the stage will be added.
+     * @param stage - The stage object containing the details of the new stage.
+     * @returns A promise that resolves when the stage is added.
+     */
     const addStageToApplication = async (appId: string, stage: Stage) => {
         if (!user) return;
         const application = applications.find((app) => app.id === appId);
@@ -67,7 +71,13 @@ export function useStageManagement(
         }
     };
 
-    // Delete a stage from an application
+    /**
+     * Deletes a stage from an application.
+     * @param appId - The ID of the application.
+     * @param stageIndex - The index of the stage to delete.
+     * @returns A promise that resolves when the stage is deleted.
+     * @throws An error if the stage cannot be deleted.
+     */
     const deleteStage = async (appId: string, stageIndex: number) => {
         if (!user) return;
 

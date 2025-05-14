@@ -13,6 +13,10 @@ import {
 import { toast } from "sonner";
 import { Application } from "@/types/application";
 
+/**
+ *  Custom hook for managing job applications.
+ * @returns An object containing application data and functions to manage applications.
+ */
 export function useApplicationManagement() {
     const { user } = useAuth();
     const [applications, setApplications] = useState<Application[]>([]);
@@ -29,7 +33,10 @@ export function useApplicationManagement() {
     useEffect(() => {
         fetchApplications();
     }, [user]);
-
+    /**
+     *  Fetches applications for the authenticated user.
+     * @returns A promise that resolves when the applications are fetched.
+     */
     const fetchApplications = async () => {
         if (!user) return;
 
@@ -53,14 +60,20 @@ export function useApplicationManagement() {
             setIsLoading(false);
         }
     };
-
+    /**
+     *  Handles input changes in the application form.
+     * @param e - The event object containing the input name and value.
+     */
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
         const { name, value } = e.target;
         setNewApp({ ...newApp, [name]: value });
     };
-
+    /**
+     *  Adds a new application to the list.
+     * @returns A promise that resolves when the application is added.
+     */
     const addApplication = async () => {
         if (!user) return;
         try {
@@ -98,7 +111,11 @@ export function useApplicationManagement() {
             toast.error("Failed to add application. Please try again.");
         }
     };
-
+    /**
+     *  Deletes an application from the list.
+     * @param appId  - The ID of the application to be deleted.
+     * @returns  A promise that resolves when the application is deleted.
+     */
     const deleteApplication = async (appId: string) => {
         if (!user) return;
 
@@ -116,7 +133,11 @@ export function useApplicationManagement() {
             toast.error("Failed to delete application. Please try again.");
         }
     };
-
+    /**
+     *  Updates an existing application.
+     * @param updatedApp  - The updated application object.
+     * @returns  A promise that resolves when the application is updated.
+     */
     const updateApplication = async (updatedApp: Application) => {
         if (!user) return;
 
@@ -143,7 +164,11 @@ export function useApplicationManagement() {
             return false;
         }
     };
-
+    /**
+     *  Toggles the favorite status of an application.
+     * @param appId  - The ID of the application to be toggled.
+     * @returns  A promise that resolves when the favorite status is toggled.
+     */
     const toggleFavorite = async (appId: string) => {
         if (!user) return;
 
@@ -184,7 +209,12 @@ export function useApplicationManagement() {
             } favorites!`,
         );
     };
-
+    /**
+     *  Toggles the completion status of a stage in an application.
+     * @param appId  - The ID of the application.
+     * @param stageIndex  - The index of the stage to be toggled.
+     * @returns A promise that resolves when the stage completion status is toggled.
+     */
     const toggleStageCompletion = async (appId: string, stageIndex: number) => {
         if (!user) return;
 
@@ -236,7 +266,10 @@ export function useApplicationManagement() {
             );
         }
     };
-
+    /**
+     * Fetches favorite applications for the authenticated user.
+     * @returns A promise that resolves when the favorite applications are fetched.
+     */
     const fetchFavoriteApplications = async () => {
         if (!user) return;
         try {
@@ -255,7 +288,10 @@ export function useApplicationManagement() {
             );
         }
     };
-
+    /**
+     * Fetches archived applications for the authenticated user.
+     * @returns A promise that resolves when the archived applications are fetched.
+     */
     const fetchArchivedApplications = async () => {
         if (!user) return;
         try {
@@ -275,7 +311,11 @@ export function useApplicationManagement() {
             );
         }
     };
-
+    /**
+     * Toggles the archived status of an application.
+     * @param app - The application object to be toggled.
+     * @returns A promise that resolves when the archived status is toggled.
+     */
     const toggleArchived = async (app: Application) => {
         if (!user) return;
         try {
