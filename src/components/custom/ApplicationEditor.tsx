@@ -12,7 +12,6 @@ interface ApplicationEditorProps {
   app: Application;
   editingAppId: string | null;
   setEditingAppId: (id: string | null) => void;
-  // Add a callback to update the parent state
   onApplicationUpdate: (updatedApp: Application) => void;
 }
 

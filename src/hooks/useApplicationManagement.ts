@@ -17,6 +17,7 @@ export function useApplicationManagement() {
     const { user } = useAuth();
     const [applications, setApplications] = useState<Application[]>([]);
     const [showAppForm, setShowAppForm] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [newApp, setNewApp] = useState({
         company: "",
         position: "",
@@ -30,6 +31,8 @@ export function useApplicationManagement() {
     }, [user]);
 
     const fetchApplications = async () => {
+        if (!user) return;
+        setIsLoading(true);
         try {
             if (!user) {
                 throw new Error("User is not authenticated.");
@@ -48,6 +51,8 @@ export function useApplicationManagement() {
         } catch (error) {
             console.error("Error fetching applications:", error);
             setApplications([]); // Set to empty array on error
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -315,5 +320,6 @@ export function useApplicationManagement() {
         fetchFavoriteApplications,
         toggleArchived,
         fetchArchivedApplications,
+        isLoading,
     };
 }

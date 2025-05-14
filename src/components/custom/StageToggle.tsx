@@ -117,7 +117,7 @@ export default function StageToggle({
                     e.stopPropagation();
                     deleteStage(app.id, stageIndex);
                   }}
-                  className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 transition-opacity"
+                  className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-chart-5 text-primary rounded-full p-1 transition-opacity"
                   title="Delete this stage"
                 >
                   <MinusCircle size={16} />
