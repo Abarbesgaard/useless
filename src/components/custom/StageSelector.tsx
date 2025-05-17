@@ -71,7 +71,7 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
         <div>
           <Button
             onClick={() => toggleStageSelector(appId)}
-            className="w-12 h-12 rounded-full bg-primary hover:bg-popover-foreground flex items-center justify-center"
+            className="w-12 h-12 rounded-full bg-primary hover:bg-popover-foreground flex items-center justify-center cursor-pointer"
           >
             <PlusCircle className="text-sidebar-ring" />
           </Button>
@@ -101,7 +101,7 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
                     <div
                       key={index}
                       onClick={() => handleStageClick(stage)}
-                      className="flex items-center gap-2 p-2 rounded hover:text-primary hover:bg-chart-5 cursor-pointer"
+                      className="flex items-center gap-2 p-2 rounded hover:text-primary hover:bg-chart-5 cursor-pointer "
                     >
                       <StageIcon className="w-4 h-4" />
                       <span>{stage.name}</span>

@@ -54,7 +54,7 @@ export default function JobSearchTracker() {
         <div>
           <Button
             onClick={() => setShowAppForm(!showAppForm)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
           >
             <PlusCircle size={16} />
             {showAppForm ? "Cancel" : "Add New Application"}

@@ -12,6 +12,7 @@ export const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
   ({ isEditing, onClick }, ref) => (
     <TooltipTrigger asChild>
       <button
+        className="cursor-pointer"
         ref={ref}
         onClick={onClick}
         title={isEditing ? "Cancel Edit" : "Edit"}

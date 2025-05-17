@@ -126,10 +126,18 @@ export default function ApplicationEditor({
             />
           </div>
           <div className="mt-4 flex gap-2">
-            <Button onClick={handleUpdateApplication} variant="default">
+            <Button
+              onClick={handleUpdateApplication}
+              variant="default"
+              className="cursor-pointer"
+            >
               Save Changes
             </Button>
-            <Button onClick={() => setEditingAppId(null)} variant="secondary">
+            <Button
+              onClick={() => setEditingAppId(null)}
+              variant="secondary"
+              className="cursor-pointer"
+            >
               Cancel
             </Button>
           </div>

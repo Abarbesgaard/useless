@@ -58,7 +58,7 @@ export default function ApplicationHeader({
             <TooltipTrigger asChild>
               <button onClick={() => toggleFavorite(app.id)}>
                 <Heart
-                  className={`w-6 h-6 ${
+                  className={`w-6 h-6 cursor-pointer ${
                     app.favorite
                       ? "text-chart-5 fill-chart-5"
                       : "text-sidebar-ring"
@@ -79,7 +79,7 @@ export default function ApplicationHeader({
             <TooltipTrigger asChild>
               <button onClick={() => toggleArchived(app)} className="p-2">
                 <Archive
-                  className={`w-6 h-6 ${
+                  className={`w-6 h-6 cursor-pointer ${
                     app.is_archived ? "text-chart-3" : "text-sidebar-ring"
                   } transition-colors`}
                 />

@@ -88,7 +88,7 @@ export default function StageToggle({
               <div className="relative group">
                 <button
                   onClick={() => toggleStageCompletion(app.id, stageIndex)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors 
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer
                             ${
                               isActive
                                 ? "bg-chart-1"

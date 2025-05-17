@@ -30,7 +30,7 @@ export const DeleteButton = ({ onClick }: DeleteButtonProps) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              className="text-destructive hover:text-chart-5 ml-1"
+              className="text-destructive hover:text-chart-5 ml-1 cursor-pointer"
               title="Delete"
               onClick={() => setIsDialogOpen(true)}
             >
