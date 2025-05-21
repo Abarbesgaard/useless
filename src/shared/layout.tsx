@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router";
 import FavoritesPage from "@/pages/favorites";
 import JobSearchTracker from "@/pages/Jobhunt";
 import ArchivedPage from "@/pages/archived";
+import AddApplication from "@/pages/addApplication";
 
 export default function AppLayout() {
   const { user } = useAuth();
@@ -39,6 +40,7 @@ function AppRoutes() {
       <Route path="/" element={<JobSearchTracker />} />
       <Route path="/favorites" element={<FavoritesPage />} />
       <Route path="/archived" element={<ArchivedPage />} />
+      <Route path="/add" element={<AddApplication />} />
       {/* Add more routes as needed */}
     </Routes>
   );

@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { availableStages } from "../constants/availableStages";
-import { Button } from "../components/ui/button";
-import { PlusCircle } from "lucide-react";
 import { Card, CardFooter } from "../components/ui/card";
-import JobApplicationForm from "../components/custom/JobApplicationForm";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
 import { StageSelector } from "@/components/custom/StageSelector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -20,11 +17,6 @@ export default function JobSearchTracker() {
   const {
     applications,
     setApplications,
-    newApp,
-    showAppForm,
-    setShowAppForm,
-    handleInputChange,
-    addApplication,
     deleteApplication,
     updateApplication,
     toggleFavorite,
@@ -46,36 +38,13 @@ export default function JobSearchTracker() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
+      <SidebarTrigger className="cursor-pointer" />
       {/* Sidebar */}
-      <SidebarTrigger />
-      {/* Main Content */}
       <div className="w-full h-full overflow-y-auto">
-        {/* Add New Application Button */}
-        <div>
-          <Button
-            onClick={() => setShowAppForm(!showAppForm)}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <PlusCircle size={16} />
-            {showAppForm ? "Cancel" : "Add New Application"}
-          </Button>
-        </div>
-
-        {/* Application Form */}
-        {showAppForm && (
-          <div className="mt-4">
-            <JobApplicationForm
-              newApp={newApp}
-              onChange={handleInputChange}
-              onSubmit={addApplication}
-            />
-          </div>
-        )}
-
+        <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
+        {/* Main Content */}
         {/* Applications list */}
         <div className="space-y-2 pt-3 pb-16">
-          <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
-
           {isLoading ? (
             // Render 3 skeleton placeholders while loading
             Array.from({ length: 3 }).map((_, idx) => (

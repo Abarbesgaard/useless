@@ -46,9 +46,14 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <Button>
+                <Link to="/add" className="flex items-center gap-2">
+                  <span>Add Application</span>
+                </Link>
+              </Button>
+              <SidebarGroupLabel>Applications</SidebarGroupLabel>
               {items.map((item) => {
                 const isActive = currentPath === item.url;
 
