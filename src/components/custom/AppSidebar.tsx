@@ -48,7 +48,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <Button>
+              <Button asChild>
                 <Link to="/add" className="flex items-center gap-2">
                   <span>Add Application</span>
                 </Link>
