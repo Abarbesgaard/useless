@@ -55,36 +55,53 @@ export function useApplicationManagement() {
             if (!user) {
                 throw new Error("User is not authenticated.");
             }
+
+            console.log("🔍 Environment:", process.env.NODE_ENV);
+            console.log("🔍 User ID:", user.id);
+            console.log("🔍 User object:", user);
+
             const apps = await getApplicationsWithCompanies();
+            console.log("🔍 Raw apps from getApplicationsWithCompanies:", apps);
+            console.log("🔍 Apps count:", apps.length);
+
             const filteredApps = apps.filter((app) =>
                 app.is_deleted === false &&
                 app.is_archived === false
             );
+            console.log("🔍 Filtered apps:", filteredApps);
+            console.log("🔍 Filtered apps count:", filteredApps.length);
 
-            const transformedApps = filteredApps.map((app) => ({
-                ...app,
-                user_id: user.id,
-                company: app.company_name,
-                date: new Date(app.date).getTime(),
-                currentStage: app.current_stage,
-                current_stage: app.current_stage,
-                stages: app.stages || [],
-                is_deleted: app.is_deleted,
-                is_archived: app.is_archived,
-                notes: app.notes || "",
-                url: app.url || "",
-                company_id: app.company_id ?? "",
-                contact_id: app.contact_id ?? "",
-            }));
+            const transformedApps = filteredApps.map((app) => {
+                console.log("🔍 Transforming app:", app);
+                return {
+                    ...app,
+                    user_id: user.id,
+                    company: app.company_name,
+                    date: new Date(app.date).getTime(),
+                    currentStage: app.current_stage,
+                    current_stage: app.current_stage,
+                    stages: app.stages || [],
+                    is_deleted: app.is_deleted,
+                    is_archived: app.is_archived,
+                    notes: app.notes || "",
+                    url: app.url || "",
+                    company_id: app.company_id ?? "",
+                    contact_id: app.contact_id ?? "",
+                };
+            });
+
+            console.log("🔍 Transformed apps:", transformedApps);
+
             const sortedApps = transformedApps.sort((a, b) => {
                 if (a.favorite && !b.favorite) return -1;
                 if (!a.favorite && b.favorite) return 1;
                 return 0;
             });
 
+            console.log("🔍 Final sorted apps:", sortedApps);
             setApplications(sortedApps);
         } catch (error) {
-            console.error("Error fetching applications:", error);
+            console.error("❌ Error fetching applications:", error);
             setApplications([]);
         } finally {
             setIsLoading(false);
