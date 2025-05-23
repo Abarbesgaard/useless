@@ -63,7 +63,7 @@ export function useApplicationManagement() {
                 date: new Date(app.date).getTime(),
                 currentStage: app.current_stage,
                 current_stage: app.current_stage,
-                stages: [],
+                stages: app.stages || [],
                 is_deleted: app.is_deleted,
                 is_archived: app.is_archived,
                 notes: app.notes || "",

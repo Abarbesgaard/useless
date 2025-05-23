@@ -564,34 +564,13 @@ export const getApplicationWithDetails = async (
 };
 
 // Get all applications with company names (for list views)
+// Get all applications with company names (for list views)
 export const getApplicationsWithCompanies = async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 
-    // ...existing code...
-    type ApplicationWithRelations = {
-      id: string;
-      position: string;
-      company: string;
-      company_id: string | null;
-      contact_id: string | null;
-      current_stage: number;
-      date: string;
-      favorite: boolean;
-      is_archived: boolean;
-      is_deleted: boolean;
-      notes: string;
-      url: string;
-      companies?: { name: string }[] | { name: string } | null;
-      contacts?:
-        | { name: string; phone?: string; email?: string; position?: string }[]
-        | { name: string; phone?: string; email?: string; position?: string }
-        | null;
-    };
-    // ...existing code...
-
-    const { data, error } = await supabase
+    const { data: applications, error } = await supabase
       .from("applications")
       .select(`
         id,
@@ -606,6 +585,7 @@ export const getApplicationsWithCompanies = async () => {
         is_deleted,
         notes,
         url,
+        auth_user,
         companies(name),
         contacts(name, phone, email, position)
       `)
@@ -618,55 +598,79 @@ export const getApplicationsWithCompanies = async () => {
       return [];
     }
 
-    return (data as ApplicationWithRelations[])?.map((app) => ({
-      id: app.id,
-      position: app.position,
-      company: app.company,
-      company_name: (Array.isArray(app.companies)
-        ? app.companies[0]?.name
-        : (app.companies as { name: string } | undefined)?.name) || app.company,
-      company_id: app.company_id,
-      contact_id: app.contact_id,
-      contact_name: (Array.isArray(app.contacts)
-        ? app.contacts[0]?.name
-        : (app.contacts as {
-          name: string;
-          phone?: string;
-          email?: string;
-          position?: string;
-        } | undefined)?.name),
-      contact_phone: (Array.isArray(app.contacts)
-        ? app.contacts[0]?.phone
-        : (app.contacts as {
-          name: string;
-          phone?: string;
-          email?: string;
-          position?: string;
-        } | undefined)?.phone),
-      contact_email: (Array.isArray(app.contacts)
-        ? app.contacts[0]?.email
-        : (app.contacts as {
-          name: string;
-          phone?: string;
-          email?: string;
-          position?: string;
-        } | undefined)?.email),
-      contact_position: (Array.isArray(app.contacts)
-        ? app.contacts[0]?.position
-        : (app.contacts as {
-          name: string;
-          phone?: string;
-          email?: string;
-          position?: string;
-        } | undefined)?.position),
-      current_stage: app.current_stage,
-      date: app.date,
-      favorite: app.favorite,
-      is_archived: app.is_archived,
-      is_deleted: app.is_deleted,
-      notes: app.notes || "",
-      url: app.url || "",
-    })) || [];
+    // Transform data and fetch stages for each application
+    const transformedData = await Promise.all(
+      applications.map(async (app) => {
+        // Fetch stages for this application
+        const { data: stages, error: stagesError } = await supabase
+          .from("application_stages")
+          .select("*")
+          .eq("application_id", app.id)
+          .eq("is_deleted", false)
+          .order("position", { ascending: true });
+
+        if (stagesError) {
+          console.error("Error fetching stages:", stagesError);
+          return null;
+        }
+
+        return {
+          id: app.id,
+          position: app.position,
+          company: app.company,
+          company_name: (Array.isArray(app.companies)
+            ? app.companies[0]?.name
+            : (app.companies as { name: string } | undefined)?.name) ||
+            app.company,
+          company_id: app.company_id,
+          contact_id: app.contact_id,
+          contact_name: (Array.isArray(app.contacts)
+            ? app.contacts[0]?.name
+            : (app.contacts as {
+              name: string;
+              phone?: string;
+              email?: string;
+              position?: string;
+            } | undefined)?.name),
+          contact_phone: (Array.isArray(app.contacts)
+            ? app.contacts[0]?.phone
+            : (app.contacts as {
+              name: string;
+              phone?: string;
+              email?: string;
+              position?: string;
+            } | undefined)?.phone),
+          contact_email: (Array.isArray(app.contacts)
+            ? app.contacts[0]?.email
+            : (app.contacts as {
+              name: string;
+              phone?: string;
+              email?: string;
+              position?: string;
+            } | undefined)?.email),
+          contact_position: (Array.isArray(app.contacts)
+            ? app.contacts[0]?.position
+            : (app.contacts as {
+              name: string;
+              phone?: string;
+              email?: string;
+              position?: string;
+            } | undefined)?.position),
+          current_stage: app.current_stage,
+          currentStage: app.current_stage || 0,
+          date: app.date,
+          favorite: app.favorite,
+          is_archived: app.is_archived,
+          is_deleted: app.is_deleted,
+          notes: app.notes || "",
+          url: app.url || "",
+          stages: stages || [],
+          user_id: app.auth_user,
+        };
+      }),
+    );
+
+    return transformedData.filter((app) => app !== null) || [];
   } catch (error) {
     console.error("Error fetching applications with companies:", error);
     return [];
