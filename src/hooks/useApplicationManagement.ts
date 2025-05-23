@@ -56,20 +56,12 @@ export function useApplicationManagement() {
                 throw new Error("User is not authenticated.");
             }
 
-            console.log("🔍 Environment:", process.env.NODE_ENV);
-            console.log("🔍 User ID:", user.id);
-            console.log("🔍 User object:", user);
-
             const apps = await getApplicationsWithCompanies();
-            console.log("🔍 Raw apps from getApplicationsWithCompanies:", apps);
-            console.log("🔍 Apps count:", apps.length);
 
             const filteredApps = apps.filter((app) =>
                 app.is_deleted === false &&
                 app.is_archived === false
             );
-            console.log("🔍 Filtered apps:", filteredApps);
-            console.log("🔍 Filtered apps count:", filteredApps.length);
 
             const transformedApps = filteredApps.map((app) => {
                 console.log("🔍 Transforming app:", app);
@@ -157,7 +149,6 @@ export function useApplicationManagement() {
                     : undefined,
             });
 
-            // Rest of your function remains the same
             if (newAppData) {
                 setApplications((prevApplications) => [
                     ...prevApplications,
@@ -167,12 +158,26 @@ export function useApplicationManagement() {
                         id: newAppData.id,
                         user_id: newAppData.user_id,
                         currentStage: newAppData.current_stage,
-                        company_id: newAppData.company_id,
-                        contact_id: newAppData.contact_id,
+                        company_id: newAppData.company_id || "", // Convert null to empty string
+                        contact_id: newAppData.contact_id || "", // Convert null to empty string
                         stages: newAppData.stages || [],
-                    },
+                    } as Application, // Type assertion to ensure it matches Application type
                 ]);
-                // ...
+
+                // Reset form and show success message
+                setNewApp({
+                    company: "",
+                    position: "",
+                    notes: "",
+                    url: "",
+                    company_id: "",
+                    contact_id: "",
+                    created_at: "",
+                    updated_at: "",
+                    date: Date.now(),
+                });
+                setShowAppForm(false);
+                toast.success("Application added successfully!");
             }
         } catch (err) {
             console.error("Failed to add application:", err);

@@ -680,25 +680,88 @@ export const getApplicationsWithCompanies = async () => {
 export const getApplicationById = async (
   id: string,
 ): Promise<ApplicationResponse | null> => {
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  if (userError || !user) {
-    console.error("Error fetching user:", userError);
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      console.error("Error fetching user:", userError);
+      return null;
+    }
+
+    // Fetch application with company and contact data
+    const { data: application, error } = await supabase
+      .from("applications")
+      .select(`
+      id,
+      position,
+      company,
+      company_id,
+      contact_id,
+      current_stage,
+      date,
+      favorite,
+      is_archived,
+      is_deleted,
+      notes,
+      url,
+      auth_user,
+      created_at,
+      companies(id, name, phone, email, website, notes),
+      contacts(id, name, phone, email, position)
+    `)
+      .eq("id", id)
+      .eq("auth_user", user.id)
+      .single();
+
+    if (error || !application) {
+      console.error("Error fetching application by ID:", error);
+      return null;
+    }
+
+    // Fetch stages for this application
+    const { data: stages, error: stagesError } = await supabase
+      .from("application_stages")
+      .select("*")
+      .eq("application_id", id)
+      .eq("is_deleted", false)
+      .order("position", { ascending: true });
+
+    if (stagesError) {
+      console.error("Error fetching stages:", stagesError);
+    }
+
+    // Transform the data to match your expected format
+    return {
+      id: application.id,
+      position: application.position,
+      company: application.company,
+      company_id: application.company_id,
+      contact_id: application.contact_id,
+      current_stage: application.current_stage,
+      currentStage: application.current_stage || 0,
+      date: application.date,
+      favorite: application.favorite,
+      is_archived: application.is_archived,
+      is_deleted: application.is_deleted,
+      notes: application.notes || "",
+      url: application.url || "",
+      auth_user: application.auth_user,
+      user_id: application.auth_user,
+      created_at: application.created_at,
+      stages: (stages || []) as Stage[],
+      company_name: application.companies?.[0]?.name || application.company,
+      company_phone: application.companies?.[0]?.phone,
+      company_email: application.companies?.[0]?.email,
+      company_website: application.companies?.[0]?.website,
+      company_notes: application.companies?.[0]?.notes,
+      contact_name: application.contacts?.[0]?.name,
+      contact_phone: application.contacts?.[0]?.phone,
+      contact_email: application.contacts?.[0]?.email,
+      contact_position: application.contacts?.[0]?.position,
+    } as ApplicationResponse;
+  } catch (error) {
+    console.error("Error in getApplicationById:", error);
     return null;
   }
-
-  const { data, error } = await supabase
-    .from("applications")
-    .select("*")
-    .eq("id", id)
-    .eq("auth_user", user.id)
-    .single();
-
-  if (error) {
-    console.error("Error fetching application by ID:", error);
-    return null;
-  }
-
-  return data as ApplicationResponse;
 };
 
 export const addCompanyApi = async (company: Company) => {

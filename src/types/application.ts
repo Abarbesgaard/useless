@@ -71,22 +71,31 @@ export interface ApplicationForSupabase {
 }
 
 // Response type from your existing addApplication function
-export interface ApplicationResponse {
-  stages: never[];
-  user_id: string;
+export type ApplicationResponse = {
   id: string;
-  company: string;
   position: string;
-  notes: string;
-  url: string;
-  date: string;
-  auth_user: string;
-  company_id: string;
-  contact_id?: string | null;
+  company: string;
+  company_id: string | null;
+  contact_id: string | null;
   current_stage: number;
-  is_deleted: boolean;
-  is_archived: boolean;
+  currentStage: number;
+  date: string;
   favorite: boolean;
+  is_archived: boolean;
+  is_deleted: boolean;
+  notes: string | null;
+  url: string | null;
+  auth_user: string;
+  user_id: string;
   created_at: string;
-  updated_at?: string;
-}
+  stages: Stage[];
+  company_name?: string;
+  company_phone?: string;
+  company_email?: string;
+  company_website?: string;
+  company_notes?: string;
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  contact_position?: string;
+};
