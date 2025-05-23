@@ -80,6 +80,24 @@ function FavoritesPage() {
               newApp={newApp}
               onChange={handleInputChange}
               onSubmit={addApplication}
+              companyInfo={{
+                id: "",
+                user_id: "",
+                name: "",
+                phone: "",
+                email: "",
+                website: "",
+                notes: undefined,
+              }}
+              contactPerson={{
+                id: "",
+                user_id: "",
+                name: "",
+                position: "",
+                email: "",
+                phone: "",
+                notes: "",
+              }}
             />
           </div>
         )}

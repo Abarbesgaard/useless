@@ -2,7 +2,7 @@ import { Briefcase, Mail, Phone, Users } from "lucide-react";
 import { Stage } from "../types/stages";
 export const defaultInitialStages: Stage[] = [
   {
-    id: "jobpost",
+    id: crypto.randomUUID(),
     name: "Job Post",
     icon: Briefcase,
     position: 0,
@@ -10,7 +10,8 @@ export const defaultInitialStages: Stage[] = [
     application_id: null,
   },
   {
-    id: "mailsent",
+    id: crypto.randomUUID(),
+
     name: "Mail Sent",
     icon: Mail,
     position: 1,
@@ -18,7 +19,7 @@ export const defaultInitialStages: Stage[] = [
     auth_user: null,
   },
   {
-    id: "callmade",
+    id: crypto.randomUUID(),
     name: "Call Made",
     icon: Phone,
     position: 2,
@@ -26,7 +27,8 @@ export const defaultInitialStages: Stage[] = [
     auth_user: null,
   },
   {
-    id: "meeting",
+    id: crypto.randomUUID(),
+
     name: "Meeting",
     icon: Users,
     position: 3,

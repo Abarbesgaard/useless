@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
-import { defaultInitialStages } from "../constants/defaultInitialStages";
 import useAuth from "./useAuth";
 import {
-    addApplication as addApplicationApi,
+    addApplicationWithCompanyAndContact,
+    addCompanyApi,
+    addContactApi,
     deleteApplication as deleteApplicationApi,
-    getApplicationsByUser,
+    getApplicationById,
+    getApplicationsWithCompanies,
     getArchivedApplicationsByUser,
     getFavoriteApplicationsByUser,
     updateApplication as updateApplicationApi,
     updateArchiveStatus,
+    updateCompanyApi,
+    updateContactApi,
 } from "../data/applications";
 import { toast } from "sonner";
 import { Application } from "@/types/application";
+import { Company } from "@/types/company";
+import { Contact } from "@/types/contact";
 
 /**
  *  Custom hook for managing job applications.
@@ -27,6 +33,10 @@ export function useApplicationManagement() {
         position: "",
         notes: "",
         url: "",
+        company_id: "",
+        contact_id: "",
+        created_at: "",
+        updated_at: "",
         date: Date.now(),
     });
 
@@ -45,8 +55,23 @@ export function useApplicationManagement() {
             if (!user) {
                 throw new Error("User is not authenticated.");
             }
-            const apps = await getApplicationsByUser(user.id);
-            const sortedApps = apps.sort((a, b) => {
+            const apps = await getApplicationsWithCompanies();
+            const transformedApps = apps.map((app) => ({
+                ...app,
+                user_id: user.id,
+                company: app.company_name,
+                date: new Date(app.date).getTime(),
+                currentStage: app.current_stage,
+                current_stage: app.current_stage,
+                stages: [],
+                is_deleted: app.is_deleted,
+                is_archived: app.is_archived,
+                notes: app.notes || "",
+                url: app.url || "",
+                company_id: app.company_id ?? "",
+                contact_id: app.contact_id ?? "",
+            }));
+            const sortedApps = transformedApps.sort((a, b) => {
                 if (a.favorite && !b.favorite) return -1;
                 if (!a.favorite && b.favorite) return 1;
                 return 0;
@@ -74,37 +99,58 @@ export function useApplicationManagement() {
      *  Adds a new application to the list.
      * @returns A promise that resolves when the application is added.
      */
-    const addApplication = async () => {
+    const addApplication = async (
+        companyInfo: Company,
+        contactPerson: Contact,
+    ) => {
         if (!user) return;
         try {
-            const newAppData = await addApplicationApi({
-                ...newApp,
-                id: "",
-                user_id: user.id,
-                currentStage: 0,
-                stages: [...defaultInitialStages],
-                is_deleted: false,
-                favorite: false,
-                is_archived: false,
+            const newAppData = await addApplicationWithCompanyAndContact({
+                applicationData: {
+                    company: newApp.company,
+                    position: newApp.position,
+                    notes: newApp.notes,
+                    url: newApp.url || "",
+                    date: newApp.date,
+                    is_deleted: false,
+                    is_archived: false,
+                    currentStage: 0,
+                    favorite: false,
+                },
+                companyData: {
+                    name: companyInfo?.name || newApp.company,
+                    phone: companyInfo?.phone || undefined,
+                    email: companyInfo?.email || undefined,
+                    website: companyInfo?.website || undefined,
+                    notes: companyInfo?.notes || undefined,
+                },
+                contactData: contactPerson?.name
+                    ? {
+                        name: contactPerson.name,
+                        email: contactPerson.email || undefined,
+                        phone: contactPerson.phone || undefined,
+                        position: contactPerson.position || undefined,
+                        notes: contactPerson.notes || undefined,
+                    }
+                    : undefined,
             });
 
+            // Rest of your function remains the same
             if (newAppData) {
                 setApplications((prevApplications) => [
                     ...prevApplications,
                     {
                         ...newAppData,
                         date: new Date(newAppData.date).getTime(),
+                        id: newAppData.id,
+                        user_id: newAppData.user_id,
+                        currentStage: newAppData.current_stage,
+                        company_id: newAppData.company_id,
+                        contact_id: newAppData.contact_id,
                         stages: newAppData.stages || [],
                     },
                 ]);
-
-                setShowAppForm(false);
-
-                // Show success toast
-                toast("Application added successfully!", {
-                    description:
-                        `"${newApp.company}" has been added to your applications.`,
-                });
+                // ...
             }
         } catch (err) {
             console.error("Failed to add application:", err);
@@ -340,6 +386,125 @@ export function useApplicationManagement() {
             toast.error("Failed to update archive status. Please try again.");
         }
     };
+    const fetchSpecificApplication = async (appId: string) => {
+        if (!user) return;
+        try {
+            const app = await getApplicationById(appId);
+            if (!app) {
+                throw new Error("Application not found");
+            }
+            const transformedApp = {
+                ...app,
+                user_id: user.id,
+                company: app.company,
+                date: new Date(app.date).getTime(),
+                currentStage: app.current_stage,
+                current_stage: app.current_stage,
+                stages: [],
+                is_deleted: app.is_deleted,
+                is_archived: app.is_archived,
+                notes: app.notes || "",
+                url: app.url || "",
+                company_id: app.company_id ?? "",
+                contact_id: app.contact_id ?? "",
+            };
+            setApplications((prevApps) =>
+                prevApps.map((prevApp) =>
+                    prevApp.id === appId ? transformedApp : prevApp
+                )
+            );
+            return transformedApp;
+        } catch (error) {
+            console.error("Error fetching specific application:", error);
+            toast.error("Failed to load application. Please try again.");
+            return null;
+        }
+    };
+    /**
+     * Adds a new company to the list.
+     * @param company - The company object to be added.
+     * @returns A promise that resolves when the company is added.
+     */
+    const addCompany = async (company: Company) => {
+        if (!user) return;
+        try {
+            const newCompany = await addCompanyApi({
+                ...company,
+                user_id: user.id,
+            });
+            toast.success("Company added successfully!");
+            return newCompany;
+        } catch (error) {
+            console.error("Failed to add company:", error);
+            toast.error("Failed to add company. Please try again.");
+            throw error;
+        }
+    };
+
+    /**
+     * Updates an existing company in the database.
+     * @param companyId - The ID of the company to update.
+     * @param company - The updated company data.
+     * @returns A promise that resolves to the updated company.
+     */
+    const updateCompany = async (companyId: string, company: Company) => {
+        if (!user) return;
+        try {
+            const updatedCompany = await updateCompanyApi(companyId, {
+                ...company,
+                user_id: user.id,
+            });
+            toast.success("Company updated successfully!");
+            return updatedCompany;
+        } catch (error) {
+            console.error("Failed to update company:", error);
+            toast.error("Failed to update company. Please try again.");
+            throw error;
+        }
+    };
+
+    /**
+     * Adds a new contact to the database.
+     * @param contact - The contact object to be added.
+     * @returns A promise that resolves to the created contact.
+     */
+    const addContact = async (contact: Contact) => {
+        if (!user) return;
+        try {
+            const newContact = await addContactApi({
+                ...contact,
+                user_id: user.id,
+            });
+            toast.success("Contact added successfully!");
+            return newContact;
+        } catch (error) {
+            console.error("Failed to add contact:", error);
+            toast.error("Failed to add contact. Please try again.");
+            throw error;
+        }
+    };
+
+    /**
+     * Updates an existing contact in the database.
+     * @param contactId - The ID of the contact to update.
+     * @param contact - The updated contact data.
+     * @returns A promise that resolves to the updated contact.
+     */
+    const updateContact = async (contactId: string, contact: Contact) => {
+        if (!user) return;
+        try {
+            const updatedContact = await updateContactApi(contactId, {
+                ...contact,
+                user_id: user.id,
+            });
+            toast.success("Contact updated successfully!");
+            return updatedContact;
+        } catch (error) {
+            console.error("Failed to update contact:", error);
+            toast.error("Failed to update contact. Please try again.");
+            throw error;
+        }
+    };
 
     return {
         applications,
@@ -348,6 +513,7 @@ export function useApplicationManagement() {
         showAppForm,
         setShowAppForm,
         handleInputChange,
+        fetchSpecificApplication,
         addApplication,
         deleteApplication,
         updateApplication,
@@ -357,6 +523,10 @@ export function useApplicationManagement() {
         fetchFavoriteApplications,
         toggleArchived,
         fetchArchivedApplications,
+        addCompany,
+        addContact,
+        updateCompany,
+        updateContact,
         isLoading,
     };
 }

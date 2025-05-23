@@ -1,4 +1,4 @@
-import { Archive, Heart, Link } from "lucide-react";
+import { Archive, Heart, Link, User } from "lucide-react";
 import {
   CardContent,
   CardDescription,
@@ -7,15 +7,20 @@ import {
 } from "../ui/card";
 import { DeleteButton } from "./DeleteButton";
 import { EditButton } from "./EditButton";
-import { Application } from "@/types/application";
+import { Application, ApplicationWithDetails } from "@/types/application";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { Company } from "@/types/company";
+import { useNavigate } from "react-router";
+import { Button } from "../ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 interface ApplicationHeaderProps {
-  app: Application;
+  app: ApplicationWithDetails;
+  company?: Company;
   editingAppId: string | null;
   setEditingAppId: (id: string | null) => void;
   handleDeleteApplication: (id: string) => void;
@@ -25,18 +30,21 @@ interface ApplicationHeaderProps {
 
 export default function ApplicationHeader({
   app,
+  company,
   editingAppId,
   setEditingAppId,
   toggleFavorite,
   handleDeleteApplication,
   toggleArchived,
 }: ApplicationHeaderProps) {
+  const navigate = useNavigate();
+  console.log("app", app);
   return (
     <div className="relative flex justify-between items-center mb-4 p-4  rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="text-left flex-grow">
         <CardHeader className="mb-2">
           <CardTitle className="text-xl font-semibold ">
-            {app.company}
+            {company?.name || app.company}
           </CardTitle>
           <CardDescription className="text-sm">{app.position}</CardDescription>
         </CardHeader>
@@ -49,6 +57,59 @@ export default function ApplicationHeader({
           >
             <Link className="w-4 h-4" />
           </a>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="p-0 border-none">
+                <User
+                  className={`w-4 h-4 ${
+                    app.contact_name
+                      ? "text-chart-2"
+                      : "text-sidebar-ring hover:opacity-75"
+                  } transition-colors cursor-pointer`}
+                />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="z-1">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Contact Information
+                </h3>
+                {app.contact_name ? (
+                  <div>
+                    <p>
+                      <strong>Name:</strong> {app.contact_name}
+                    </p>
+                    {app.contact_phone && (
+                      <p>
+                        <strong>Phone:</strong> {app.contact_phone}
+                      </p>
+                    )}
+                    {app.contact_email && (
+                      <p>
+                        <strong>Email:</strong>{" "}
+                        <a
+                          href={`mailto:${app.contact_email}`}
+                          className="text-chart-1 underline hover:text-sidebar-primary"
+                        >
+                          {app.contact_email}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p>No contact information available.</p>
+                )}
+                <div className="mt-4 flex justify-end gap-2">
+                  <Button
+                    variant="secondary"
+                    onClick={() => navigate(`/edit-application/${app.id}`)}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </CardContent>
       </div>
       {/* Action buttons positioned at the top-right corner */}
