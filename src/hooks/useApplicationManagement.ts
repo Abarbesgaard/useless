@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Application } from "@/types/application";
 import { Company } from "@/types/company";
 import { Contact } from "@/types/contact";
+import supabase from "@/lib/supabase";
 
 /**
  *  Custom hook for managing job applications.
@@ -64,7 +65,6 @@ export function useApplicationManagement() {
             );
 
             const transformedApps = filteredApps.map((app) => {
-                console.log("🔍 Transforming app:", app);
                 return {
                     ...app,
                     user_id: user.id,
@@ -82,15 +82,12 @@ export function useApplicationManagement() {
                 };
             });
 
-            console.log("🔍 Transformed apps:", transformedApps);
-
             const sortedApps = transformedApps.sort((a, b) => {
                 if (a.favorite && !b.favorite) return -1;
                 if (!a.favorite && b.favorite) return 1;
                 return 0;
             });
 
-            console.log("🔍 Final sorted apps:", sortedApps);
             setApplications(sortedApps);
         } catch (error) {
             console.error("❌ Error fetching applications:", error);
@@ -474,13 +471,24 @@ export function useApplicationManagement() {
      * @param company - The updated company data.
      * @returns A promise that resolves to the updated company.
      */
-    const updateCompany = async (companyId: string, company: Company) => {
+    const updateCompany = async (
+        companyId: string,
+        company: Company,
+        applicationId: string,
+    ) => {
         if (!user) return;
         try {
             const updatedCompany = await updateCompanyApi(companyId, {
                 ...company,
                 user_id: user.id,
             });
+
+            if (applicationId) {
+                await updateApplicationReferences(applicationId, {
+                    company_id: companyId,
+                });
+            }
+
             toast.success("Company updated successfully!");
             return updatedCompany;
         } catch (error) {
@@ -517,19 +525,84 @@ export function useApplicationManagement() {
      * @param contact - The updated contact data.
      * @returns A promise that resolves to the updated contact.
      */
-    const updateContact = async (contactId: string, contact: Contact) => {
+    const updateContact = async (
+        contactId: string,
+        contact: Contact,
+        applicationId?: string, // Optional application to link to
+    ) => {
         if (!user) return;
         try {
+            // Update the contact
             const updatedContact = await updateContactApi(contactId, {
                 ...contact,
                 user_id: user.id,
             });
-            toast.success("Contact updated successfully!");
+
+            // If an application ID was provided, also update its contact_id
+            if (applicationId) {
+                await updateApplicationReferences(applicationId, {
+                    contact_id: contactId,
+                });
+            }
+
+            toast.success("Contact updated and linked successfully!");
             return updatedContact;
         } catch (error) {
             console.error("Failed to update contact:", error);
             toast.error("Failed to update contact. Please try again.");
             throw error;
+        }
+    };
+    /**
+     * Updates application with new company or contact references
+     * @param applicationId - The application to update
+     * @param updates - Object with company_id and/or contact_id
+     */
+    const updateApplicationReferences = async (
+        applicationId: string,
+        updates: { company_id?: string; contact_id?: string },
+    ) => {
+        if (!user) return;
+
+        try {
+            // Get the current application from Supabase to ensure we have the latest data
+            const { data, error } = await supabase
+                .from("applications")
+                .update({
+                    company_id: updates.company_id,
+                    contact_id: updates.contact_id,
+                })
+                .eq("id", applicationId)
+                .eq("auth_user", user.id)
+                .select();
+
+            if (error) {
+                console.error(
+                    "Failed to update application references:",
+                    error,
+                );
+                toast.error("Failed to link company/contact to application");
+                return null;
+            }
+
+            // Update local state
+            setApplications(
+                applications.map((app) =>
+                    app.id === applicationId
+                        ? {
+                            ...app,
+                            company_id: updates.company_id ?? app.company_id,
+                            contact_id: updates.contact_id ?? app.contact_id,
+                        }
+                        : app
+                ),
+            );
+
+            return data;
+        } catch (error) {
+            console.error("Failed to update application references:", error);
+            toast.error("Failed to link company/contact to application");
+            return null;
         }
     };
 
@@ -540,6 +613,7 @@ export function useApplicationManagement() {
         showAppForm,
         setShowAppForm,
         setNewApp,
+        updateApplicationReferences,
         handleInputChange,
         fetchSpecificApplication,
         addApplication,

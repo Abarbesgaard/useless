@@ -38,7 +38,6 @@ export default function ApplicationHeader({
   toggleArchived,
 }: ApplicationHeaderProps) {
   const navigate = useNavigate();
-  console.log("app", app);
   return (
     <div className="relative flex justify-between items-center mb-4 p-4  rounded-lg shadow-md hover:shadow-lg transition-shadow">
       <div className="text-left flex-grow">

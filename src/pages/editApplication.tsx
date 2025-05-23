@@ -19,6 +19,7 @@ function EditApplication() {
     updateCompany,
     setNewApp,
     updateContact,
+    updateApplicationReferences,
   } = useApplicationManagement();
 
   const [application, setApplication] = useState<ApplicationWithDetails | null>(
@@ -192,7 +193,7 @@ function EditApplication() {
           notes: companyData.notes || null,
         };
 
-        await updateCompany(companyId, cleanCompanyData);
+        await updateCompany(companyId, cleanCompanyData, application.id);
       }
 
       // Next, update or create the contact
@@ -233,6 +234,12 @@ function EditApplication() {
           await updateContact(contactId, cleanContactData);
         }
       }
+
+      // Update the application's company_id and contact_id references
+      await updateApplicationReferences(application.id, {
+        company_id: companyId,
+        contact_id: contactId || undefined,
+      });
 
       // Finally, update the application with the correct IDs
       const applicationUpdate: Application = {
