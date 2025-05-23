@@ -56,7 +56,12 @@ export function useApplicationManagement() {
                 throw new Error("User is not authenticated.");
             }
             const apps = await getApplicationsWithCompanies();
-            const transformedApps = apps.map((app) => ({
+            const filteredApps = apps.filter((app) =>
+                app.is_deleted === false &&
+                app.is_archived === false
+            );
+
+            const transformedApps = filteredApps.map((app) => ({
                 ...app,
                 user_id: user.id,
                 company: app.company_name,
