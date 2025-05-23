@@ -512,6 +512,7 @@ export function useApplicationManagement() {
         newApp,
         showAppForm,
         setShowAppForm,
+        setNewApp,
         handleInputChange,
         fetchSpecificApplication,
         addApplication,

@@ -17,6 +17,7 @@ function EditApplication() {
     addContact,
     addCompany,
     updateCompany,
+    setNewApp,
     updateContact,
   } = useApplicationManagement();
 
@@ -46,13 +47,6 @@ function EditApplication() {
     notes: "",
   });
 
-  // Load application data on component mount
-  // Import the correct function
-
-  // In your useEffect:
-  // (setLoading is already declared above with loading state)
-
-  // In your useEffect:
   useEffect(() => {
     const loadApplication = async () => {
       if (!id) {
@@ -61,9 +55,7 @@ function EditApplication() {
       }
 
       try {
-        console.log("Fetching application with ID:", id);
         const result = await getApplicationWithDetails(id);
-        console.log("Fetched application result:", result);
 
         if (!result || !result.application) {
           console.log("No application found, redirecting to home");
@@ -85,28 +77,23 @@ function EditApplication() {
 
         setApplication(appWithDetails);
 
-        // Populate form with existing data
-        console.log("Setting up form data...");
-
-        // Populate the main application form fields
-        handleInputChange({
-          target: { name: "company", value: result.application.company || "" },
-        } as React.ChangeEvent<HTMLInputElement>);
-
-        handleInputChange({
-          target: {
-            name: "position",
-            value: result.application.position || "",
-          },
-        } as React.ChangeEvent<HTMLInputElement>);
-
-        handleInputChange({
-          target: { name: "url", value: result.application.url || "" },
-        } as React.ChangeEvent<HTMLInputElement>);
-
-        handleInputChange({
-          target: { name: "notes", value: result.application.notes || "" },
-        } as React.ChangeEvent<HTMLTextAreaElement>);
+        // Now use setNewApp to populate the form fields
+        setNewApp({
+          company: result.application.company || "",
+          position: result.application.position || "",
+          notes: result.application.notes || "",
+          url: result.application.url || "",
+          date:
+            typeof result.application.date === "string"
+              ? Date.parse(result.application.date)
+              : result.application.date,
+          company_id: result.application.company_id || "",
+          contact_id: result.application.contact_id || "",
+          created_at: result.application.created_at || "",
+          updated_at: result.application.updated_at || "",
+        });
+        // You'll need to add a setNewApp function to your useApplicationManagement hook
+        // or modify it to accept an object to set multiple fields at once
 
         // Populate company information
         if (result.company) {
@@ -134,10 +121,10 @@ function EditApplication() {
           });
         }
 
-        setLoading(false); // Add this line to stop loading
+        setLoading(false);
       } catch (error) {
         console.error("Failed to load application:", error);
-        setLoading(false); // Also set loading to false on error
+        setLoading(false);
         navigate("/");
       }
     };
