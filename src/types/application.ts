@@ -32,6 +32,7 @@ export interface ApplicationWithDetails extends Application {
   contact_position?: string | null;
   contact_email?: string | null;
   contact_phone?: string | null;
+  updated_at?: string;
 }
 export interface ApplicationFormData {
   application: {
@@ -98,4 +99,5 @@ export type ApplicationResponse = {
   contact_phone?: string;
   contact_email?: string;
   contact_position?: string;
+  updated_at?: string;
 };

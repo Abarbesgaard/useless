@@ -73,6 +73,14 @@ function EditApplication() {
           company_details: result.company,
           contact_details: result.contact,
           currentStage: 0,
+          // Handle null values by converting to empty string
+          company_id: result.application.company_id || "",
+          contact_id: result.application.contact_id || "",
+          // Ensure other required string fields are not null
+          notes: result.application.notes || "",
+          url: result.application.url || "",
+          created_at: result.application.created_at || "",
+          updated_at: result.application.updated_at || "",
         };
 
         setApplication(appWithDetails);
@@ -92,8 +100,6 @@ function EditApplication() {
           created_at: result.application.created_at || "",
           updated_at: result.application.updated_at || "",
         });
-        // You'll need to add a setNewApp function to your useApplicationManagement hook
-        // or modify it to accept an object to set multiple fields at once
 
         // Populate company information
         if (result.company) {
