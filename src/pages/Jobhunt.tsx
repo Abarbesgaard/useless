@@ -37,7 +37,7 @@ export default function JobSearchTracker() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="flex h-screen w-screen overflow-hidden ">
       <SidebarTrigger className="cursor-pointer" />
       {/* Sidebar */}
       <div className="w-full h-full overflow-y-auto">
@@ -89,7 +89,7 @@ export default function JobSearchTracker() {
                         deleteStage={deleteStage}
                       />
                       <div className="flex items-center">
-                        <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
+                        <div className="h-0.5 w-8 bg-sidebar-ring mx-1"></div>
                         <div className="relative">
                           <StageSelector
                             appId={app.id}
