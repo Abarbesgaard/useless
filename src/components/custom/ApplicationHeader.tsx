@@ -32,7 +32,6 @@ export default function ApplicationHeader({
   app,
   company,
   editingAppId,
-  setEditingAppId,
   toggleFavorite,
   handleDeleteApplication,
   toggleArchived,
@@ -160,9 +159,7 @@ export default function ApplicationHeader({
             <TooltipTrigger asChild>
               <EditButton
                 isEditing={app.id === editingAppId}
-                onClick={() =>
-                  setEditingAppId(app.id === editingAppId ? null : app.id)
-                }
+                onClick={() => navigate(`/edit-application/${app.id}`)}
               />
             </TooltipTrigger>
             <TooltipContent>
