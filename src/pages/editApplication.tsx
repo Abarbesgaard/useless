@@ -6,6 +6,8 @@ import { Company } from "@/types/company";
 import { Contact } from "@/types/contact";
 import { Application, ApplicationWithDetails } from "@/types/application";
 import { getApplicationWithDetails } from "@/data/applications";
+import { useCompanyManagement } from "@/hooks/useCompanyManagement";
+import { useContactManagement } from "@/hooks/useContactManagement";
 
 function EditApplication() {
   const navigate = useNavigate();
@@ -14,13 +16,13 @@ function EditApplication() {
     newApp,
     handleInputChange,
     updateApplication,
-    addContact,
-    addCompany,
-    updateCompany,
     setNewApp,
     updateContact,
     updateApplicationReferences,
   } = useApplicationManagement();
+
+  const { updateCompany, addCompany } = useCompanyManagement();
+  const { addContact } = useContactManagement();
 
   const [application, setApplication] = useState<ApplicationWithDetails | null>(
     null
