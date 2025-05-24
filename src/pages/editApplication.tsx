@@ -75,7 +75,7 @@ function EditApplication() {
               : result.application.date,
           company_details: result.company,
           contact_details: result.contact,
-          currentStage: 0,
+          currentStage: result.application.current_stage || 0, // Use current_stage from DB
           // Handle null values by converting to empty string
           company_id: result.application.company_id || "",
           contact_id: result.application.contact_id || "",
@@ -85,7 +85,6 @@ function EditApplication() {
           created_at: result.application.created_at || "",
           updated_at: result.application.updated_at || "",
         };
-
         setApplication(appWithDetails);
 
         // Now use setNewApp to populate the form fields

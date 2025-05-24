@@ -209,45 +209,66 @@ export async function getApplicationsByUser(userId: string) {
 }
 
 export const updateApplication = async (app: Application) => {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  try {
+    const { data, error } = await supabase
+      .from("applications")
+      .update({
+        position: app.position,
+        company: app.company,
+        company_id: app.company_id,
+        contact_id: app.contact_id,
+        current_stage: app.currentStage, // Make sure this is correct
+        favorite: app.favorite,
+        is_archived: app.is_archived,
+        is_deleted: app.is_deleted,
+        notes: app.notes,
+        url: app.url,
+      })
+      .eq("id", app.id)
+      .eq("auth_user", app.user_id)
+      .select();
+    if (error) {
+      console.error("Error updating application:", error);
+      throw error;
+    }
+    // Also update all the stages - this is likely the missing part
+    if (app.stages && app.stages.length > 0) {
+      for (const stage of app.stages) {
+        if (stage.id) {
+          // Update existing stage
+          await supabase
+            .from("application_stages")
+            .update({
+              name: stage.name,
+              icon: stage.icon,
+              position: stage.position,
+              is_active: stage.is_active,
+              is_deleted: stage.is_deleted,
+            })
+            .eq("id", stage.id)
+            .eq("application_id", app.id);
+        } else {
+          // Insert new stage
+          await supabase
+            .from("application_stages")
+            .insert({
+              name: stage.name,
+              icon: stage.icon,
+              position: stage.position,
+              application_id: app.id,
+              auth_user: app.user_id,
+              is_active: stage.is_active,
+              is_deleted: false,
+            });
+        }
+      }
+    }
 
-  if (userError || !user || !app.company || !app.position) {
-    console.error(
-      "Error fetching user or invalid application data:",
-      userError,
-    );
-    return null;
-  }
-  // Format application data for database
-  const applicationUpdate = {
-    company: app.company,
-    position: app.position,
-    notes: app.notes || "",
-    url: app.url || "",
-    current_stage: app.currentStage,
-    favorite: app.favorite,
-  };
-  // Update the record in Supabase
-  const { data, error } = await supabase
-    .from("applications")
-    .update(applicationUpdate)
-    .eq("id", app.id)
-    .eq("auth_user", user.id)
-    .eq("is_deleted", false) // Ensure we only update non-deleted applications
-    .select();
-
-  if (error) {
+    return data?.[0];
+  } catch (error) {
     console.error("Error updating application:", error);
     throw error;
   }
-
-  return {
-    ...app,
-    ...(data?.[0] || {}),
-  };
 };
 
 export const addStageToApplication = async (
@@ -366,6 +387,7 @@ export const updateArchiveStatus = async (app: Application) => {
     ...(data?.[0] || {}),
   };
 };
+
 export const addApplicationWithCompanyAndContact = async ({
   applicationData,
   companyData,
@@ -505,6 +527,7 @@ export const addApplicationWithCompanyAndContact = async ({
     throw error;
   }
 };
+
 export const getApplicationWithDetails = async (
   applicationId: string,
 ): Promise<

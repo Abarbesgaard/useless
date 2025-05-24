@@ -62,6 +62,14 @@ export function useApplicationManagement() {
             );
 
             const transformedApps = filteredApps.map((app) => {
+                const processedStages = (app.stages || []).map((
+                    stage,
+                    index,
+                ) => ({
+                    ...stage,
+                    is_active: index <= (app.current_stage || 0),
+                }));
+
                 return {
                     ...app,
                     user_id: user.id,
@@ -69,7 +77,7 @@ export function useApplicationManagement() {
                     date: new Date(app.date).getTime(),
                     currentStage: app.current_stage,
                     current_stage: app.current_stage,
-                    stages: app.stages || [],
+                    stages: processedStages,
                     is_deleted: app.is_deleted,
                     is_archived: app.is_archived,
                     notes: app.notes || "",
@@ -209,19 +217,28 @@ export function useApplicationManagement() {
         if (!user) return;
 
         try {
-            await updateApplicationApi({
+            const processedStages = updatedApp.stages?.map((stage, index) => ({
+                ...stage,
+                is_active: index <= (updatedApp.currentStage || 0),
+            })) || [];
+
+            const processedApp = {
                 ...updatedApp,
+                stages: processedStages,
                 user_id: user.id,
+            };
+
+            await updateApplicationApi({
+                ...processedApp,
                 is_deleted: updatedApp.is_deleted,
-                stages: updatedApp.stages,
                 favorite: updatedApp.favorite,
                 is_archived: updatedApp.is_archived,
             });
 
             setApplications(
-                applications.map((
-                    app,
-                ) => (app.id === updatedApp.id ? updatedApp : app)),
+                applications.map((app) =>
+                    app.id === updatedApp.id ? processedApp : app
+                ),
             );
 
             return true;
@@ -414,6 +431,11 @@ export function useApplicationManagement() {
             if (!app) {
                 throw new Error("Application not found");
             }
+            const processedStages = (app.stages || []).map((stage, index) => ({
+                ...stage,
+                is_active: index <= (app.current_stage || 0),
+            }));
+
             const transformedApp = {
                 ...app,
                 user_id: user.id,
@@ -421,7 +443,7 @@ export function useApplicationManagement() {
                 date: new Date(app.date).getTime(),
                 currentStage: app.current_stage,
                 current_stage: app.current_stage,
-                stages: [],
+                stages: processedStages,
                 is_deleted: app.is_deleted,
                 is_archived: app.is_archived,
                 notes: app.notes || "",
