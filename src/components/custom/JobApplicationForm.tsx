@@ -50,7 +50,7 @@ const JobApplicationForm: React.FC<JobApplicationFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto ">
       <div className="mb-6 p-4 border rounded-md ">
         <h2 className="text-xl font-bold mb-4">Job Application Form</h2>
 

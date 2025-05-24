@@ -286,14 +286,16 @@ function EditApplication() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <JobApplicationForm
-        newApp={newApp}
-        companyInfo={companyInfo}
-        contactPerson={contactPerson}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
+    <div className="h-screen overflow-y-auto p-4 pb-20">
+      <div className="max-w-lg mx-auto">
+        <JobApplicationForm
+          newApp={newApp}
+          companyInfo={companyInfo}
+          contactPerson={contactPerson}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
+      </div>
     </div>
   );
 }
