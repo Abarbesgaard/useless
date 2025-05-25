@@ -49,11 +49,13 @@ export default function ApplicationHeader({
       <div className="relative flex justify-between items-center mb-4 p-4  rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <div className="text-left flex-grow">
           <CardHeader className="mb-2">
-            <CardTitle
-              className="text-xl font-semibold  cursor-pointer hover:text-chart-1 transition-colors"
-              onClick={handleHeaderClick}
-            >
-              {company?.name || app.company}
+            <CardTitle className="text-xl font-semibold">
+              <span
+                className="cursor-pointer hover:text-chart-1 transition-colors inline-block"
+                onClick={handleHeaderClick}
+              >
+                {company?.name || app.company}
+              </span>
             </CardTitle>
             <CardDescription className="text-sm">
               {app.position}
