@@ -14,7 +14,13 @@ export const addApplication = async (
     error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user || !app.company || !app.position) return null;
+  if (userError || !user || !app.company || !app.position) {
+    console.error(
+      "Error fetching user or invalid application data:",
+      userError,
+    );
+    return null;
+  }
 
   const newApp = {
     auth_user: user.id,
@@ -31,34 +37,41 @@ export const addApplication = async (
     is_deleted: false,
   };
 
-  const { data: insertedApp, error: insertError } = await supabase
-    .from("applications")
-    .insert([newApp])
-    .select()
-    .single();
+  try {
+    const { data: insertedApp, error: insertError } = await supabase
+      .from("applications")
+      .insert([newApp])
+      .select()
+      .single();
+    if (insertError || !insertedApp) {
+      console.error("Error inserting application:", insertError);
+      throw insertError;
+    } else {
+      // Optional: insert stages
+      if (stages && stages.length > 0) {
+        const stageData = stages.map((s) => ({
+          id: crypto.randomUUID(),
+          auth_user: user.id,
+          application_id: insertedApp.id,
+          name: s.name,
+          icon: s.icon,
+          position: s.position,
+          is_deleted: false,
+        }));
 
-  if (insertError || !insertedApp) throw insertError;
+        const { error: stageInsertError } = await supabase
+          .from("application_stages")
+          .insert(stageData);
 
-  // Optional: insert stages
-  if (stages && stages.length > 0) {
-    const stageData = stages.map((s) => ({
-      id: crypto.randomUUID(),
-      auth_user: user.id,
-      application_id: insertedApp.id,
-      name: s.name,
-      icon: s.icon,
-      position: s.position,
-      is_deleted: false,
-    }));
+        if (stageInsertError) throw stageInsertError;
+      }
 
-    const { error: stageInsertError } = await supabase
-      .from("application_stages")
-      .insert(stageData);
-
-    if (stageInsertError) throw stageInsertError;
+      return insertedApp as ApplicationResponse;
+    }
+  } catch (error) {
+    console.error("Error adding application:", error);
+    return null;
   }
-
-  return insertedApp as ApplicationResponse;
 };
 
 export async function getArchivedApplicationsByUser(userId: string) {
