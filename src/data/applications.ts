@@ -586,8 +586,6 @@ export const getApplicationWithDetails = async (
   }
 };
 
-// Get all applications with company names (for list views)
-// Get all applications with company names (for list views)
 export const getApplicationsWithCompanies = async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -706,7 +704,7 @@ export const getApplicationById = async (
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      console.error("Error fetching user:", userError);
+      console.error("User authentication error:", userError);
       return null;
     }
 
@@ -714,29 +712,16 @@ export const getApplicationById = async (
     const { data: application, error } = await supabase
       .from("applications")
       .select(`
-      id,
-      position,
-      company,
-      company_id,
-      contact_id,
-      current_stage,
-      date,
-      favorite,
-      is_archived,
-      is_deleted,
-      notes,
-      url,
-      auth_user,
-      created_at,
-      companies(id, name, phone, email, website, notes),
-      contacts(id, name, phone, email, position)
-    `)
+        *,
+        companies(*),
+        contacts(*)
+      `)
       .eq("id", id)
       .eq("auth_user", user.id)
       .single();
 
     if (error || !application) {
-      console.error("Error fetching application by ID:", error);
+      console.error("Error fetching application:", error);
       return null;
     }
 
@@ -753,34 +738,71 @@ export const getApplicationById = async (
     }
 
     // Transform the data to match your expected format
-    return {
+    const transformedApp = {
       id: application.id,
-      position: application.position,
       company: application.company,
-      company_id: application.company_id,
-      contact_id: application.contact_id,
-      current_stage: application.current_stage,
-      currentStage: application.current_stage || 0,
-      date: application.date,
-      favorite: application.favorite,
-      is_archived: application.is_archived,
-      is_deleted: application.is_deleted,
+      position: application.position,
       notes: application.notes || "",
       url: application.url || "",
-      auth_user: application.auth_user,
+      date: new Date(application.date).toISOString(),
+      currentStage: application.current_stage || 0,
+      current_stage: application.current_stage || 0,
+      stages: stages || [],
       user_id: application.auth_user,
+      auth_user: application.auth_user,
+      is_deleted: application.is_deleted || false,
+      favorite: application.favorite || false,
+      is_archived: application.is_archived || false,
+      company_id: application.company_id,
+      contact_id: application.contact_id,
       created_at: application.created_at,
-      stages: (stages || []) as Stage[],
-      company_name: application.companies?.[0]?.name || application.company,
-      company_phone: application.companies?.[0]?.phone,
-      company_email: application.companies?.[0]?.email,
-      company_website: application.companies?.[0]?.website,
-      company_notes: application.companies?.[0]?.notes,
-      contact_name: application.contacts?.[0]?.name,
-      contact_phone: application.contacts?.[0]?.phone,
-      contact_email: application.contacts?.[0]?.email,
-      contact_position: application.contacts?.[0]?.position,
-    } as ApplicationResponse;
+
+      // Handle company data - check if it's an array or single object
+      company_details: Array.isArray(application.companies)
+        ? application.companies[0] || null
+        : application.companies || null,
+
+      // Flatten company data
+      company_name: Array.isArray(application.companies)
+        ? application.companies[0]?.name
+        : application.companies?.name || application.company,
+      company_email: Array.isArray(application.companies)
+        ? application.companies[0]?.email
+        : application.companies?.email,
+      company_phone: Array.isArray(application.companies)
+        ? application.companies[0]?.phone
+        : application.companies?.phone,
+      company_website: Array.isArray(application.companies)
+        ? application.companies[0]?.website
+        : application.companies?.website,
+      company_notes: Array.isArray(application.companies)
+        ? application.companies[0]?.notes
+        : application.companies?.notes,
+
+      // Handle contact data - check if it's an array or single object
+      contact_details: Array.isArray(application.contacts)
+        ? application.contacts[0] || null
+        : application.contacts || null,
+
+      // Flatten contact data
+      contact_name: Array.isArray(application.contacts)
+        ? application.contacts[0]?.name
+        : application.contacts?.name,
+      contact_email: Array.isArray(application.contacts)
+        ? application.contacts[0]?.email
+        : application.contacts?.email,
+      contact_phone: Array.isArray(application.contacts)
+        ? application.contacts[0]?.phone
+        : application.contacts?.phone,
+      contact_position: Array.isArray(application.contacts)
+        ? application.contacts[0]?.position
+        : application.contacts?.position,
+      contact_notes: Array.isArray(application.contacts)
+        ? application.contacts[0]?.notes
+        : application.contacts?.notes,
+    };
+
+    return transformedApp;
   } catch (error) {
     console.error("Error in getApplicationById:", error);
     return null;

@@ -122,7 +122,7 @@ export default function DetailsPage() {
     };
 
     loadApplication();
-  }, [id, applications, fetchSpecificApplication, navigate]);
+  }, []); // Removed 'applications' dependency
 
   const handleToggleFavorite = async () => {
     if (application) {

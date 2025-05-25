@@ -100,4 +100,6 @@ export type ApplicationResponse = {
   contact_email?: string;
   contact_position?: string;
   updated_at?: string;
+  contact_details?: Contact | null;
+  company_details?: Company | null;
 };
