@@ -7,6 +7,7 @@ import JobSearchTracker from "@/pages/Jobhunt";
 import ArchivedPage from "@/pages/archived";
 import AddApplication from "@/pages/addApplication";
 import EditApplication from "@/pages/editApplication";
+import Details from "@/pages/details";
 
 export default function AppLayout() {
   const { user } = useAuth();
@@ -43,6 +44,7 @@ function AppRoutes() {
       <Route path="/archived" element={<ArchivedPage />} />
       <Route path="/add" element={<AddApplication />} />
       <Route path="/edit-application/:id" element={<EditApplication />} />
+      <Route path="/details/:id" element={<Details />} />
       {/* Add more routes as needed */}
     </Routes>
   );
