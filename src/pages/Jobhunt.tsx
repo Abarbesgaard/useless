@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { availableStages } from "../constants/availableStages";
-import { Card, CardFooter } from "../components/ui/card";
 import ApplicationHeader from "@/components/custom/ApplicationHeader";
 import { StageSelector } from "@/components/custom/StageSelector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -10,6 +9,7 @@ import StageToggle from "@/components/custom/StageToggle";
 import { useStageManagement } from "@/hooks/useStageManagement";
 import { useApplicationManagement } from "@/hooks/useApplicationManagement";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardFooter } from "@/components/ui/card";
 
 export default function JobSearchTracker() {
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
@@ -89,7 +89,7 @@ export default function JobSearchTracker() {
                         deleteStage={deleteStage}
                       />
                       <div className="flex items-center">
-                        <div className="h-0.5 w-8 bg-sidebar-ring mx-1"></div>
+                        <div className="h-0.5 w-8 bg-sidebar-ring mx-1 mb-4"></div>
                         <div className="relative">
                           <StageSelector
                             appId={app.id}
@@ -101,15 +101,7 @@ export default function JobSearchTracker() {
                         </div>
                       </div>
                     </div>
-                    <CardFooter>
-                      {app.notes && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          <p>
-                            <strong>Notes:</strong> {app.notes}
-                          </p>
-                        </div>
-                      )}
-                    </CardFooter>
+                    <CardFooter className="flex justify-between items-center p-4"></CardFooter>
                   </Card>
                 </div>
               ))}
