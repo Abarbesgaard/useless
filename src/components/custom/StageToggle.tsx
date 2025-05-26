@@ -1,12 +1,17 @@
 import { Application } from "@/types/application";
 import { LucideIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 import {
   Award,
   Check,
   MinusCircle,
   FileText,
-  // Import all icons you're using in your application
   Mail,
   Phone,
   Calendar,
@@ -22,11 +27,9 @@ import {
   AlertCircle,
   Linkedin,
   Ghost,
-  // Add any other icons you might be using
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
-  // Include all icons with exact matching names
   Award,
   Check,
   MinusCircle,
@@ -46,7 +49,6 @@ const iconMap: Record<string, LucideIcon> = {
   AlertCircle,
   Linkedin,
   Ghost,
-  // Add more icons as needed
 };
 
 const resolveIcon = (iconName: string | LucideIcon): LucideIcon => {
@@ -73,7 +75,7 @@ export default function StageToggle({
   deleteStage,
 }: StageToggleProps) {
   return (
-    <>
+    <TooltipProvider>
       {app.stages &&
         app.stages.map((stage, stageIndex) => {
           const IconComponent =
@@ -86,30 +88,44 @@ export default function StageToggle({
           return (
             <div key={stageIndex} className="flex items-center">
               <div className="relative group">
-                <button
-                  onClick={() => toggleStageCompletion(app.id, stageIndex)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer
-                            ${
-                              isActive
-                                ? "bg-chart-1"
-                                : "bg-sidebar-foreground hover:bg-primary"
-                            }`}
-                >
-                  {IconComponent && (
-                    <IconComponent
-                      size={24}
-                      className={
-                        isActive ? "text-foreground" : "text-sidebar-ring"
-                      }
-                    />
-                  )}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => toggleStageCompletion(app.id, stageIndex)}
+                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer
+                                ${
+                                  isActive
+                                    ? "bg-chart-1"
+                                    : "bg-sidebar-foreground hover:bg-primary"
+                                }`}
+                    >
+                      {IconComponent && (
+                        <IconComponent
+                          size={24}
+                          className={
+                            isActive ? "text-foreground" : "text-sidebar-ring"
+                          }
+                        />
+                      )}
 
-                  {!isActive && (
-                    <div className="absolute inset-0 bg-chart-1 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Check size={24} className="text-foreground" />
+                      {!isActive && (
+                        <div className="absolute inset-0 bg-chart-1 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Check size={24} className="text-foreground" />
+                        </div>
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="max-w-xs">
+                      {stage.note && stage.note.trim() && (
+                        <p className="text-xs text-primary-foreground mt-1 whitespace-pre-wrap break-words">
+                          {stage.note}
+                        </p>
+                      )}
                     </div>
-                  )}
-                </button>
+                  </TooltipContent>
+                </Tooltip>
+
                 <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
                   {stage.name}
                 </span>
@@ -137,6 +153,6 @@ export default function StageToggle({
             </div>
           );
         })}
-    </>
+    </TooltipProvider>
   );
 }

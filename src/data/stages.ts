@@ -24,7 +24,11 @@ const getIconName = (
 };
 
 // Create Stage
-export const addStage = async (stage: Stage, applicationId: string) => {
+export const addStage = async (
+  stage: Stage,
+  applicationId: string,
+  note?: string,
+) => {
   const {
     data: { user },
     error: userError,
@@ -41,6 +45,7 @@ export const addStage = async (stage: Stage, applicationId: string) => {
       position: stage.position,
       auth_user: user.id,
       is_active: false,
+      note: note || null,
     }])
     .select()
     .single();

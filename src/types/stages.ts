@@ -10,5 +10,6 @@ export type Stage = {
   auth_user?: string | null;
   is_active?: boolean | null;
   is_deleted?: boolean | null;
+  note?: string | null;
 };
 export type StageForPersistence = Omit<Stage, "category">;

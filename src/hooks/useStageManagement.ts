@@ -25,7 +25,11 @@ export function useStageManagement(
      * @param stage - The stage object containing the details of the new stage.
      * @returns A promise that resolves when the stage is added.
      */
-    const addStageToApplication = async (appId: string, stage: Stage) => {
+    const addStageToApplication = async (
+        appId: string,
+        stage: Stage,
+        note?: string,
+    ) => {
         if (!user) return;
         const application = applications.find((app) => app.id === appId);
         if (!application) return;
@@ -37,13 +41,18 @@ export function useStageManagement(
             icon: stage.icon,
             is_active: false,
             is_deleted: false,
+            note: note || null, // Add the note here
         };
 
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { category, ...stageForPersistence } = newStage;
 
-            await addStage(stageForPersistence as StageForPersistence, appId);
+            await addStage(
+                stageForPersistence as StageForPersistence,
+                appId,
+                note,
+            ); // Pass note to addStage
 
             const updatedApp = {
                 ...application,
@@ -143,6 +152,7 @@ export function useStageManagement(
         addStageToApplication: addStageToApplication as (
             appId: string,
             stage: Stage,
+            note?: string,
         ) => void,
         deleteStage: deleteStage as (
             appId: string,
