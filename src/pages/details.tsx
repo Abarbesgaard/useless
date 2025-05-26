@@ -280,12 +280,12 @@ export default function DetailsPage() {
                 </CardHeader>
                 <CardContent>
                   {application.url && (
-                    <div className="mb-4">
+                    <div className="mb-4 ">
                       <a
                         href={application.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-chart-1 hover:underline"
+                        className="inline-flex gap-2 text-chart-1 hover:underline"
                       >
                         <ExternalLink className="w-4 h-4" />
                         View Job Posting
@@ -318,7 +318,7 @@ export default function DetailsPage() {
                         const StageIcon = resolveIcon(stage.icon);
 
                         return (
-                          <div key={index} className="flex items-center">
+                          <div key={index} className="flex items-center mb-3">
                             <div className="relative group">
                               <button
                                 onClick={() => handleStageToggle(index)}
