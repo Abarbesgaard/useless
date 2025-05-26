@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 
 interface StageSelectorProps {
   appId: string;
@@ -166,23 +167,22 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
       </Popover>
 
       {/* Note Input Popover */}
-      <Popover open={notePopoverOpen} onOpenChange={setNotePopoverOpen}>
-        <PopoverTrigger asChild>
-          <div style={{ display: "none" }} />
-        </PopoverTrigger>
-        <PopoverContent className="w-80 p-4">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
+      <Dialog open={notePopoverOpen} onOpenChange={setNotePopoverOpen}>
+        <DialogContent className="w-80 p-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               {selectedStage && (
                 <>
                   <selectedStage.icon className="w-4 h-4" />
-                  <h3 className="font-semibold text-sm">
+                  <span className="font-semibold text-sm">
                     {selectedStage.name}
-                  </h3>
+                  </span>
                 </>
               )}
-            </div>
+            </DialogTitle>
+          </DialogHeader>
 
+          <div className="space-y-3">
             <div className="space-y-2">
               <Label htmlFor="stage-note" className="text-sm">
                 Add a note (optional)
@@ -206,8 +206,8 @@ export const StageSelector: React.FC<StageSelectorProps> = ({
               </Button>
             </div>
           </div>
-        </PopoverContent>
-      </Popover>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
