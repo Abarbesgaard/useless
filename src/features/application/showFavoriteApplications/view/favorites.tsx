@@ -1,16 +1,19 @@
-import ApplicationEditor from "@/components/custom/ApplicationEditor";
-import ApplicationHeader from "@/components/custom/ApplicationHeader";
-import JobApplicationForm from "@/components/custom/JobApplicationForm";
-import { StageSelector } from "@/components/custom/StageSelector";
-import StageToggle from "@/components/custom/StageToggle";
+import ApplicationEditor from "../components/ApplicationEditor";
+import ApplicationHeader from "../components/ApplicationHeader";
+import JobApplicationForm from "../components/JobApplicationForm";
+import { StageSelector } from "../components/StageSelector";
+import StageToggle from "../components/StageToggle";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import { useStageManagement } from "../hooks/useStageManagement";
+import { Application } from "../types/application";
+import { availableStages } from "../constants/availableStages";
+{
+  /* Shadcn */
+}
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { availableStages } from "@/constants/availableStages";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import { useStageManagement } from "@/hooks/useStageManagement";
-import { Application } from "@/types/application";
 import { PlusCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
