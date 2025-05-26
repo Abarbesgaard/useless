@@ -228,8 +228,8 @@ export const updateApplication = async (app: Application) => {
       .update({
         position: app.position,
         company: app.company,
-        company_id: app.company_id,
-        contact_id: app.contact_id,
+        company_id: app.company_id || null,
+        contact_id: app.contact_id || null,
         current_stage: app.currentStage, // Make sure this is correct
         favorite: app.favorite,
         is_archived: app.is_archived,
