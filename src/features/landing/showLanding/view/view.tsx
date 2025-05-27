@@ -7,7 +7,7 @@ import { Cookie } from "../components/cookie";
 
 export function LandingPage() {
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-chart-1 via-sidebar-primary to-background text-foreground overflow-y-auto overflow-x-hidden">
+    <div className="dark fixed inset-0 bg-gradient-to-br from-chart-1 via-sidebar-primary to-background text-foreground overflow-y-auto overflow-x-hidden">
       <Particles />
       <div className="relative z-10 min-h-full">
         <Header />
