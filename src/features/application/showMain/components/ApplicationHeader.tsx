@@ -119,7 +119,9 @@ export default function ApplicationHeader({
                   <div className="mt-4 flex justify-end gap-2">
                     <Button
                       variant="secondary"
-                      onClick={() => navigate(`/edit-application/${app.id}`)}
+                      onClick={() =>
+                        navigate(`/app/edit-application/${app.id}`)
+                      }
                     >
                       Edit
                     </Button>
@@ -178,7 +180,7 @@ export default function ApplicationHeader({
               <TooltipTrigger asChild>
                 <EditButton
                   isEditing={app.id === editingAppId}
-                  onClick={() => navigate(`/edit-application/${app.id}`)}
+                  onClick={() => navigate(`/app/edit-application/${app.id}`)}
                 />
               </TooltipTrigger>
               <TooltipContent>
