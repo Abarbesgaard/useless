@@ -1,7 +1,7 @@
 import useAuth from "../hooks/useAuth";
 import AppSidebar from "../components/custom/AppSidebar";
 import Login from "../pages/Login";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes } from "react-router";
 import FavoritesPage from "../features/application/showFavoriteApplications/view/favorites";
 import JobSearchTracker from "@/pages/Jobhunt";
 import ArchivedPage from "@/pages/archived";
@@ -54,6 +54,7 @@ function AppRoutes() {
 
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="applications" replace />} />
       <Route path="applications" element={<JobSearchTracker />} />
       <Route path="favorites" element={<FavoritesPage />} />
       <Route path="archived" element={<ArchivedPage />} />

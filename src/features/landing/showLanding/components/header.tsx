@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export function Header() {
   const handleGetStarted = () => {
-    window.location.href = "/app";
+    window.location.href = "/app/applications";
   };
 
   return (
