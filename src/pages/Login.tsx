@@ -13,7 +13,7 @@ export default function Login() {
 
       <div className="w-full max-w-md flex flex-col items-center">
         <h1 className="text-3xl font-bold text-center mb-6">
-          Welcome to UseLess
+          Welcome to Strackly
         </h1>
 
         <div className="w-full bg-card border rounded-lg p-6 shadow-sm">

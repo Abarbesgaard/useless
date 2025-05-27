@@ -40,7 +40,7 @@ export default function AppSidebar() {
   return (
     <Sidebar className=" h-full">
       <SidebarHeader>
-        <h1 className="text-lg font-bold">UseLess</h1>
+        <h1 className="text-lg font-bold">Strackly</h1>
         <p className="text-sm ">Job Search Tracker</p>
         <p className="text-xl font-semibold">Hello, {user?.email}</p>
       </SidebarHeader>
@@ -85,7 +85,7 @@ export default function AppSidebar() {
           <ModeToggle />
         </div>
         <p className="text-sm">Version 1.0.0</p>
-        <p className="text-sm">© 2023 UseLess</p>
+        <p className="text-sm">© 2025 Strackly</p>
         <p className="text-sm">All rights reserved</p>
       </SidebarFooter>
     </Sidebar>

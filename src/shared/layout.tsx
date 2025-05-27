@@ -8,8 +8,22 @@ import ArchivedPage from "@/pages/archived";
 import AddApplication from "@/pages/addApplication";
 import EditApplication from "@/pages/editApplication";
 import Details from "@/pages/details";
+import { LandingPage } from "../features/landing/showLanding/view/view";
+import { NotFoundPage } from "../features/errors/view/view";
 
 export default function AppLayout() {
+  return (
+    <div className="w-full min-h-screen">
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/app/*" element={<AuthenticatedApp />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </div>
+  );
+}
+
+function AuthenticatedApp() {
   const { user } = useAuth();
 
   if (!user) {
@@ -26,12 +40,13 @@ export default function AppLayout() {
       <AppSidebar />
 
       {/* Main Content */}
-      <div className="flex-1">
+      <div className="flex-1 overflow-auto">
         <AppRoutes />
       </div>
     </div>
   );
 }
+
 function AppRoutes() {
   const { user } = useAuth();
 
@@ -45,7 +60,7 @@ function AppRoutes() {
       <Route path="/add" element={<AddApplication />} />
       <Route path="/edit-application/:id" element={<EditApplication />} />
       <Route path="/details/:id" element={<Details />} />
-      {/* Add more routes as needed */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
