@@ -70,7 +70,7 @@ function AddApplication() {
 
     try {
       await addApplication(companyForSubmission, contactForSubmission);
-      navigate("/");
+      navigate("../applications", { relative: "path" });
     } catch (error) {
       console.error("Failed to add application:", error);
     }

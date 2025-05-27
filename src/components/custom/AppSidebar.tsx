@@ -18,17 +18,17 @@ import { ModeToggle } from "./ModeToggle";
 const items = [
   {
     title: "All",
-    url: "/",
+    url: "/app/applications", // Changed from "/"
     icon: Home,
   },
   {
     title: "Favorites",
-    url: "/favorites",
+    url: "/app/favorites", // Changed from "/favorites"
     icon: Heart,
   },
   {
     title: "Archived",
-    url: "/archived",
+    url: "/app/archived", // Changed from "/archived"
     icon: Archive,
   },
 ];
@@ -49,7 +49,7 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <Button asChild>
-                <Link to="/add" className="flex items-center gap-2">
+                <Link to="/app/add" className="flex items-center gap-2">
                   <span>Add Application</span>
                 </Link>
               </Button>

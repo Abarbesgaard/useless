@@ -54,12 +54,12 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={<JobSearchTracker />} />
-      <Route path="/favorites" element={<FavoritesPage />} />
-      <Route path="/archived" element={<ArchivedPage />} />
-      <Route path="/add" element={<AddApplication />} />
-      <Route path="/edit-application/:id" element={<EditApplication />} />
-      <Route path="/details/:id" element={<Details />} />
+      <Route path="applications" element={<JobSearchTracker />} />
+      <Route path="favorites" element={<FavoritesPage />} />
+      <Route path="archived" element={<ArchivedPage />} />
+      <Route path="add" element={<AddApplication />} />
+      <Route path="edit-application/:id" element={<EditApplication />} />
+      <Route path="details/:id" element={<Details />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
