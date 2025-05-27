@@ -1,6 +1,6 @@
 import useAuth from "../hooks/useAuth";
 import AppSidebar from "../components/custom/AppSidebar";
-import Login from "../pages/Login";
+import Login from "../features/user/login/view/Login";
 import { Navigate, Route, Routes } from "react-router";
 import FavoritesPage from "../features/application/showFavoriteApplications/view/favorites";
 import ArchivedPage from "@/pages/archived";
