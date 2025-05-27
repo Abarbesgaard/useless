@@ -21,7 +21,7 @@ export function Features() {
             {features.map((feature, index) => (
               <Card
                 key={index}
-                className="bg-transparent border-muted-foreground backdrop-blur-sm hover:bg-foreground/15 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl relative cursor-pointer"
+                className="bg-sidebar border-muted-foreground backdrop-blur-sm hover:bg-foreground/15 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl relative cursor-pointer"
                 onClick={() => handleFeatureClick(feature.path)}
               >
                 <Badge
