@@ -3,13 +3,13 @@ import AppSidebar from "../components/custom/AppSidebar";
 import Login from "../pages/Login";
 import { Navigate, Route, Routes } from "react-router";
 import FavoritesPage from "../features/application/showFavoriteApplications/view/favorites";
-import JobSearchTracker from "@/pages/Jobhunt";
 import ArchivedPage from "@/pages/archived";
 import AddApplication from "../features/application/addApplication/view/addApplication";
 import EditApplication from "@/pages/editApplication";
 import Details from "../features/application/detailsApplication/view/details";
 import { LandingPage } from "../features/landing/showLanding/view/view";
 import { NotFoundPage } from "../features/errors/view/view";
+import Main from "../features/application/showMain/view/main";
 
 export default function AppLayout() {
   return (
@@ -55,7 +55,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="applications" replace />} />
-      <Route path="applications" element={<JobSearchTracker />} />
+      <Route path="applications" element={<Main />} />
       <Route path="favorites" element={<FavoritesPage />} />
       <Route path="archived" element={<ArchivedPage />} />
       <Route path="add" element={<AddApplication />} />

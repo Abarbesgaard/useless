@@ -130,7 +130,9 @@ export default function DetailsPage() {
     };
 
     loadApplication();
-  }, []); // Removed 'applications' dependency
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggleFavorite = async () => {
     if (application) {

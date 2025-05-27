@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { Card, CardFooter } from "../../../../components/ui/card";
+import { Skeleton } from "../../../../components/ui/skeleton";
+import { SidebarTrigger } from "../../../../components/ui/sidebar";
 import { availableStages } from "../constants/availableStages";
-import ApplicationHeader from "@/components/custom/ApplicationHeader";
-import { StageSelector } from "@/components/custom/StageSelector";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import ApplicationEditor from "@/components/custom/ApplicationEditor";
-import { Application } from "@/types/application";
-import StageToggle from "@/components/custom/StageToggle";
-import { useStageManagement } from "@/hooks/useStageManagement";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardFooter } from "@/components/ui/card";
+import ApplicationHeader from "../components/ApplicationHeader";
+import { StageSelector } from "../components/StageSelector";
+import ApplicationEditor from "../components/ApplicationEditor";
+import { Application } from "../types/application";
+import StageToggle from "../components/StageToggle";
+import { useStageManagement } from "../hooks/useStageManagement";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
 
-export default function JobSearchTracker() {
+export default function Main() {
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
 
   const {
