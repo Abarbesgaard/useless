@@ -24,7 +24,20 @@ export default function Login() {
 
           <Auth
             supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    inputText: "hsl(var(--foreground))",
+                    inputBackground: "hsl(var(--background))",
+                    inputBorder: "hsl(var(--border))",
+                    inputLabelText: "hsl(var(--foreground))",
+                    inputPlaceholder: "hsl(var(--muted-foreground))",
+                  },
+                },
+              },
+            }}
             providers={[]}
           />
         </div>

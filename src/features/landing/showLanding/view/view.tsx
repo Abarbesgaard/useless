@@ -3,6 +3,7 @@ import { Hero } from "../components/hero";
 import { Features } from "../components/features";
 import { Footer } from "../components/footer";
 import { Particles } from "../components/particles";
+import { Cookie } from "../components/cookie";
 
 export function LandingPage() {
   return (
@@ -17,6 +18,7 @@ export function LandingPage() {
         </main>
         <Footer />
       </div>
+      <Cookie />
     </div>
   );
 }
