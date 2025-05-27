@@ -53,7 +53,7 @@ function EditApplication() {
   useEffect(() => {
     const loadApplication = async () => {
       if (!id) {
-        navigate("/");
+        navigate("/app/");
         return;
       }
 
@@ -133,7 +133,7 @@ function EditApplication() {
       } catch (error) {
         console.error("Failed to load application:", error);
         setLoading(false);
-        navigate("/");
+        navigate("/app/");
       }
     };
 
@@ -265,7 +265,7 @@ function EditApplication() {
       console.log("Updating application with data:", applicationUpdate);
 
       await updateApplication(applicationUpdate);
-      navigate("/");
+      navigate("/app/");
     } catch (error) {
       console.error("Failed to update application:", error);
     }
