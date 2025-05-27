@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import JobApplicationForm from "@/components/custom/JobApplicationForm";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import { Company } from "@/types/company";
-import { Contact } from "@/types/contact";
+import JobApplicationForm from "../components/JobApplicationForm";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import { Company } from "../types/company";
+import { Contact } from "../types/contact";
 
 function AddApplication() {
   const navigate = useNavigate();

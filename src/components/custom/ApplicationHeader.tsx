@@ -42,7 +42,7 @@ export default function ApplicationHeader({
     if ((e.target as HTMLElement).closest(".action-buttons")) {
       return;
     }
-    navigate(`/details/${app.id}`);
+    navigate(`/app/details/${app.id}`);
   };
   return (
     <div>

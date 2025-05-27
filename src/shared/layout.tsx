@@ -5,9 +5,9 @@ import { Navigate, Route, Routes } from "react-router";
 import FavoritesPage from "../features/application/showFavoriteApplications/view/favorites";
 import JobSearchTracker from "@/pages/Jobhunt";
 import ArchivedPage from "@/pages/archived";
-import AddApplication from "@/pages/addApplication";
+import AddApplication from "../features/application/addApplication/view/addApplication";
 import EditApplication from "@/pages/editApplication";
-import Details from "@/pages/details";
+import Details from "../features/application/detailsApplication/view/details";
 import { LandingPage } from "../features/landing/showLanding/view/view";
 import { NotFoundPage } from "../features/errors/view/view";
 

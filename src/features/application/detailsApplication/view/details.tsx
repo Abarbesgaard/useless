@@ -1,11 +1,14 @@
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import { ApplicationWithDetails } from "@/types/application";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "../../../../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../../components/ui/card";
+import { Badge } from "../../../../components/ui/badge";
+import { Separator } from "../../../../components/ui/separator";
 import {
   ArrowLeft,
   Building2,
@@ -34,7 +37,12 @@ import {
   LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarTrigger,
+} from "../../../../components/ui/sidebar";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import { ApplicationWithDetails } from "../types/application";
 const iconMap: Record<string, LucideIcon> = {
   Award,
   Check,
@@ -87,7 +95,7 @@ export default function DetailsPage() {
   useEffect(() => {
     const loadApplication = async () => {
       if (!id) {
-        navigate("/");
+        navigate("/app");
         return;
       }
 
@@ -109,7 +117,7 @@ export default function DetailsPage() {
             setApplication(fetchedApp as ApplicationWithDetails);
           } else {
             toast.error("Application not found");
-            navigate("/");
+            navigate("/app/applications");
           }
         } catch (error) {
           console.error("Error loading application:", error);
@@ -188,7 +196,7 @@ export default function DetailsPage() {
               <SidebarTrigger className="cursor-pointer" />
               <Button
                 variant="ghost"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/app")}
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -196,12 +204,12 @@ export default function DetailsPage() {
               </Button>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 mr-6 w-fit">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleToggleFavorite}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 flex-shrink-0"
               >
                 <Heart
                   className={`w-4 h-4 ${
@@ -219,7 +227,7 @@ export default function DetailsPage() {
                 variant="outline"
                 size="sm"
                 onClick={handleToggleArchived}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 flex-shrink-0"
               >
                 <Archive className="w-4 h-4" />
                 <span className="hidden sm:inline">
@@ -230,8 +238,10 @@ export default function DetailsPage() {
               <Button
                 variant="default"
                 size="sm"
-                onClick={() => navigate(`/edit-application/${application.id}`)}
-                className="flex items-center gap-2"
+                onClick={() =>
+                  navigate(`/app/edit-application/${application.id}`)
+                }
+                className="flex items-center gap-2 flex-shrink-0"
               >
                 <Edit className="w-4 h-4" />
                 <span className="hidden sm:inline">Edit</span>
