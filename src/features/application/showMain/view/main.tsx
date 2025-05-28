@@ -39,14 +39,10 @@ export default function Main() {
   return (
     <div className="flex h-screen w-screen overflow-hidden ">
       <SidebarTrigger className="cursor-pointer" />
-      {/* Sidebar */}
       <div className="w-full h-full overflow-y-auto">
         <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
-        {/* Main Content */}
-        {/* Applications list */}
         <div className="space-y-2 pt-3 pb-16">
           {isLoading ? (
-            // Render 3 skeleton placeholders while loading
             Array.from({ length: 3 }).map((_, idx) => (
               <div key={idx} className="w-4xl p-3">
                 <Card className="p-4 space-y-3">

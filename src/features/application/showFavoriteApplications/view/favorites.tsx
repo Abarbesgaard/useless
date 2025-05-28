@@ -1,6 +1,5 @@
 import ApplicationEditor from "../components/ApplicationEditor";
 import ApplicationHeader from "../components/ApplicationHeader";
-import JobApplicationForm from "../components/JobApplicationForm";
 import { StageSelector } from "../components/StageSelector";
 import StageToggle from "../components/StageToggle";
 import { useApplicationManagement } from "../hooks/useApplicationManagement";
@@ -23,10 +22,6 @@ function FavoritesPage() {
 
   const {
     applications,
-    newApp,
-    showAppForm,
-    handleInputChange,
-    addApplication,
     deleteApplication,
     updateApplication,
     toggleFavorite,
@@ -59,41 +54,10 @@ function FavoritesPage() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      {/* Sidebar */}
       <SidebarTrigger />
-      {/* Main Content */}
       <div className="w-full h-full overflow-y-auto">
-        {/* Application Form */}
-        {showAppForm && (
-          <div className="mt-4">
-            <JobApplicationForm
-              newApp={newApp}
-              onChange={handleInputChange}
-              onSubmit={addApplication}
-              companyInfo={{
-                id: "",
-                user_id: "",
-                name: "",
-                phone: "",
-                email: "",
-                website: "",
-                notes: undefined,
-              }}
-              contactPerson={{
-                id: "",
-                user_id: "",
-                name: "",
-                position: "",
-                email: "",
-                phone: "",
-                notes: "",
-              }}
-            />
-          </div>
-        )}
-
         {/* Applications list - Only showing favorites */}
-        <div className="space-y-2 pt-3 pb-16">
+        <div className="w-full h-full overflow-y-auto">
           <h2 className="text-lg font-medium mb-2 flex">
             Your Favorite Applications
           </h2>
