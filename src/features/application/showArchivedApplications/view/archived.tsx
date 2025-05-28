@@ -3,7 +3,6 @@ import ApplicationHeader from "../components/ApplicationHeader";
 import JobApplicationForm from "../components/JobApplicationForm";
 import { StageSelector } from "../components/StageSelector";
 import StageToggle from "../components/StageToggle";
-import { Button } from "../../../../components/ui/button";
 import { Card, CardFooter } from "../../../../components/ui/card";
 import { SidebarTrigger } from "../../../../components/ui/sidebar";
 import { Skeleton } from "../../../../components/ui/skeleton";
@@ -13,7 +12,6 @@ import { useApplicationManagement } from "../hooks/useApplicationManagement";
 import useAuth from "../hooks/useAuth";
 import { useStageManagement } from "../hooks/useStageManagement";
 import { Application } from "../types/application";
-import { PlusCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
 function ArchivedPage() {
@@ -26,7 +24,6 @@ function ArchivedPage() {
   const {
     newApp,
     showAppForm,
-    setShowAppForm,
     handleInputChange,
     addApplication,
     deleteApplication,
@@ -75,15 +72,6 @@ function ArchivedPage() {
       {/* Main Content */}
       <div className="w-full h-full overflow-y-auto">
         {/* Add New Application Button */}
-        <div>
-          <Button
-            onClick={() => setShowAppForm(!showAppForm)}
-            className="flex items-center gap-2"
-          >
-            <PlusCircle size={16} />
-            {showAppForm ? "Cancel" : "Add New Application"}
-          </Button>
-        </div>
 
         {/* Application Form */}
         {showAppForm && (

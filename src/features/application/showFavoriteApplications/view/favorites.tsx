@@ -10,11 +10,9 @@ import { availableStages } from "../constants/availableStages";
 {
   /* Shadcn */
 }
-import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlusCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
 function FavoritesPage() {
@@ -27,7 +25,6 @@ function FavoritesPage() {
     applications,
     newApp,
     showAppForm,
-    setShowAppForm,
     handleInputChange,
     addApplication,
     deleteApplication,
@@ -66,17 +63,6 @@ function FavoritesPage() {
       <SidebarTrigger />
       {/* Main Content */}
       <div className="w-full h-full overflow-y-auto">
-        {/* Add New Application Button */}
-        <div>
-          <Button
-            onClick={() => setShowAppForm(!showAppForm)}
-            className="flex items-center gap-2"
-          >
-            <PlusCircle size={16} />
-            {showAppForm ? "Cancel" : "Add New Application"}
-          </Button>
-        </div>
-
         {/* Application Form */}
         {showAppForm && (
           <div className="mt-4">
