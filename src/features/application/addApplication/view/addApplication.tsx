@@ -77,7 +77,7 @@ function AddApplication() {
   };
 
   return (
-    <div className="w-full h-screen overflow-y-auto">
+    <div className="w-full h-screen overflow-y-auto justify-items-start">
       <div className="min-h-screen p-4">
         <div className="w-full max-w-4xl mx-auto">
           <JobApplicationForm
