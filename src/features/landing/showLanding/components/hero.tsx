@@ -8,7 +8,7 @@ export function Hero() {
   return (
     <section className="text-center py-24 px-5">
       <div className="container mx-auto">
-        <h1 className="text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-muted-foreground to-chart-4 bg-clip-text text-transparent animate-pulse">
+        <h1 className="text-6xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-muted-foreground to-chart-4 bg-clip-text text-transparent ">
           Track Your Path to Success
         </h1>
         <p className="text-xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-relaxed">
