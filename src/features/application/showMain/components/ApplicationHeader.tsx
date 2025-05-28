@@ -7,14 +7,14 @@ import {
 } from "../../../../components/ui/card";
 import { DeleteButton } from "./DeleteButton";
 import { EditButton } from "./EditButton";
-import { Application, ApplicationWithDetails } from "@/types/application";
+import { Application, ApplicationWithDetails } from "../types/application";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../../../../components/ui/tooltip";
-import { Company } from "@/types/company";
+import { Company } from "../types/company";
 import { useNavigate } from "react-router";
 import { Button } from "../../../../components/ui/button";
 import {

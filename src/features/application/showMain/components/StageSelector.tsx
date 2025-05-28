@@ -1,4 +1,4 @@
-import { Stage } from "@/types/stages";
+import { Stage } from "../types/stages";
 import {
   Popover,
   PopoverContent,

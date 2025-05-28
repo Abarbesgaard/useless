@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { addApplication } from "../data/applications";
-import { Application } from "../types/application";
+import { addApplication } from "../features/application/addApplication/data/applications";
+import { Application } from "../features/application/addApplication/types/application";
 
 // Mock Supabase - define mocks inside the factory function
 vi.mock("@/lib/supabase", () => ({
