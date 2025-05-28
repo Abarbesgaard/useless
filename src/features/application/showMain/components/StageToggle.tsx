@@ -92,7 +92,7 @@ export default function StageToggle({
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => toggleStageCompletion(app.id, stageIndex)}
-                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer
+                      className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer 
                                 ${
                                   isActive
                                     ? "bg-chart-1"
@@ -147,7 +147,7 @@ export default function StageToggle({
                     stageIndex < app.currentStage
                       ? "bg-sidebar-primary"
                       : "bg-muted-foreground"
-                  } mx-1`}
+                  }`}
                 ></div>
               )}
             </div>

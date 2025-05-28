@@ -85,7 +85,7 @@ export default function Main() {
                         deleteStage={deleteStage}
                       />
                       <div className="flex items-center">
-                        <div className="h-0.5 w-8 bg-sidebar-ring mx-1 mb-4"></div>
+                        <div className="h-0.5 w-8 bg-sidebar-ring mx-1 "></div>
                         <div className="relative">
                           <StageSelector
                             appId={app.id}
