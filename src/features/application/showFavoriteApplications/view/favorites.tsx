@@ -47,12 +47,13 @@ function FavoritesPage() {
   } = useStageManagement(favoriteApplications, setFavoriteApplications);
 
   useEffect(() => {
-    const favApps = applications.filter((app) => app.favorite === true);
+    const favApps = applications.filter((app) => app && app.favorite === true);
     setFavoriteApplications(favApps);
   }, [applications]);
 
   useEffect(() => {
     fetchFavoriteApplications();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApplicationUpdate = (updatedApp: Application) => {

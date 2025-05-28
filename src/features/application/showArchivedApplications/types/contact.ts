@@ -22,5 +22,16 @@ export interface NewContact {
     is_primary?: boolean;
 }
 
+// For updating a contact (all fields optional except id)
+export interface ContactUpdate {
+    id: string;
+    name?: string;
+    position?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    notes?: string | null;
+    is_primary?: boolean;
+}
+
 // For database persistence (without timestamps that are auto-generated)
 export type ContactForPersistence = Omit<Contact, "created_at" | "updated_at">;

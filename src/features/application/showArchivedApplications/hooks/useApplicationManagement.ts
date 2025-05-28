@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useAuth from "../hooks/useAuth";
+import useAuth from "./useAuth";
 import {
     addApplicationWithCompanyAndContact,
     deleteApplication as deleteApplicationApi,
@@ -40,7 +40,7 @@ export function useApplicationManagement() {
 
     useEffect(() => {
         fetchApplications();
-        //eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
     /**
      *  Fetches applications for the authenticated user.
@@ -402,33 +402,13 @@ export function useApplicationManagement() {
      * @returns A promise that resolves when the archived status is toggled.
      */
     const toggleArchived = async (app: Application) => {
-        if (!user || !app) return;
-
+        if (!user) return;
         try {
-            console.log("User:", user);
-            console.log("App being archived:", app);
-            console.log(
-                "Toggling archive status for app:",
-                app.id,
-                "Current status:",
-                app.is_archived,
-            );
-
             const updatedApp = await updateArchiveStatus(app);
 
-            console.log("Update result:", updatedApp);
-
-            if (!updatedApp) {
-                throw new Error("updateArchiveStatus returned null/undefined");
-            }
-
-            if (updatedApp.is_archived) {
-                setApplications(applications.filter((a) => a.id !== app.id));
-            } else {
-                setApplications(
-                    applications.map((a) => (a.id === app.id ? updatedApp : a)),
-                );
-            }
+            setApplications(
+                applications.map((a) => (a.id === app.id ? updatedApp : a)),
+            );
 
             toast(
                 `Application ${

@@ -1,13 +1,13 @@
 import { useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
-import JobApplicationForm from "@/components/custom/JobApplicationForm";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import { Company } from "@/types/company";
-import { Contact } from "@/types/contact";
-import { Application, ApplicationWithDetails } from "@/types/application";
-import { getApplicationWithDetails } from "@/data/applications";
-import { useCompanyManagement } from "@/hooks/useCompanyManagement";
-import { useContactManagement } from "@/hooks/useContactManagement";
+import JobApplicationForm from "../components/JobApplicationForm";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import { Company } from "../types/company";
+import { Contact } from "../types/contact";
+import { Application, ApplicationWithDetails } from "../types/application";
+import { getApplicationWithDetails } from "../data/applications";
+import { useCompanyManagement } from "../hooks/useCompanyManagement";
+import { useContactManagement } from "../hooks/useContactManagement";
 
 function EditApplication() {
   const navigate = useNavigate();
@@ -138,6 +138,7 @@ function EditApplication() {
     };
 
     loadApplication();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Handle changes for all form sections

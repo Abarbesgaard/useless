@@ -363,18 +363,23 @@ export const updateArchiveStatus = async (app: Application) => {
     error: userError,
   } = await supabase.auth.getUser();
 
-  if (userError || !user) {
-    console.error("Error fetching user:", userError);
+  if (userError || !user || !app.company || !app.position) {
+    console.error(
+      "Error fetching user or invalid application data:",
+      userError,
+    );
     return null;
   }
 
-  if (!app.id) {
-    console.error("Application ID is required");
-    return null;
-  }
-
+  // Format application data for database
   const applicationUpdate = {
-    is_archived: !app.is_archived,
+    company: app.company,
+    position: app.position,
+    notes: app.notes || "",
+    url: app.url || "",
+    current_stage: app.currentStage || 0,
+    favorite: app.favorite,
+    is_archived: !app.is_archived, // Toggle the archive status
   };
 
   const { data, error } = await supabase
@@ -382,6 +387,7 @@ export const updateArchiveStatus = async (app: Application) => {
     .update(applicationUpdate)
     .eq("id", app.id)
     .eq("auth_user", user.id)
+    .eq("is_archived", app.is_archived)
     .select();
 
   if (error) {
@@ -389,14 +395,9 @@ export const updateArchiveStatus = async (app: Application) => {
     throw error;
   }
 
-  if (!data || data.length === 0) {
-    console.error("No application was updated");
-    return null;
-  }
-
   return {
     ...app,
-    is_archived: !app.is_archived,
+    ...(data?.[0] || {}),
   };
 };
 

@@ -2,6 +2,8 @@ import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import { Button } from "../../../../components/ui/button";
+import { Company } from "../types/company";
+import { Contact } from "../types/contact";
 import {
   Card,
   CardContent,
@@ -10,8 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/card";
-import { Company } from "../types/company";
-import { Contact } from "../types/contact";
 
 interface JobApplicationFormProps {
   newApp: {

@@ -1,18 +1,18 @@
-import ApplicationEditor from "@/components/custom/ApplicationEditor";
-import ApplicationHeader from "@/components/custom/ApplicationHeader";
-import JobApplicationForm from "@/components/custom/JobApplicationForm";
-import { StageSelector } from "@/components/custom/StageSelector";
-import StageToggle from "@/components/custom/StageToggle";
-import { Button } from "@/components/ui/button";
-import { Card, CardFooter } from "@/components/ui/card";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { availableStages } from "@/constants/availableStages";
-import { getArchivedApplicationsByUser } from "@/data/applications";
-import { useApplicationManagement } from "@/hooks/useApplicationManagement";
-import useAuth from "@/hooks/useAuth";
-import { useStageManagement } from "@/hooks/useStageManagement";
-import { Application } from "@/types/application";
+import ApplicationEditor from "../components/ApplicationEditor";
+import ApplicationHeader from "../components/ApplicationHeader";
+import JobApplicationForm from "../components/JobApplicationForm";
+import { StageSelector } from "../components/StageSelector";
+import StageToggle from "../components/StageToggle";
+import { Button } from "../../../../components/ui/button";
+import { Card, CardFooter } from "../../../../components/ui/card";
+import { SidebarTrigger } from "../../../../components/ui/sidebar";
+import { Skeleton } from "../../../../components/ui/skeleton";
+import { availableStages } from "../constants/availableStages";
+import { getArchivedApplicationsByUser } from "../data/applications";
+import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import useAuth from "../hooks/useAuth";
+import { useStageManagement } from "../hooks/useStageManagement";
+import { Application } from "../types/application";
 import { PlusCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -61,6 +61,7 @@ function ArchivedPage() {
   // Fetch archived applications on mount or when user changes
   useEffect(() => {
     fetchAndSetArchivedApplications();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const handleApplicationUpdate = (updatedApp: Application) => {

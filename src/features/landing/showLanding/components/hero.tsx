@@ -27,7 +27,7 @@ export function Hero() {
             variant="outline"
             className="border-2 border-muted/30 text-foreground hover:bg-foreground/10 hover:border-sidebar-border/50 px-8 py-4 rounded-full text-lg font-semibold transition-all w-full sm:w-auto cursor-pointer"
           >
-            Watch Demo
+            See Guide
           </Button>
         </div>
       </div>
