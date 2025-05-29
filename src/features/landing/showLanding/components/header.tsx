@@ -1,8 +1,20 @@
 import { Button } from "@/components/ui/button";
+import i18n from "../language/i18n";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function Header() {
+  const [currentLang, setCurrentLang] = useState(i18n.language);
+  const { t } = useTranslation();
+
   const handleGetStarted = () => {
     window.location.href = "/app/applications";
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "en" ? "da" : "en";
+    i18n.changeLanguage(newLang);
+    setCurrentLang(newLang);
   };
 
   return (
@@ -22,7 +34,7 @@ export function Header() {
               href="#features"
               className="text-foreground/80 hover:text-chart-4 transition-colors cursor-pointer"
             >
-              Features
+              {t("header.features")}
             </a>
           </li>
           <li>
@@ -30,7 +42,7 @@ export function Header() {
               href="#about"
               className="text-foreground/80 hover:text-chart-4 transition-colors cursor-pointer"
             >
-              About
+              {t("header.about")}
             </a>
           </li>
           <li>
@@ -38,17 +50,27 @@ export function Header() {
               href="#contact"
               className="text-foreground/80 hover:text-chart-4 transition-colors cursor-pointer"
             >
-              Contact
+              {t("header.contact")}
             </a>
           </li>
         </ul>
 
-        <Button
-          onClick={handleGetStarted}
-          className="bg-gradient-to-r from-chart-1 to-chart-4  text-foreground px-6 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 cursor-pointer"
-        >
-          Get Started
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={toggleLanguage}
+            variant="outline"
+            size="sm"
+            className="border-2 border-muted/30 text-foreground hover:bg-foreground/10 hover:border-sidebar-border/50"
+          >
+            {currentLang === "en" ? "DA" : "EN"}
+          </Button>
+          <Button
+            onClick={handleGetStarted}
+            className="bg-gradient-to-r from-chart-1 to-chart-4  text-foreground px-6 py-2 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 cursor-pointer"
+          >
+            {t("header.getStarted")}
+          </Button>
+        </div>
       </nav>
     </header>
   );

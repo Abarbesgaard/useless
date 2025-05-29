@@ -2,77 +2,8 @@
 import supabase from "@/lib/supabase"; // or wherever your client lives
 import { Stage } from "../types/stages";
 import { Application, ApplicationResponse } from "../types/application";
-import { Company, NewCompany } from "../types/company";
+import { NewCompany } from "../types/company";
 import { Contact, NewContact } from "../types/contact";
-
-export const addApplication = async (
-  app: Application,
-  stages?: Stage[],
-): Promise<ApplicationResponse | null> => {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user || !app.company || !app.position) {
-    console.error(
-      "Error fetching user or invalid application data:",
-      userError,
-    );
-    return null;
-  }
-
-  const newApp = {
-    auth_user: user.id,
-    company: app.company,
-    position: app.position,
-    notes: app.notes || "",
-    url: app.url || "",
-    date: new Date(app.date).toISOString(),
-    company_id: app.company_id || null,
-    contact_id: app.contact_id || null,
-    favorite: app.favorite || false,
-    is_archived: app.is_archived || false,
-    current_stage: 0,
-    is_deleted: false,
-  };
-
-  try {
-    const { data: insertedApp, error: insertError } = await supabase
-      .from("applications")
-      .insert([newApp])
-      .select()
-      .single();
-    if (insertError || !insertedApp) {
-      console.error("Error inserting application:", insertError);
-      throw insertError;
-    } else {
-      // Optional: insert stages
-      if (stages && stages.length > 0) {
-        const stageData = stages.map((s) => ({
-          id: crypto.randomUUID(),
-          auth_user: user.id,
-          application_id: insertedApp.id,
-          name: s.name,
-          icon: s.icon,
-          position: s.position,
-          is_deleted: false,
-        }));
-
-        const { error: stageInsertError } = await supabase
-          .from("application_stages")
-          .insert(stageData);
-
-        if (stageInsertError) throw stageInsertError;
-      }
-
-      return insertedApp as ApplicationResponse;
-    }
-  } catch (error) {
-    console.error("Error adding application:", error);
-    return null;
-  }
-};
 
 export async function getArchivedApplicationsByUser(userId: string) {
   const { data: applications, error: appError } = await supabase
@@ -171,56 +102,6 @@ export async function getFavoriteApplicationsByUser(userId: string) {
   return transformedData.filter((app) => app !== null) || [];
 }
 
-export async function getApplicationsByUser(userId: string) {
-  const { data: applications, error: appError } = await supabase
-    .from("applications")
-    .select("*")
-    .eq("auth_user", userId)
-    .eq("is_deleted", false)
-    .eq("is_archived", false);
-
-  if (appError) {
-    console.error("Error fetching applications:", appError);
-    return [];
-  }
-
-  const transformedData = await Promise.all(
-    applications.map(async (app) => {
-      const { data: stages, error: stagesError } = await supabase
-        .from("application_stages")
-        .select("*")
-        .eq("application_id", app.id)
-        .eq("is_deleted", false)
-        .order("position", { ascending: true });
-
-      if (stagesError) {
-        console.error("Error fetching stages:", stagesError);
-        return null;
-      }
-
-      return {
-        id: app.id,
-        company: app.company,
-        company_id: app.company_id,
-        contact_id: app.contact_id,
-        position: app.position,
-        notes: app.notes || "",
-        url: app.url || "",
-        date: app.date || Date.now(),
-        currentStage: app.current_stage || 0,
-        stages: stages || [],
-        user_id: app.auth_user,
-        is_deleted: app.is_deleted || false,
-        favorite: app.favorite || false,
-        is_archived: app.is_archived || false,
-        updated_at: app.updated_at || "",
-      };
-    }),
-  );
-
-  return transformedData.filter((app) => app !== null) || [];
-}
-
 export const updateApplication = async (app: Application) => {
   try {
     const { data, error } = await supabase
@@ -280,40 +161,6 @@ export const updateApplication = async (app: Application) => {
     return data?.[0];
   } catch (error) {
     console.error("Error updating application:", error);
-    throw error;
-  }
-};
-
-export const addStageToApplication = async (
-  applicationId: string,
-  stage: Stage,
-) => {
-  const { data, error } = await supabase.from("application_stages").insert([
-    {
-      application_id: applicationId,
-      name: stage.name,
-      icon: stage.icon,
-      position: stage.position,
-      is_deleted: false,
-    },
-  ]);
-
-  if (error) {
-    console.error("Error adding stage:", error);
-    throw error;
-  }
-
-  return data;
-};
-
-export const deleteStage = async (stageId: string) => {
-  const { error } = await supabase
-    .from("application_stages")
-    .delete()
-    .eq("id", stageId);
-
-  if (error) {
-    console.error("Error deleting stage:", error);
     throw error;
   }
 };
@@ -541,64 +388,6 @@ export const addApplicationWithCompanyAndContact = async ({
   }
 };
 
-export const getApplicationWithDetails = async (
-  applicationId: string,
-): Promise<
-  {
-    application: ApplicationResponse;
-    company: Company | null;
-    contact: Contact | null;
-  } | null
-> => {
-  try {
-    // Get application
-    const { data: application, error: appError } = await supabase
-      .from("applications")
-      .select("*")
-      .eq("id", applicationId)
-      .single();
-
-    if (appError || !application) return null;
-
-    // Get company details
-    let company: Company | null = null;
-    if (application.company_id) {
-      const { data: companyData, error: companyError } = await supabase
-        .from("companies")
-        .select("*")
-        .eq("id", application.company_id)
-        .single();
-
-      if (!companyError && companyData) {
-        company = companyData as Company;
-      }
-    }
-
-    // Get contact details
-    let contact: Contact | null = null;
-    if (application.contact_id) {
-      const { data: contactData, error: contactError } = await supabase
-        .from("contacts")
-        .select("*")
-        .eq("id", application.contact_id)
-        .single();
-
-      if (!contactError && contactData) {
-        contact = contactData as Contact;
-      }
-    }
-
-    return {
-      application: application as ApplicationResponse,
-      company,
-      contact,
-    };
-  } catch (error) {
-    console.error("Error getting application details:", error);
-    return null;
-  }
-};
-
 export const getApplicationsWithCompanies = async () => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -820,58 +609,6 @@ export const getApplicationById = async (
     console.error("Error in getApplicationById:", error);
     return null;
   }
-};
-
-export const addCompanyApi = async (company: Company) => {
-  const { data, error } = await supabase
-    .from("companies")
-    .insert([company])
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error adding company:", error);
-    throw error;
-  }
-
-  return data;
-};
-
-/**
- * Updates an existing company in the database.
- */
-export const updateCompanyApi = async (companyId: string, company: Company) => {
-  const { data, error } = await supabase
-    .from("companies")
-    .update(company)
-    .eq("id", companyId)
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error updating company:", error);
-    throw error;
-  }
-
-  return data;
-};
-
-/**
- * Adds a new contact to the database.
- */
-export const addContactApi = async (contact: Contact) => {
-  const { data, error } = await supabase
-    .from("contacts")
-    .insert([contact])
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error adding contact:", error);
-    throw error;
-  }
-
-  return data;
 };
 
 /**

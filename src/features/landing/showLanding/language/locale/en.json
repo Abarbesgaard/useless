@@ -1,0 +1,14 @@
+{
+  "hero": {
+    "title": "Track Your Path to Success",
+    "description": "Streamline your job search with intelligent application tracking, deadline management, and career insights. Never miss an opportunity again.",
+    "startButton": "Start Tracking Free",
+    "guideButton": "See Guide"
+  },
+  "header": {
+    "features": "Features",
+    "about": "About",
+    "contact": "Contact",
+    "getStarted": "Get Started"
+  }
+}
