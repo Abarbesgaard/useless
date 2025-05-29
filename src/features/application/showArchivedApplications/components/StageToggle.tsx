@@ -93,22 +93,32 @@ export default function StageToggle({
                     <button
                       onClick={() => toggleStageCompletion(app.id, stageIndex)}
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer
-                                ${
+                                ${app.is_archived ? 'opacity-60' : ''} ${
                                   isActive
-                                    ? "bg-chart-1"
-                                    : "bg-sidebar-foreground hover:bg-primary"
+                                    ? app.is_archived 
+                                      ? "bg-muted" 
+                                      : "bg-chart-1"
+                                    : app.is_archived
+                                      ? "bg-muted-foreground/20 hover:bg-muted-foreground/30"
+                                      : "bg-sidebar-foreground hover:bg-primary"
                                 }`}
                     >
                       {IconComponent && (
                         <IconComponent
                           size={24}
                           className={
-                            isActive ? "text-foreground" : "text-sidebar-ring"
+                            isActive 
+                              ? app.is_archived 
+                                ? "text-muted-foreground" 
+                                : "text-foreground"
+                              : app.is_archived
+                                ? "text-muted-foreground/60"
+                                : "text-sidebar-ring"
                           }
                         />
                       )}
 
-                      {!isActive && (
+                      {!isActive && !app.is_archived && (
                         <div className="absolute inset-0 bg-chart-1 bg-opacity-75 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <Check size={24} className="text-foreground" />
                         </div>
@@ -117,6 +127,11 @@ export default function StageToggle({
                   </TooltipTrigger>
                   <TooltipContent>
                     <div className="max-w-xs">
+                      {app.is_archived && (
+                        <p className="text-xs text-muted-foreground mb-1 italic">
+                          Archived Application
+                        </p>
+                      )}
                       {stage.note && stage.note.trim() && (
                         <p className="text-xs text-primary-foreground mt-1 whitespace-pre-wrap break-words">
                           {stage.note}
@@ -126,7 +141,9 @@ export default function StageToggle({
                   </TooltipContent>
                 </Tooltip>
 
-                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24">
+                <span className={`absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-center w-24 ${
+                  app.is_archived ? 'text-muted-foreground' : ''
+                }`}>
                   {stage.name}
                 </span>
 
@@ -135,7 +152,11 @@ export default function StageToggle({
                     e.stopPropagation();
                     deleteStage(app.id, stageIndex);
                   }}
-                  className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 bg-chart-5 text-primary rounded-full p-1 transition-opacity"
+                  className={`opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 rounded-full p-1 transition-opacity ${
+                    app.is_archived 
+                      ? 'bg-muted text-muted-foreground' 
+                      : 'bg-chart-5 text-primary'
+                  }`}
                   title="Delete this stage"
                 >
                   <MinusCircle size={16} />
@@ -143,11 +164,15 @@ export default function StageToggle({
               </div>
               {stageIndex < app.stages.length - 1 && (
                 <div
-                  className={`h-0.5 w-8 ${
+                  className={`h-0.5 w-8 mx-1 ${
                     stageIndex < app.currentStage
-                      ? "bg-sidebar-primary"
-                      : "bg-muted-foreground"
-                  } mx-1`}
+                      ? app.is_archived
+                        ? "bg-muted-foreground/40"
+                        : "bg-sidebar-primary"
+                      : app.is_archived
+                        ? "bg-muted-foreground/20"
+                        : "bg-muted-foreground"
+                  }`}
                 ></div>
               )}
             </div>

@@ -94,7 +94,7 @@ function ArchivedPage() {
           <>
             {archivedApplications.map((app) => (
               <div key={app.id} className="w-4xl p-3 overflow-y-auto">
-                <Card>
+                <Card className="bg-muted/30 border-muted-foreground/20 opacity-75 hover:opacity-90 transition-opacity">
                   <ApplicationHeader
                     app={app}
                     editingAppId={editingAppId}
@@ -116,7 +116,7 @@ function ArchivedPage() {
                       deleteStage={deleteStage}
                     />
                     <div className="flex items-center">
-                      <div className="h-0.5 w-8 bg-gray-200 mx-1"></div>
+                      <div className="h-0.5 w-8 bg-muted-foreground/30 mx-1"></div>
                       <div className="relative">
                         <StageSelector
                           appId={app.id}
@@ -130,7 +130,7 @@ function ArchivedPage() {
                   </div>
                   <CardFooter>
                     {app.notes && (
-                      <div className="mt-2 text-sm text-gray-600">
+                      <div className="mt-2 text-sm text-muted-foreground">
                         <p>
                           <strong>Notes:</strong> {app.notes}
                         </p>
@@ -141,8 +141,8 @@ function ArchivedPage() {
               </div>
             ))}
             {archivedApplications.length === 0 && (
-              <div className="text-center p-8 text-gray-500">
-                No applications yet. Click "Add New Application" to get started.
+              <div className="text-center p-8 text-muted-foreground">
+                No archived applications found.
               </div>
             )}
           </>

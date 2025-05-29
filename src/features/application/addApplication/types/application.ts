@@ -25,15 +25,7 @@ export interface Application extends NewApp {
   created_at?: string;
   updated_at?: string;
 }
-export interface ApplicationWithDetails extends Application {
-  company_details?: Company | null;
-  contact_details?: Contact | null;
-  contact_name?: string | null;
-  contact_position?: string | null;
-  contact_email?: string | null;
-  contact_phone?: string | null;
-  updated_at?: string;
-}
+
 // Response type from your existing addApplication function
 export type ApplicationResponse = {
   id: string;

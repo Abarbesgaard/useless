@@ -46,7 +46,7 @@ export function useApplicationManagement() {
      *  Fetches applications for the authenticated user.
      * @returns A promise that resolves when the applications are fetched.
      */
-    const fetchApplications = async () => {
+    async function fetchApplications() {
         if (!user) return;
 
         setIsLoading(true);
@@ -101,25 +101,25 @@ export function useApplicationManagement() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }
     /**
      *  Handles input changes in the application form.
      * @param e - The event object containing the input name and value.
      */
-    const handleInputChange = (
+    function handleInputChange(
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
+    ) {
         const { name, value } = e.target;
         setNewApp({ ...newApp, [name]: value });
-    };
+    }
     /**
      *  Adds a new application to the list.
      * @returns A promise that resolves when the application is added.
      */
-    const addApplication = async (
+    async function addApplication(
         companyInfo: Company,
         contactPerson: Contact,
-    ) => {
+    ) {
         if (!user) return;
         try {
             const newAppData = await addApplicationWithCompanyAndContact({
@@ -186,13 +186,13 @@ export function useApplicationManagement() {
             console.error("Failed to add application:", err);
             toast.error("Failed to add application. Please try again.");
         }
-    };
+    }
     /**
      *  Deletes an application from the list.
      * @param appId  - The ID of the application to be deleted.
      * @returns  A promise that resolves when the application is deleted.
      */
-    const deleteApplication = async (appId: string) => {
+    async function deleteApplication(appId: string) {
         if (!user) return;
 
         try {
@@ -208,13 +208,13 @@ export function useApplicationManagement() {
             console.error("Failed to delete application:", err);
             toast.error("Failed to delete application. Please try again.");
         }
-    };
+    }
     /**
      *  Updates an existing application.
      * @param updatedApp  - The updated application object.
      * @returns  A promise that resolves when the application is updated.
      */
-    const updateApplication = async (updatedApp: Application) => {
+    async function updateApplication(updatedApp: Application) {
         if (!user) return;
 
         try {
@@ -248,13 +248,13 @@ export function useApplicationManagement() {
             toast.error("Failed to update application. Please try again.");
             return false;
         }
-    };
+    }
     /**
      *  Toggles the favorite status of an application.
      * @param appId  - The ID of the application to be toggled.
      * @returns  A promise that resolves when the favorite status is toggled.
      */
-    const toggleFavorite = async (appId: string) => {
+    async function toggleFavorite(appId: string) {
         if (!user) return;
 
         // Update the favorite state for the application locally
@@ -293,14 +293,14 @@ export function useApplicationManagement() {
                     : "removed from"
             } favorites!`,
         );
-    };
+    }
     /**
      *  Toggles the completion status of a stage in an application.
      * @param appId  - The ID of the application.
      * @param stageIndex  - The index of the stage to be toggled.
      * @returns A promise that resolves when the stage completion status is toggled.
      */
-    const toggleStageCompletion = async (appId: string, stageIndex: number) => {
+    async function toggleStageCompletion(appId: string, stageIndex: number) {
         if (!user) return;
 
         // Find the current application
@@ -350,12 +350,12 @@ export function useApplicationManagement() {
                 ) => (app.id === appId ? currentApp : app)),
             );
         }
-    };
+    }
     /**
      * Fetches favorite applications for the authenticated user.
      * @returns A promise that resolves when the favorite applications are fetched.
      */
-    const fetchFavoriteApplications = async () => {
+    async function fetchFavoriteApplications() {
         if (!user) return;
         try {
             const favoriteApps = await getFavoriteApplicationsByUser(user.id);
@@ -372,12 +372,12 @@ export function useApplicationManagement() {
                 "Failed to load favorite applications. Please try again.",
             );
         }
-    };
+    }
     /**
      * Fetches archived applications for the authenticated user.
      * @returns A promise that resolves when the archived applications are fetched.
      */
-    const fetchArchivedApplications = async () => {
+    async function fetchArchivedApplications() {
         if (!user) return;
         try {
             const archivedApps = await getArchivedApplicationsByUser(user.id);
@@ -395,13 +395,13 @@ export function useApplicationManagement() {
                 "Failed to load archived applications. Please try again.",
             );
         }
-    };
+    }
     /**
      * Toggles the archived status of an application.
      * @param app - The application object to be toggled.
      * @returns A promise that resolves when the archived status is toggled.
      */
-    const toggleArchived = async (app: Application) => {
+    async function toggleArchived(app: Application) {
         if (!user) return;
         try {
             const updatedApp = await updateArchiveStatus(app);
@@ -424,8 +424,8 @@ export function useApplicationManagement() {
             console.error("Failed to update archive status:", error);
             toast.error("Failed to update archive status. Please try again.");
         }
-    };
-    const fetchSpecificApplication = async (appId: string) => {
+    }
+    async function fetchSpecificApplication(appId: string) {
         if (!user) return;
         try {
             const app = await getApplicationById(appId);
@@ -463,7 +463,7 @@ export function useApplicationManagement() {
             toast.error("Failed to load application. Please try again.");
             return null;
         }
-    };
+    }
 
     /**
      * Updates an existing contact in the database.
@@ -471,11 +471,11 @@ export function useApplicationManagement() {
      * @param contact - The updated contact data.
      * @returns A promise that resolves to the updated contact.
      */
-    const updateContact = async (
+    async function updateContact(
         contactId: string,
         contact: Contact,
-        applicationId?: string, // Optional application to link to
-    ) => {
+        applicationId?: string,
+    ) {
         if (!user) return;
         try {
             // Update the contact
@@ -498,16 +498,16 @@ export function useApplicationManagement() {
             toast.error("Failed to update contact. Please try again.");
             throw error;
         }
-    };
+    }
     /**
      * Updates application with new company or contact references
      * @param applicationId - The application to update
      * @param updates - Object with company_id and/or contact_id
      */
-    const updateApplicationReferences = async (
+    async function updateApplicationReferences(
         applicationId: string,
         updates: { company_id?: string; contact_id?: string },
-    ) => {
+    ) {
         if (!user) return;
 
         try {
@@ -550,7 +550,7 @@ export function useApplicationManagement() {
             toast.error("Failed to link company/contact to application");
             return null;
         }
-    };
+    }
 
     return {
         applications,

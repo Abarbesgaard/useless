@@ -178,7 +178,7 @@ export default function ApplicationHeader({
               <TooltipTrigger asChild>
                 <EditButton
                   isEditing={app.id === editingAppId}
-                  onClick={() => navigate(`/edit-application/${app.id}`)}
+                  onClick={() => navigate(`/app/edit-application/${app.id}`)}
                 />
               </TooltipTrigger>
               <TooltipContent>

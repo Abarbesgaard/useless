@@ -1,6 +1,3 @@
-import { Contact, NewContact } from "./contact";
-
-// types/company.ts
 export interface Company {
     id: string;
     name: string;
@@ -14,25 +11,10 @@ export interface Company {
     updated_at?: string;
 }
 
-// For creating a new company (without id and timestamps)
 export interface NewCompany {
     name: string;
     phone?: string;
     email?: string;
     website?: string;
     notes?: string;
-}
-
-export type CompanyForPersistence = Omit<Company, "created_at" | "updated_at">;
-// For API responses that include related data
-export interface CompanyDetails {
-    company: Company;
-    contacts: Contact[];
-    applications_count?: number;
-}
-
-// For form state management
-export interface CompanyFormData {
-    company: NewCompany;
-    primaryContact?: NewContact;
 }

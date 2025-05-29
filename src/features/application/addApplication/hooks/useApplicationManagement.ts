@@ -46,6 +46,7 @@ export function useApplicationManagement() {
      *  Fetches applications for the authenticated user.
      * @returns A promise that resolves when the applications are fetched.
      */
+
     const fetchApplications = async () => {
         if (!user) return;
 

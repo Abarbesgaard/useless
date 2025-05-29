@@ -22,56 +22,14 @@ export interface Application extends NewApp {
   favorite: boolean;
   company_id: string;
   contact_id?: string | null;
-  created_at?: string;
   updated_at?: string;
 }
 export interface ApplicationWithDetails extends Application {
-  company_details?: Company | null;
-  contact_details?: Contact | null;
   contact_name?: string | null;
-  contact_position?: string | null;
   contact_email?: string | null;
   contact_phone?: string | null;
   updated_at?: string;
 }
-export interface ApplicationFormData {
-  application: {
-    company: string;
-    position: string;
-    url: string;
-    notes: string;
-  };
-  companyInfo: {
-    phone: string;
-    email: string;
-    website: string;
-    notes?: string;
-  };
-  contactPerson: {
-    name: string;
-    position: string;
-    email: string;
-    phone: string;
-    notes: string;
-  };
-}
-
-export interface ApplicationForSupabase {
-  company: string;
-  position: string;
-  notes: string;
-  url: string;
-  date: string; // ISO string for Supabase
-  auth_user: string; // Matches your existing field name
-  company_id: string;
-  contact_id?: string | null;
-  current_stage: number; // Matches your existing field name
-  is_deleted: boolean;
-  is_archived?: boolean;
-  favorite?: boolean;
-}
-
-// Response type from your existing addApplication function
 export type ApplicationResponse = {
   id: string;
   position: string;

@@ -7,7 +7,6 @@ interface EditButtonProps {
   onClick: () => void;
 }
 
-// Convert to forwardRef to properly handle refs
 export const EditButton = forwardRef<HTMLButtonElement, EditButtonProps>(
   ({ isEditing, onClick }, ref) => (
     <TooltipTrigger asChild>

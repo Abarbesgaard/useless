@@ -54,26 +54,8 @@ export const addStage = async (
   return data;
 };
 
-// Update Stage
-export const updateStage = async (
-  stageId: string,
-  updatedStage: Partial<Stage>,
-) => {
-  const { data, error } = await supabase
-    .from("application_stages")
-    .update(updatedStage)
-    .eq("id", stageId)
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-};
-
-// Delete Stage (soft)
 export const softDeleteStage = async (stageId: string | undefined) => {
   try {
-    // Check if the stage exists before updating
     const { error: selectError } = await supabase
       .from("application_stages")
       .select("id, is_deleted")
@@ -85,7 +67,6 @@ export const softDeleteStage = async (stageId: string | undefined) => {
       return { success: false, error: selectError.message };
     }
 
-    // Proceed with updating if the stage exists
     const { error: updateError } = await supabase
       .from("application_stages")
       .update({ is_deleted: true })
