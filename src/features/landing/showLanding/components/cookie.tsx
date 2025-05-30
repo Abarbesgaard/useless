@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Cookie() {
   const [showConsent, setShowConsent] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
@@ -29,19 +31,18 @@ export function Cookie() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex-1">
           <p className="text-sm text-muted-foreground">
-            We use cookies to enhance your experience. By continuing to visit
-            this site you agree to our use of cookies.{" "}
+            {t("cookie.message")}
             <a href="/privacy" className="underline hover:text-foreground">
-              Learn more
+              {t("cookie.learnMore")}
             </a>
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={declineCookies}>
-            Decline
+            {t("cookie.decline")}
           </Button>
           <Button size="sm" onClick={acceptCookies}>
-            Accept
+            {t("cookie.accept")}
           </Button>
           <Button variant="ghost" size="sm" onClick={declineCookies}>
             <X className="h-4 w-4" />

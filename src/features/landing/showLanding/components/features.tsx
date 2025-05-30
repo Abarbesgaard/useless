@@ -2,9 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { features } from "../constants/features";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 export function Features() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleFeatureClick = (path: string) => {
     navigate(path);
@@ -15,7 +17,7 @@ export function Features() {
       <div className="container mx-auto">
         <div className="bg-transparent backdrop-blur-xl rounded-3xl p-12 border border-muted-foreground">
           <h2 className="text-4xl font-bold text-center mb-16 text-foreground">
-            Everything you need to land your dream job
+            {t("features.title")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature, index) => (
@@ -39,12 +41,12 @@ export function Features() {
                     {feature.icon}
                   </div>
                   <CardTitle className="text-xl text-foreground">
-                    {feature.title}
+                    {t(feature.title)}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-foreground/80 text-center leading-relaxed">
-                    {feature.description}
+                    {t(feature.description)}
                   </p>
                 </CardContent>
               </Card>

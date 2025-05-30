@@ -10,5 +10,85 @@
     "about": "About",
     "contact": "Contact",
     "getStarted": "Get Started"
+  },
+  "cookie": {
+    "message": "We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies.",
+    "learnMore": "Learn More",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "footer": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contactUs": "Contact Us",
+    "followUs": "Follow Us",
+    "language": "Language",
+    "sections": {
+      "product": {
+        "title": "Product",
+        "links": {
+          "features": "Features",
+          "pricing": "Pricing",
+          "integrations": "Integrations",
+          "api": "API"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "links": {
+          "aboutUs": "About Us",
+          "careers": "Careers",
+          "press": "Press",
+          "contact": "Contact"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "links": {
+          "blog": "Blog",
+          "helpCenter": "Help Center",
+          "guides": "Guides",
+          "community": "Community"
+        }
+      },
+      "legal": {
+        "title": "Legal",
+        "links": {
+          "privacyPolicy": "Privacy Policy",
+          "termsOfService": "Terms of Service",
+          "cookiePolicy": "Cookie Policy",
+          "gdpr": "GDPR"
+        }
+      }
+    }
+  },
+  "features": {
+    "title": "Everything You Need to Land Your Dream Job",
+    "items": {
+      "smartTracking": {
+        "title": "Smart Tracking",
+        "description": "Track your job applications with intelligent automation and insights."
+      },
+      "goalManagement": {
+        "title": "Goal Management",
+        "description": "Set daily, weekly, and monthly application goals. Track your progress and maintain momentum in your job search."
+      },
+      "analyticsDashboard": {
+        "title": "Analytics Dashboard",
+        "description": "Gain insights into your job search performance with detailed analytics and success rate tracking."
+      },
+      "smartNotifications": {
+        "title": "Smart Notifications",
+        "description": "Never miss important deadlines or follow-ups with intelligent reminders and notifications."
+      },
+      "documentManager": {
+        "title": "Document Manager",
+        "description": "Store and organize resumes, cover letters, and portfolios. Access them instantly when needed."
+      },
+      "jobBoardIntegration": {
+        "title": "Job Board Integration",
+        "description": "Connect with popular job boards and import applications automatically. Save time on data entry."
+      }
+    }
   }
 }

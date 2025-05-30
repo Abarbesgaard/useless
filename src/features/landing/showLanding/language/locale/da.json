@@ -1,14 +1,94 @@
 {
   "hero": {
-    "title": "Spor Din Vej Til Succes",
-    "description": "Strømlign dit jobsøgning med intelligent ansøgningssporing, deadline-styring og karriereindsigt. Gå aldrig glip af en mulighed igen.",
-    "startButton": "Start helt gratis!",
-    "guideButton": "Se Guide"
+    "title": "Din Vej Til Drømmejobbet",
+    "description": "Organiser dit jobsøgning med intelligent ansøgningssporing, deadline-påmindelser og karriereindsigt. Gå aldrig glip af den perfekte mulighed igen.",
+    "startButton": "Kom i gang gratis",
+    "guideButton": "Se vejledning"
   },
   "header": {
     "features": "Features",
     "about": "Om Os",
     "contact": "kontakt",
     "getStarted": "Kom I Gang"
+  },
+  "cookie": {
+    "message": "Vi bruger cookies for at forbedre din oplevelse. Ved at fortsætte med at bruge vores side, accepterer du vores brug af cookies.",
+    "learnMore": "Lær Mere",
+    "accept": "Accepter",
+    "decline": "Afvis"
+  },
+  "footer": {
+    "privacyPolicy": "Privatlivspolitik",
+    "termsOfService": "Servicevilkår",
+    "contactUs": "Kontakt Os",
+    "followUs": "Følg Os",
+    "language": "Sprog",
+    "sections": {
+      "product": {
+        "title": "Produkt",
+        "links": {
+          "features": "Funktioner",
+          "pricing": "Priser",
+          "integrations": "Integrationer",
+          "api": "API"
+        }
+      },
+      "company": {
+        "title": "Virksomhed",
+        "links": {
+          "aboutUs": "Om Os",
+          "careers": "Karriere",
+          "press": "Presse",
+          "contact": "Kontakt"
+        }
+      },
+      "resources": {
+        "title": "Ressourcer",
+        "links": {
+          "blog": "Blog",
+          "helpCenter": "Hjælpecenter",
+          "guides": "Guides",
+          "community": "Fællesskab"
+        }
+      },
+      "legal": {
+        "title": "Juridisk",
+        "links": {
+          "privacyPolicy": "Privatlivspolitik",
+          "termsOfService": "Servicevilkår",
+          "cookiePolicy": "Cookie Politik",
+          "gdpr": "GDPR"
+        }
+      }
+    }
+  },
+  "features": {
+    "title": "Alt, Du Behøver For At Få Dit Drømmejob",
+    "items": {
+      "smartTracking": {
+        "title": "Smart Sporing",
+        "description": "Organiser ansøgninger med statusopdateringer, deadlines og follow-up påmindelser."
+      },
+      "goalManagement": {
+        "title": "Målstyring",
+        "description": "Sæt daglige, ugentlige og månedlige ansøgningsmål. Følg dit fremskridt."
+      },
+      "analyticsDashboard": {
+        "title": "Analytics Dashboard",
+        "description": "Få indsigt i din jobsøgningsperformance med detaljeret analyse."
+      },
+      "smartNotifications": {
+        "title": "Smarte Notifikationer",
+        "description": "Gå aldrig glip af vigtige deadlines eller follow-ups."
+      },
+      "documentManager": {
+        "title": "Dokumentstyring",
+        "description": "Opbevar og organiser CV'er, følgebreve og portfolier."
+      },
+      "jobBoardIntegration": {
+        "title": "Jobportal Integration",
+        "description": "Forbind med populære jobportaler og importer ansøgninger automatisk."
+      }
+    }
   }
 }

@@ -1,6 +1,8 @@
 import { footer } from "../constants/footer";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
+  const { t } = useTranslation();
   const handleLinkClick = (link: string) => {
     const path = `/${link.toLowerCase().replace(/\s+/g, "-")}`;
     window.location.href = path;
@@ -13,7 +15,7 @@ export function Footer() {
           {footer.map((section, index) => (
             <div key={index}>
               <h4 className="text-foreground font-semibold text-lg mb-5">
-                {section.title}
+                {t(section.title)}
               </h4>
               <div className="space-y-3">
                 {section.links.map((link, linkIndex) => (
@@ -22,7 +24,7 @@ export function Footer() {
                     onClick={() => handleLinkClick(link)}
                     className="block text-foreground/70 hover:text-chart-4 transition-colors cursor-pointer text-left"
                   >
-                    {link}
+                    {t(link)}
                   </button>
                 ))}
               </div>

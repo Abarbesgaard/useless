@@ -1,49 +1,43 @@
 export const features = [
     {
         icon: "📊",
-        title: "Smart Tracking",
-        description:
-            "Organize applications with status updates, deadlines, and follow-up reminders. Stay on top of every opportunity.",
+        title: "features.items.smartTracking.title",
+        description: "features.items.smartTracking.description",
         status: "WIP",
         path: "/tracking",
     },
     {
         icon: "🎯",
-        title: "Goal Management",
-        description:
-            "Set daily, weekly, and monthly application goals. Track your progress and maintain momentum in your job search.",
+        title: "features.items.goalManagement.title",
+        description: "features.items.goalManagement.description",
         status: "TODO",
         path: "/goals",
     },
     {
         icon: "📈",
-        title: "Analytics Dashboard",
-        description:
-            "Gain insights into your job search performance with detailed analytics and success rate tracking.",
+        title: "features.items.analyticsDashboard.title",
+        description: "features.items.analyticsDashboard.description",
         status: "TODO",
         path: "/analytics",
     },
     {
         icon: "🔔",
-        title: "Smart Notifications",
-        description:
-            "Never miss important deadlines or follow-ups with intelligent reminders and notifications.",
+        title: "features.items.smartNotifications.title",
+        description: "features.items.smartNotifications.description",
         status: "TODO",
         path: "/notifications",
     },
     {
         icon: "📋",
-        title: "Document Manager",
-        description:
-            "Store and organize resumes, cover letters, and portfolios. Access them instantly when needed.",
+        title: "features.items.documentManager.title",
+        description: "features.items.documentManager.description",
         status: "WIP",
         path: "/documents",
     },
     {
         icon: "🌐",
-        title: "Job Board Integration",
-        description:
-            "Connect with popular job boards and import applications automatically. Save time on data entry.",
+        title: "features.items.jobBoardIntegration.title",
+        description: "features.items.jobBoardIntegration.description",
         status: "TODO",
         path: "/job-boards",
     },
