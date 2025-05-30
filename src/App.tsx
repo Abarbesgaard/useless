@@ -6,6 +6,7 @@ import { ThemeProvider } from "./components/custom/ThemeProvider";
 import { BrowserRouter } from "react-router";
 import { SidebarProvider } from "./components/ui/sidebar";
 import AppLayout from "./shared/layout";
+import "./language/i18n";
 
 export default function App() {
   return (

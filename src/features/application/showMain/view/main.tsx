@@ -10,8 +10,10 @@ import { Application } from "../types/application";
 import StageToggle from "../components/StageToggle";
 import { useStageManagement } from "../hooks/useStageManagement";
 import { useApplicationManagement } from "../hooks/useApplicationManagement";
+import { useTranslation } from "react-i18next";
 
 export default function Main() {
+  const { t } = useTranslation("application");
   const [editingAppId, setEditingAppId] = useState<string | null>(null);
 
   const {
@@ -40,7 +42,7 @@ export default function Main() {
     <div className="flex h-screen w-screen overflow-hidden ">
       <SidebarTrigger className="cursor-pointer" />
       <div className="w-full h-full overflow-y-auto">
-        <h2 className="text-lg font-medium mb-2 flex">Your Applications</h2>
+        <h2 className="text-lg font-medium mb-2 flex">{t("title")}</h2>
         <div className="space-y-2 pt-3 pb-16">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, idx) => (

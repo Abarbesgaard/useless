@@ -1,0 +1,15 @@
+{
+  "sidebar": {
+    "all": "All",
+    "favorites": "Favorites",
+    "archived": "Archived",
+    "addApplication": "Add Application",
+    "applications": "Applications",
+    "signOut": "Sign out",
+    "appName": "Strackly",
+    "appDescription": "Job Search Tracker",
+    "hello": "Hello",
+    "version": "Version",
+    "allRightsReserved": "All rights reserved"
+  }
+}

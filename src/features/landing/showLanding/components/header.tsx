@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import i18n from "../language/i18n";
+import i18n from "../../../../language/i18n";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
