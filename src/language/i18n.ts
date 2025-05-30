@@ -2,8 +2,8 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 // Import translations from different features
-import enLanding from "@/features/landing/showLanding/language/locale/en.json";
-import daLanding from "@/features/landing/showLanding/language/locale/da.json";
+import enLanding from "../features/landing/showLanding/language/locale/en.json";
+import daLanding from "../features/landing/showLanding/language/locale/da.json";
 import enSidebar from "./locale/en.json";
 import daSidebar from "./locale/da.json";
 // Add more feature translations as needed

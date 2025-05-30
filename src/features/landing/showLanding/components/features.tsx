@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 export function Features() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t } = useTranslation("landing");
 
   const handleFeatureClick = (path: string) => {
     navigate(path);

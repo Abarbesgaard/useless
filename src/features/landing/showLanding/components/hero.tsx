@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 export function Hero() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("landing");
 
   const handleGetStarted = () => {
     window.location.href = "/app";

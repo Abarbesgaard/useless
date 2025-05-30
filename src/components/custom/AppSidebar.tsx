@@ -101,15 +101,14 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <div className="flex items-center">
-          <Button onClick={signOut} variant="outline" className="mr-2">
+        <div className="flex justify-center items-center gap-2">
+          <Button onClick={signOut} variant="outline" className="">
             {t("signOut", "Sign out")}
           </Button>
           <ModeToggle />
           <Button
             onClick={toggleLanguage}
             variant="outline"
-            size="sm"
             className="border-2 border-muted/30 text-foreground hover:bg-foreground/10 hover:border-sidebar-border/50"
           >
             {currentLang === "en" ? "DA" : "EN"}

@@ -2,7 +2,7 @@ import { footer } from "../constants/footer";
 import { useTranslation } from "react-i18next";
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t } = useTranslation("landing");
   const handleLinkClick = (link: string) => {
     const path = `/${link.toLowerCase().replace(/\s+/g, "-")}`;
     window.location.href = path;
