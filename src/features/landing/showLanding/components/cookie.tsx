@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 export function Cookie() {
   const [showConsent, setShowConsent] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useTranslation("landing");
 
   useEffect(() => {
     const consent = localStorage.getItem("cookie-consent");
