@@ -10,6 +10,7 @@ import Details from "../features/application/detailsApplication/view/details";
 import { LandingPage } from "../features/landing/showLanding/view/view";
 import { NotFoundPage } from "../features/errors/view/view";
 import Main from "../features/application/showMain/view/main";
+import UserProfilePage from "../features/user/showUserDetail/view/details";
 
 export default function AppLayout() {
   return (
@@ -62,6 +63,8 @@ function AppRoutes() {
       <Route path="edit-application/:id" element={<EditApplication />} />
       <Route path="details/:id" element={<Details />} />
       <Route path="*" element={<NotFoundPage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/profile" element={<UserProfilePage />} />
     </Routes>
   );
 }

@@ -49,13 +49,6 @@ export default function AppSidebar() {
     i18n.changeLanguage(newLang);
     setCurrentLang(newLang);
   };
-  console.log("Available languages:", i18n.languages);
-  console.log("Current language:", i18n.language);
-  console.log("Current language state:", currentLang);
-  console.log(
-    "available translations:",
-    i18n.getResourceBundle(i18n.language, "sidebar")
-  );
   return (
     <Sidebar className=" h-full">
       <SidebarHeader>
