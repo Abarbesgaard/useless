@@ -19,12 +19,15 @@ export default function UserProfilePage() {
   });
   const [newPreference, setNewPreference] = useState("");
 
-  const addPreference = (preferenceType: keyof typeof formData) => {
-    if (newPreference.trim() && Array.isArray(formData[preferenceType])) {
+  const addPreference = (preferenceType: string) => {
+    if (
+      newPreference.trim() &&
+      Array.isArray(formData[preferenceType as keyof typeof formData])
+    ) {
       setFormData((prev) => ({
         ...prev,
         [preferenceType]: [
-          ...(prev[preferenceType] as string[]),
+          ...(prev[preferenceType as keyof typeof formData] as string[]),
           newPreference.trim(),
         ],
       }));
@@ -32,16 +35,13 @@ export default function UserProfilePage() {
     }
   };
 
-  const removePreference = (
-    preferenceType: keyof typeof formData,
-    index: number
-  ) => {
-    if (Array.isArray(formData[preferenceType])) {
+  const removePreference = (preferenceType: string, index: number) => {
+    if (Array.isArray(formData[preferenceType as keyof typeof formData])) {
       setFormData((prev) => ({
         ...prev,
-        [preferenceType]: (prev[preferenceType] as string[]).filter(
-          (_, i) => i !== index
-        ),
+        [preferenceType]: (
+          prev[preferenceType as keyof typeof formData] as string[]
+        ).filter((_, i) => i !== index),
       }));
     }
   };
@@ -131,13 +131,20 @@ export default function UserProfilePage() {
   const [newSkill, setNewSkill] = useState("");
   const [activeTab, setActiveTab] = useState("personal");
 
-  const handleEdit = (section: keyof typeof isEditing) => {
-    setIsEditing((prev) => ({ ...prev, [section]: !prev[section] }));
+  const handleEdit = (section: string) => {
+    setIsEditing((prev) => ({
+      ...prev,
+      [section as keyof typeof isEditing]:
+        !prev[section as keyof typeof isEditing],
+    }));
   };
 
-  const handleSave = async (section: keyof typeof isEditing) => {
+  const handleSave = async (section: string) => {
     try {
-      setIsEditing((prev) => ({ ...prev, [section]: false }));
+      setIsEditing((prev) => ({
+        ...prev,
+        [section as keyof typeof isEditing]: false,
+      }));
       // Here you would typically save to your backend/Supabase
       console.log(`Saving ${section} data:`, formData);
       toast.success(`${section} oplysninger gemt`);
@@ -151,23 +158,29 @@ export default function UserProfilePage() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addSkill = (skillType: keyof typeof formData) => {
-    if (newSkill.trim() && Array.isArray(formData[skillType])) {
+  const addSkill = (skillType: string) => {
+    if (
+      newSkill.trim() &&
+      Array.isArray(formData[skillType as keyof typeof formData])
+    ) {
       setFormData((prev) => ({
         ...prev,
-        [skillType]: [...(prev[skillType] as string[]), newSkill.trim()],
+        [skillType]: [
+          ...(prev[skillType as keyof typeof formData] as string[]),
+          newSkill.trim(),
+        ],
       }));
       setNewSkill("");
     }
   };
 
-  const removeSkill = (skillType: keyof typeof formData, index: number) => {
-    if (Array.isArray(formData[skillType])) {
+  const removeSkill = (skillType: string, index: number) => {
+    if (Array.isArray(formData[skillType as keyof typeof formData])) {
       setFormData((prev) => ({
         ...prev,
-        [skillType]: (prev[skillType] as string[]).filter(
-          (_, i) => i !== index
-        ),
+        [skillType]: (
+          prev[skillType as keyof typeof formData] as string[]
+        ).filter((_, i) => i !== index),
       }));
     }
   };
@@ -242,7 +255,11 @@ export default function UserProfilePage() {
         <div className="max-w-6xl">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <Header user={user} formData={formData} getInitials={getInitials} />
+            <Header
+              user={user ?? null}
+              formData={formData}
+              getInitials={getInitials}
+            />
           </div>
 
           <ProfileTabs

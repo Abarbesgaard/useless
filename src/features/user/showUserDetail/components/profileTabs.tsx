@@ -108,7 +108,16 @@ export default function ProfileTabs({
       {/* Personal Information Tab */}
       <TabsContent value="personal">
         <PersonalTab
-          formData={formData}
+          formData={
+            formData.personal as {
+              firstName: string;
+              lastName: string;
+              email: string;
+              phone: string;
+              location: string;
+              bio: string;
+            }
+          }
           isEditing={isEditing}
           handleInputChange={handleInputChange}
           handleEdit={handleEdit}
@@ -119,7 +128,18 @@ export default function ProfileTabs({
       {/* Professional Information Tab */}
       <TabsContent value="professional">
         <ProfessionalTab
-          formData={formData}
+          formData={
+            formData.professional as {
+              currentTitle: string;
+              yearsExperience: string;
+              salaryExpectation: string;
+              availableFrom: string;
+              portfolioUrl: string;
+              linkedinUrl: string;
+              githubUrl: string;
+              cvUrl: string;
+            }
+          }
           isEditing={isEditing}
           handleInputChange={handleInputChange}
           handleEdit={handleEdit}
@@ -130,7 +150,20 @@ export default function ProfileTabs({
       {/* Skills Tab */}
       <TabsContent value="skills">
         <SkillsTab
-          formData={formData}
+          formData={{
+            technicalSkills: Array.isArray(formData.technicalSkills)
+              ? (formData.technicalSkills as string[])
+              : [],
+            softSkills: Array.isArray(formData.softSkills)
+              ? (formData.softSkills as string[])
+              : [],
+            interests: Array.isArray(formData.interests)
+              ? (formData.interests as string[])
+              : [],
+            languages: Array.isArray(formData.languages)
+              ? (formData.languages as string[])
+              : [],
+          }}
           isEditing={isEditing}
           handleEdit={handleEdit}
           handleSave={handleSave}
@@ -144,7 +177,19 @@ export default function ProfileTabs({
       {/* Work Experience Tab */}
       <TabsContent value="experience">
         <ExperienceTab
-          formData={formData}
+          formData={{
+            workExperience: Array.isArray(formData.experience)
+              ? formData.experience.map((exp) => ({
+                  id: typeof exp.id === "number" ? exp.id : 0,
+                  company: typeof exp.company === "string" ? exp.company : "",
+                  position:
+                    typeof exp.position === "string" ? exp.position : "",
+                  period: typeof exp.period === "string" ? exp.period : "",
+                  description:
+                    typeof exp.description === "string" ? exp.description : "",
+                }))
+              : [],
+          }}
           isEditing={isEditing}
           handleEdit={handleEdit}
           handleSave={handleSave}
@@ -157,7 +202,18 @@ export default function ProfileTabs({
       {/* Education Tab */}
       <TabsContent value="education">
         <EducationTab
-          formData={formData}
+          formData={{
+            education: Array.isArray(formData.education)
+              ? formData.education.map((edu) => ({
+                  id: typeof edu.id === "number" ? edu.id : 0,
+                  institution:
+                    typeof edu.institution === "string" ? edu.institution : "",
+                  degree: typeof edu.degree === "string" ? edu.degree : "",
+                  period: typeof edu.period === "string" ? edu.period : "",
+                  grade: typeof edu.grade === "string" ? edu.grade : "",
+                }))
+              : [],
+          }}
           isEditing={isEditing}
           handleEdit={handleEdit}
           handleSave={handleSave}
@@ -170,7 +226,20 @@ export default function ProfileTabs({
       {/* Job Preferences Tab */}
       <TabsContent value="preferences">
         <PreferencesTab
-          formData={formData}
+          formData={{
+            preferredRoles: Array.isArray(formData.preferredRoles)
+              ? (formData.preferredRoles as string[])
+              : [],
+            preferredCompanySize: Array.isArray(formData.preferredCompanySize)
+              ? (formData.preferredCompanySize as string[])
+              : [],
+            workArrangement: Array.isArray(formData.workArrangement)
+              ? (formData.workArrangement as string[])
+              : [],
+            industries: Array.isArray(formData.industries)
+              ? (formData.industries as string[])
+              : [],
+          }}
           isEditing={isEditing}
           handleEdit={handleEdit}
           handleSave={handleSave}
