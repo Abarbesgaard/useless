@@ -108,16 +108,17 @@ export default function ProfileTabs({
       {/* Personal Information Tab */}
       <TabsContent value="personal">
         <PersonalTab
-          formData={
-            formData.personal as {
-              firstName: string;
-              lastName: string;
-              email: string;
-              phone: string;
-              location: string;
-              bio: string;
-            }
-          }
+          formData={{
+            firstName:
+              typeof formData.firstName === "string" ? formData.firstName : "",
+            lastName:
+              typeof formData.lastName === "string" ? formData.lastName : "",
+            email: typeof formData.email === "string" ? formData.email : "",
+            phone: typeof formData.phone === "string" ? formData.phone : "",
+            location:
+              typeof formData.location === "string" ? formData.location : "",
+            bio: typeof formData.bio === "string" ? formData.bio : "",
+          }}
           isEditing={isEditing}
           handleInputChange={handleInputChange}
           handleEdit={handleEdit}
@@ -128,18 +129,37 @@ export default function ProfileTabs({
       {/* Professional Information Tab */}
       <TabsContent value="professional">
         <ProfessionalTab
-          formData={
-            formData.professional as {
-              currentTitle: string;
-              yearsExperience: string;
-              salaryExpectation: string;
-              availableFrom: string;
-              portfolioUrl: string;
-              linkedinUrl: string;
-              githubUrl: string;
-              cvUrl: string;
-            }
-          }
+          formData={{
+            currentTitle:
+              typeof formData.currentTitle === "string"
+                ? formData.currentTitle
+                : "",
+            yearsExperience:
+              typeof formData.yearsExperience === "string"
+                ? formData.yearsExperience
+                : formData.yearsExperience !== undefined
+                ? String(formData.yearsExperience)
+                : "",
+            salaryExpectation:
+              typeof formData.salaryExpectation === "string"
+                ? formData.salaryExpectation
+                : "",
+            availableFrom:
+              typeof formData.availableFrom === "string"
+                ? formData.availableFrom
+                : "",
+            portfolioUrl:
+              typeof formData.portfolioUrl === "string"
+                ? formData.portfolioUrl
+                : "",
+            linkedinUrl:
+              typeof formData.linkedinUrl === "string"
+                ? formData.linkedinUrl
+                : "",
+            githubUrl:
+              typeof formData.githubUrl === "string" ? formData.githubUrl : "",
+            cvUrl: typeof formData.cvUrl === "string" ? formData.cvUrl : "",
+          }}
           isEditing={isEditing}
           handleInputChange={handleInputChange}
           handleEdit={handleEdit}
@@ -178,8 +198,8 @@ export default function ProfileTabs({
       <TabsContent value="experience">
         <ExperienceTab
           formData={{
-            workExperience: Array.isArray(formData.experience)
-              ? formData.experience.map((exp) => ({
+            workExperience: Array.isArray(formData.workExperience)
+              ? formData.workExperience.map((exp) => ({
                   id: typeof exp.id === "number" ? exp.id : 0,
                   company: typeof exp.company === "string" ? exp.company : "",
                   position:
