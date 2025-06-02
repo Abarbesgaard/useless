@@ -22,7 +22,7 @@ export const addSoftSkill = async (
     }
 };
 
-export const deleteSoftSkill = async (skillId: number): Promise<boolean> => {
+export const deleteSoftSkill = async (skillId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("soft_skills")

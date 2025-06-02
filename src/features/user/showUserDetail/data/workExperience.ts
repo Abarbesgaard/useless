@@ -23,7 +23,7 @@ export const addWorkExperience = async (
 };
 
 export const updateWorkExperience = async (
-    experienceId: number,
+    experienceId: string,
     experienceData: WorkExperience,
 ): Promise<boolean> => {
     try {

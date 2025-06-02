@@ -1,14 +1,15 @@
 import supabase from "@/lib/supabase";
+import { Interest } from "../types/Interest";
 
 // Interests CRUD
 export const addInterest = async (
     userId: string,
-    interestName: string,
+    interest: Interest,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("interests")
-            .insert({ profile_id: userId, interest_name: interestName });
+            .insert({ profile_id: userId, ...interest });
 
         if (error) {
             console.error("Error adding interest:", error);
@@ -21,7 +22,7 @@ export const addInterest = async (
     }
 };
 
-export const deleteInterest = async (interestId: number): Promise<boolean> => {
+export const deleteInterest = async (interestId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("interests")

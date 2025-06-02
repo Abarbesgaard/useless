@@ -1,14 +1,15 @@
 import supabase from "@/lib/supabase";
+import { PreferredCompanySize } from "../types/PreferredCompanySize";
 
 // Company Size Preferences CRUD
 export const addPreferredCompanySize = async (
     userId: string,
-    companySize: string,
+    companySize: PreferredCompanySize,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("preferred_company_size")
-            .insert({ profile_id: userId, company_size: companySize });
+            .insert({ profile_id: userId, ...companySize });
 
         if (error) {
             console.error("Error adding preferred company size:", error);
@@ -22,7 +23,7 @@ export const addPreferredCompanySize = async (
 };
 
 export const deletePreferredCompanySize = async (
-    sizeId: number,
+    sizeId: string,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase

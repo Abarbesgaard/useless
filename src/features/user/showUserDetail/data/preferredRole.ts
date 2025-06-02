@@ -21,7 +21,7 @@ export const addPreferredRole = async (
     }
 };
 
-export const deletePreferredRole = async (roleId: number): Promise<boolean> => {
+export const deletePreferredRole = async (roleId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("preferred_roles")

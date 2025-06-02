@@ -1,19 +1,15 @@
 import supabase from "@/lib/supabase";
+import { Language } from "../types/Language";
 
 // Languages CRUD
 export const addLanguage = async (
     userId: string,
-    languageName: string,
-    proficiencyLevel?: string,
+    language: Language,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("languages")
-            .insert({
-                profile_id: userId,
-                language_name: languageName,
-                proficiency_level: proficiencyLevel,
-            });
+            .insert({ profile_id: userId, ...language });
 
         if (error) {
             console.error("Error adding language:", error);
@@ -27,17 +23,13 @@ export const addLanguage = async (
 };
 
 export const updateLanguage = async (
-    languageId: number,
-    languageName: string,
-    proficiencyLevel?: string,
+    languageId: string,
+    language: Language,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("languages")
-            .update({
-                language_name: languageName,
-                proficiency_level: proficiencyLevel,
-            })
+            .update(language)
             .eq("id", languageId);
 
         if (error) {
@@ -51,7 +43,7 @@ export const updateLanguage = async (
     }
 };
 
-export const deleteLanguage = async (languageId: number): Promise<boolean> => {
+export const deleteLanguage = async (languageId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("languages")

@@ -23,7 +23,7 @@ export const addTechnicalSkill = async (
 };
 
 export const deleteTechnicalSkill = async (
-    skillId: number,
+    skillId: string,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase

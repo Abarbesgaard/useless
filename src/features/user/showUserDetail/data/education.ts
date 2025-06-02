@@ -1,14 +1,10 @@
 import supabase from "@/lib/supabase";
+import { Education } from "../types/Education";
 
 // Education CRUD
 export const addEducation = async (
     userId: string,
-    educationData: {
-        institution: string;
-        degree: string;
-        period: string;
-        grade?: string;
-    },
+    educationData: Education,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
@@ -27,13 +23,8 @@ export const addEducation = async (
 };
 
 export const updateEducation = async (
-    educationId: number,
-    educationData: {
-        institution?: string;
-        degree?: string;
-        period?: string;
-        grade?: string;
-    },
+    educationId: string,
+    educationData: Education,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
@@ -53,7 +44,7 @@ export const updateEducation = async (
 };
 
 export const deleteEducation = async (
-    educationId: number,
+    educationId: string,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase

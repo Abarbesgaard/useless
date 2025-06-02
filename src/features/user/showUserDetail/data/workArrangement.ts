@@ -23,7 +23,7 @@ export const addWorkArrangement = async (
 };
 
 export const deleteWorkArrangement = async (
-    arrangementId: number,
+    arrangementId: string,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase

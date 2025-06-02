@@ -1,14 +1,15 @@
 import supabase from "@/lib/supabase";
+import { Industry } from "../types/Industry";
 
 // Industries CRUD
 export const addIndustry = async (
     userId: string,
-    industryName: string,
+    industry: Industry,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("industries")
-            .insert({ profile_id: userId, industry_name: industryName });
+            .insert({ profile_id: userId, ...industry });
 
         if (error) {
             console.error("Error adding industry:", error);
@@ -21,7 +22,7 @@ export const addIndustry = async (
     }
 };
 
-export const deleteIndustry = async (industryId: number): Promise<boolean> => {
+export const deleteIndustry = async (industryId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("industries")
