@@ -1,7 +1,5 @@
 import supabase from "@/lib/supabase";
 import { WorkExperience } from "../types/WorkExperience";
-
-// Work Experience CRUD
 export const addWorkExperience = async (
     userId: string,
     experienceData: WorkExperience,

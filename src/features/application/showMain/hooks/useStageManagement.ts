@@ -34,6 +34,11 @@ export function useStageManagement(
         const application = applications.find((app) => app.id === appId);
         if (!application) return;
 
+        // Extract the display name properly
+        const stageName = typeof stage.name === "string"
+            ? stage.name
+            : stage.name || "Unknown Stage";
+
         const newStage: Stage = {
             ...stage,
             id: crypto.randomUUID(),
@@ -41,7 +46,8 @@ export function useStageManagement(
             icon: stage.icon,
             is_active: false,
             is_deleted: false,
-            note: note || null, // Add the note here
+            note: note || null,
+            name: stageName, // Ensure name is stored as string
         };
 
         try {
@@ -52,7 +58,7 @@ export function useStageManagement(
                 stageForPersistence as StageForPersistence,
                 appId,
                 note,
-            ); // Pass note to addStage
+            );
 
             const updatedApp = {
                 ...application,
@@ -72,7 +78,7 @@ export function useStageManagement(
             // Show success toast
             toast.success("Stage added", {
                 description:
-                    `"${stage.name}" stage has been added to this application.`,
+                    `"${stageName}" stage has been added to this application.`,
             });
         } catch (error) {
             console.error("Failed to add stage:", error);
