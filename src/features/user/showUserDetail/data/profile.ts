@@ -1,5 +1,5 @@
 import supabase from "@/lib/supabase";
-import { Profile } from "../types/profile";
+import { Profile } from "../types/Profile";
 
 /**
  * Fetches the comprehensive profile of a user by their ID, including all related data.

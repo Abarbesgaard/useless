@@ -1,14 +1,10 @@
 import supabase from "@/lib/supabase";
+import { WorkExperience } from "../types/WorkExperience";
 
 // Work Experience CRUD
 export const addWorkExperience = async (
     userId: string,
-    experienceData: {
-        company: string;
-        position: string;
-        period: string;
-        description?: string;
-    },
+    experienceData: WorkExperience,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
@@ -28,12 +24,7 @@ export const addWorkExperience = async (
 
 export const updateWorkExperience = async (
     experienceId: number,
-    experienceData: {
-        company?: string;
-        position?: string;
-        period?: string;
-        description?: string;
-    },
+    experienceData: WorkExperience,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase

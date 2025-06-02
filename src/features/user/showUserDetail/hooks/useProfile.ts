@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getProfile } from "../data/profile";
-import { ComprehensiveProfile } from "../types/profile";
+import { ComprehensiveProfile } from "../types/Profile";
 
 export default function useProfile(userId: string | null) {
     const [profile, setProfile] = useState<ComprehensiveProfile | null>(null);

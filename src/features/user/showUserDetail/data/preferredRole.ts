@@ -1,14 +1,14 @@
 import supabase from "@/lib/supabase";
+import { PreferredRole } from "../types/PreferredRole";
 
-// Preferred Roles CRUD
 export const addPreferredRole = async (
     userId: string,
-    roleName: string,
+    role: PreferredRole,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("preferred_roles")
-            .insert({ profile_id: userId, role_name: roleName });
+            .insert({ profile_id: userId, ...role });
 
         if (error) {
             console.error("Error adding preferred role:", error);

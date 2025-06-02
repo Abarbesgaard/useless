@@ -1,14 +1,15 @@
 import supabase from "@/lib/supabase";
+import { WorkArrangement } from "../types/WorkArrangement";
 
 // Work Arrangement CRUD
 export const addWorkArrangement = async (
     userId: string,
-    arrangementType: string,
+    arrangement: WorkArrangement,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("work_arrangement")
-            .insert({ profile_id: userId, arrangement_type: arrangementType });
+            .insert({ profile_id: userId, ...arrangement });
 
         if (error) {
             console.error("Error adding work arrangement:", error);

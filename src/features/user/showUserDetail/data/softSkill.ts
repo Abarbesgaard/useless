@@ -1,14 +1,15 @@
 import supabase from "@/lib/supabase";
+import { SoftSkill } from "../types/SoftSkill";
 
 // Soft Skills CRUD
 export const addSoftSkill = async (
     userId: string,
-    skillName: string,
+    skill: SoftSkill,
 ): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("soft_skills")
-            .insert({ profile_id: userId, skill_name: skillName });
+            .insert({ profile_id: userId, ...skill });
 
         if (error) {
             console.error("Error adding soft skill:", error);
