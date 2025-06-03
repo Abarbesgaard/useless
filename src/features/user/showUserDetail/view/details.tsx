@@ -1,29 +1,35 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import Header from "../components/header";
 import ProfileTabs from "../components/profileTabs";
-import { getProfile, updatePersonalInfo } from "../data/profile";
+import { updatePersonalInfo } from "../data/profile";
 import { updateProfessionalInfo } from "../data/professionalInfo";
+import { updateTechnicalSkills } from "../data/technicalSkill";
+import { updateSoftSkills } from "../data/softSkill";
+import { updateInterests } from "../data/interests";
+import { updateLanguages } from "../data/language";
+import {
+  addWorkExperience,
+  updateWorkExperience,
+  getWorkExperiences,
+} from "../data/workExperience";
+import { getProfessionalInfo } from "../data/professionalInfo";
+import { getTechnicalSkill } from "../data/technicalSkill";
 import { PersonalInfo } from "../types/PersonalInfo";
 import { ProfessionalInfo } from "../types/ProfessionalInfo";
+import { Education } from "../types/Education";
+import { getSoftSkill } from "../data/softSkill";
+import { getInterest } from "../data/interests";
+import { getLanguage } from "../data/language";
 
-interface ProfileWithPersonalInfo {
-  personal_info?: {
-    first_name?: string;
-    last_name?: string;
-    email?: string;
-    phone?: string;
-    location?: string;
-    bio?: string;
-  };
-}
+// Add this import
+import { getPersonalInfo } from "../data/profile";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
-  const [, setIsLoading] = useState(false);
 
   const [isEditing, setIsEditing] = useState({
     personal: false,
@@ -61,91 +67,89 @@ export default function UserProfilePage() {
       }));
     }
   };
-  const [formData, setFormData] = useState({
-    // Personal Information
-    firstName: user?.user_metadata?.first_name || "Anders",
-    lastName: user?.user_metadata?.last_name || "Nielsen",
-    email: user?.email || "anders.nielsen@email.com",
-    phone: "+45 12 34 56 78",
-    location: "København, Danmark",
-    bio: "Erfaren softwareudvikler med passion for moderne webudvikling og brugeroplevelse.",
+  // Define a type for work experience
+  type WorkExperience = {
+    id: number;
+    company: string;
+    position: string;
+    period: string;
+    description: string;
+  };
 
-    // Professional Information
-    currentTitle: "Senior Frontend Developer",
-    yearsExperience: "5+",
-    salaryExpectation: "500.000 - 600.000 DKK",
-    availableFrom: "Straks",
+  const [formData, setFormData] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    location: string;
+    bio: string;
+    currentTitle: string;
+    yearsExperience: string;
+    salaryExpectation: string;
+    availableFrom: string;
+    technicalSkills: string[];
+    softSkills: string[];
+    interests: string[];
+    languages: string[];
+    workExperience: WorkExperience[];
+    education: Education[]; // You can define a type for education as well
+    preferredRoles: string[];
+    preferredCompanySize: string[];
+    workArrangement: string[];
+    industries: string[];
+    cvUrl: string;
+    portfolioUrl: string;
+    linkedinUrl: string;
+    githubUrl: string;
+  }>({
+    // Personal Information - will be loaded from database
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    location: "",
+    bio: "",
 
-    // Skills & Interests
-    technicalSkills: [
-      "React",
-      "TypeScript",
-      "Node.js",
-      "Python",
-      "AWS",
-      "Docker",
-    ],
-    softSkills: ["Teamwork", "Problem Solving", "Communication", "Leadership"],
-    interests: ["AI/ML", "Web3", "Cloud Computing", "UX Design"],
-    languages: [
-      "Dansk (Modersmål)",
-      "Engelsk (Flydende)",
-      "Tysk (Grundlæggende)",
-    ],
+    // Professional Information - will be loaded from database
+    currentTitle: "",
+    yearsExperience: "",
+    salaryExpectation: "",
+    availableFrom: "",
 
-    // Work Experience
-    workExperience: [
-      {
-        id: 1,
-        company: "Tech Solutions ApS",
-        position: "Senior Frontend Developer",
-        period: "2022 - Nu",
-        description:
-          "Leder af frontend-teamet, udvikling af React-applikationer og mentoring af juniorer.",
-      },
-      {
-        id: 2,
-        company: "Digital Agency",
-        position: "Frontend Developer",
-        period: "2020 - 2022",
-        description:
-          "Udvikling af responsive websites og webapplikationer for forskellige kunder.",
-      },
-    ],
+    // Skills & Interests - will be loaded from database
+    technicalSkills: [],
+    softSkills: [],
+    interests: [],
+    languages: [],
 
-    // Education
-    education: [
-      {
-        id: 1,
-        institution: "Danmarks Tekniske Universitet",
-        degree: "Kandidat i Softwareteknologi",
-        period: "2018 - 2020",
-        grade: "10.2",
-      },
-      {
-        id: 2,
-        institution: "Københavns Universitet",
-        degree: "Bachelor i Datalogi",
-        period: "2015 - 2018",
-        grade: "9.8",
-      },
-    ],
+    // Work Experience - will be loaded from database
+    workExperience: [],
 
-    // Job Preferences
-    preferredRoles: ["Frontend Developer", "Full Stack Developer", "Tech Lead"],
-    preferredCompanySize: ["Startup", "Mellemstor virksomhed"],
-    workArrangement: ["Hybrid", "Remote"],
-    industries: ["Tech", "Fintech", "E-commerce", "SaaS"],
+    // Education - will be loaded from database
+    education: [],
 
-    // CV & Documents
-    cvUrl: "cv_anders_nielsen_2024.pdf",
-    portfolioUrl: "https://andersnielsendev.com",
-    linkedinUrl: "https://linkedin.com/in/andersnielsendev",
-    githubUrl: "https://github.com/andersnielsendev",
+    // Job Preferences - will be loaded from database
+    preferredRoles: [],
+    preferredCompanySize: [],
+    workArrangement: [],
+    industries: [],
+
+    // CV & Documents - will be loaded from database
+    cvUrl: "",
+    portfolioUrl: "",
+    linkedinUrl: "",
+    githubUrl: "",
   });
 
   const [newSkill, setNewSkill] = useState("");
   const [activeTab, setActiveTab] = useState("personal");
+
+  // Add state to track which experiences are new vs existing
+  const [experienceState, setExperienceState] = useState<{
+    [key: number]: "new" | "existing" | "deleted";
+  }>({});
+
+  const [, setIsLoading] = useState(true);
 
   const handleEdit = (section: string) => {
     setIsEditing((prev) => ({
@@ -221,6 +225,132 @@ export default function UserProfilePage() {
           toast.success("Professionelle oplysninger gemt");
         } else {
           toast.error("Fejl ved gem af professionelle oplysninger");
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
+      } else if (section === "experience") {
+        console.log("Saving work experience data:", formData.workExperience);
+        console.log("User ID:", user.id);
+
+        let allSuccessful = true;
+        const savedExperiences: typeof formData.workExperience = [];
+
+        for (const experience of formData.workExperience) {
+          // Skip empty experiences
+          if (!experience.company || !experience.position) {
+            console.log("Skipping empty experience:", experience);
+            continue;
+          }
+
+          const state = experienceState[experience.id] || "new";
+          console.log(
+            `Processing experience ${experience.id} with state: ${state}`
+          );
+
+          try {
+            if (state === "new") {
+              console.log("Adding new experience:", experience);
+              // Create a clean experience object including the required id
+              const cleanExperience = {
+                id: experience.id,
+                company: experience.company,
+                position: experience.position,
+                period: experience.period,
+                description: experience.description,
+              };
+
+              const success = await addWorkExperience(user.id, cleanExperience);
+              if (success) {
+                savedExperiences.push(experience);
+              } else {
+                allSuccessful = false;
+                console.error("Failed to add experience:", experience);
+              }
+            } else if (state === "existing") {
+              console.log("Updating existing experience:", experience);
+              const success = await updateWorkExperience(
+                experience.id.toString(),
+                experience
+              );
+              if (success) {
+                savedExperiences.push(experience);
+              } else {
+                allSuccessful = false;
+                console.error("Failed to update experience:", experience);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to save experience:", experience, error);
+            allSuccessful = false;
+          }
+        }
+
+        console.log("Saved experiences:", savedExperiences);
+
+        if (allSuccessful && savedExperiences.length > 0) {
+          toast.success(`${savedExperiences.length} arbejdserfaringer gemt`);
+        } else if (savedExperiences.length > 0) {
+          toast.warning(
+            `${savedExperiences.length} arbejdserfaringer gemt, men nogle fejlede`
+          );
+        } else {
+          toast.error("Ingen arbejdserfaringer blev gemt");
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
+      } else if (section === "skills") {
+        console.log("Saving skills data:", {
+          technicalSkills: formData.technicalSkills,
+          softSkills: formData.softSkills,
+          interests: formData.interests,
+          languages: formData.languages,
+        });
+
+        // Save technical skills
+        console.log("Saving technical skills...");
+        const techSuccess = await updateTechnicalSkills(
+          user.id,
+          formData.technicalSkills
+        );
+        console.log("Technical skills result:", techSuccess);
+
+        // Save soft skills
+        console.log("Saving soft skills...");
+        const softSuccess = await updateSoftSkills(
+          user.id,
+          formData.softSkills
+        );
+        console.log("Soft skills result:", softSuccess);
+
+        // Save interests
+        console.log("Saving interests...");
+        const interestsSuccess = await updateInterests(
+          user.id,
+          formData.interests
+        );
+        console.log("Interests result:", interestsSuccess);
+
+        // Save languages
+        console.log("Saving languages...");
+        const languagesSuccess = await updateLanguages(
+          user.id,
+          formData.languages
+        );
+        console.log("Languages result:", languagesSuccess);
+
+        if (
+          techSuccess &&
+          softSuccess &&
+          interestsSuccess &&
+          languagesSuccess
+        ) {
+          toast.success("Færdigheder og interesser gemt");
+        } else {
+          toast.error("Fejl ved gem af færdigheder og interesser");
           setIsEditing((prev) => ({
             ...prev,
             [section as keyof typeof isEditing]: true,
@@ -302,16 +432,24 @@ export default function UserProfilePage() {
   };
 
   const addExperience = () => {
+    const newId = Date.now();
     const newExp = {
-      id: Date.now(),
+      id: newId,
       company: "",
       position: "",
       period: "",
       description: "",
     };
+
     setFormData((prev) => ({
       ...prev,
       workExperience: [...prev.workExperience, newExp],
+    }));
+
+    // Mark as new
+    setExperienceState((prev) => ({
+      ...prev,
+      [newId]: "new",
     }));
   };
 
@@ -329,6 +467,19 @@ export default function UserProfilePage() {
       ...prev,
       workExperience: prev.workExperience.filter((exp) => exp.id !== id),
     }));
+
+    // If it was an existing experience, mark for deletion
+    if (experienceState[id] === "existing") {
+      // You'd call deleteWorkExperience here for existing records
+      // deleteWorkExperience(id);
+    }
+
+    // Remove from state tracking
+    setExperienceState((prev) => {
+      const newState = { ...prev };
+      delete newState[id];
+      return newState;
+    });
   };
 
   const addEducation = () => {
@@ -365,37 +516,128 @@ export default function UserProfilePage() {
     return `${formData.firstName?.[0] || ""}${formData.lastName?.[0] || ""}`;
   };
 
-  /* useEffect(() => {
-    const loadProfileData = async () => {
+  // Load existing work experiences
+  useEffect(() => {
+    const loadExistingExperiences = async () => {
+      if (!user?.id) return;
+
+      try {
+        const existingExperiences = await getWorkExperiences(user.id);
+
+        if (existingExperiences.length > 0) {
+          // Replace the hardcoded experiences with database ones
+          setFormData((prev) => ({
+            ...prev,
+            workExperience: existingExperiences.map((exp) => ({
+              ...exp,
+              description: exp.description ?? "",
+            })),
+          }));
+
+          // Mark all loaded experiences as existing
+          const existingState: { [key: number]: "existing" } = {};
+          existingExperiences.forEach((exp) => {
+            existingState[exp.id] = "existing";
+          });
+          setExperienceState(existingState);
+        }
+      } catch (error) {
+        console.error("Error loading existing experiences:", error);
+      }
+    };
+
+    loadExistingExperiences();
+  }, [user?.id]);
+
+  // Replace your existing useEffect with this comprehensive one
+  useEffect(() => {
+    const loadAllProfileData = async () => {
       if (!user?.id) return;
 
       setIsLoading(true);
-      try {
-        const profile = (await getProfile(
-          user.id
-        )) as ProfileWithPersonalInfo | null;
+      console.log("Loading all profile data for user:", user.id);
 
-        if (profile?.personal_info) {
-          const personalInfo = profile.personal_info;
-          setFormData((prev) => ({
-            ...prev,
-            firstName:
-              personalInfo?.first_name ||
-              user?.user_metadata?.first_name ||
-              "Anders",
-            lastName:
-              personalInfo?.last_name ||
-              user?.user_metadata?.last_name ||
-              "Nielsen",
-            email:
-              personalInfo?.email || user?.email || "anders.nielsen@email.com",
-            phone: personalInfo?.phone || "+45 12 34 56 78",
-            location: personalInfo?.location || "København, Danmark",
-            bio:
-              personalInfo?.bio ||
-              "Erfaren softwareudvikler med passion for moderne webudvikling og brugeroplevelse.",
-          }));
+      try {
+        // Load all data in parallel for better performance
+        const [
+          personalInfo,
+          professionalInfo,
+          technicalSkills,
+          softSkills,
+          interests,
+          languages,
+          workExperiences,
+          // Add other data calls here as needed
+        ] = await Promise.all([
+          getPersonalInfo(user.id), // Changed from getProfile to getPersonalInfo
+          getProfessionalInfo(user.id),
+          getTechnicalSkill(user.id),
+          getSoftSkill(user.id),
+          getInterest(user.id),
+          getLanguage(user.id),
+          getWorkExperiences(user.id),
+          // Add other data calls here
+        ]);
+
+        console.log("Loaded data:", {
+          personalInfo,
+          professionalInfo,
+          technicalSkills,
+          softSkills,
+          interests,
+          languages,
+          workExperiences,
+        });
+
+        // Update formData with all loaded data
+        setFormData((prev) => ({
+          ...prev,
+          // Personal Information - data comes from PersonalInfo type
+          firstName:
+            personalInfo?.firstName || user?.user_metadata?.first_name || "",
+          lastName:
+            personalInfo?.lastName || user?.user_metadata?.last_name || "",
+          email: personalInfo?.email || user?.email || "",
+          phone: personalInfo?.phone || "",
+          location: personalInfo?.location || "",
+          bio: personalInfo?.bio || "",
+
+          // Professional Information - data comes from ProfessionalInfo type
+          currentTitle: professionalInfo?.currentTitle || "",
+          yearsExperience: professionalInfo?.yearsExperience || "",
+          salaryExpectation: professionalInfo?.salaryExpectation || "",
+          availableFrom: professionalInfo?.availableFrom || "",
+          portfolioUrl: professionalInfo?.links?.portfolio || "",
+          linkedinUrl: professionalInfo?.links?.linkedin || "",
+          githubUrl: professionalInfo?.links?.github || "",
+          cvUrl: professionalInfo?.links?.cv || "",
+
+          // Skills & Interests - arrays come directly from the get functions
+          technicalSkills: technicalSkills || [],
+          softSkills: softSkills || [],
+          interests: interests || [],
+          languages: languages || [],
+
+          // Work Experience - array comes directly from getWorkExperiences
+          workExperience:
+            workExperiences.map((exp) => ({
+              ...exp,
+              description: exp.description || "",
+            })) || [],
+
+          // You can add more data loading here for education, preferences, etc.
+        }));
+
+        // Mark all loaded work experiences as existing
+        if (workExperiences.length > 0) {
+          const existingState: { [key: number]: "existing" } = {};
+          workExperiences.forEach((exp) => {
+            existingState[exp.id] = "existing";
+          });
+          setExperienceState(existingState);
         }
+
+        console.log("Profile data loaded successfully");
       } catch (error) {
         console.error("Error loading profile data:", error);
         toast.error("Fejl ved indlæsning af profil data");
@@ -404,8 +646,13 @@ export default function UserProfilePage() {
       }
     };
 
-    loadProfileData();
-  }, [user]); */
+    loadAllProfileData();
+  }, [
+    user?.id,
+    user?.email,
+    user?.user_metadata?.first_name,
+    user?.user_metadata?.last_name,
+  ]); // Added missing dependencies
 
   return (
     <SidebarInset>

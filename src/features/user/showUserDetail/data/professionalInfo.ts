@@ -95,22 +95,14 @@ export const getProfessionalInfo = async (
             .from("professional_info")
             .select("*")
             .eq("profile_id", userId)
-            .maybeSingle();
+            .single();
 
-        if (error) {
+        if (error && error.code !== "PGRST116") { // PGRST116 is "no rows returned"
             console.error("Error fetching professional info:", error);
             return null;
         }
 
-        if (!data) return null;
-
-        return {
-            currentTitle: data.current_title || "",
-            yearsExperience: data.years_experience || "",
-            salaryExpectation: data.salary_expectation || "",
-            availableFrom: data.available_from || "",
-            links: data.links || null,
-        };
+        return data;
     } catch (error) {
         console.error("Unexpected error fetching professional info:", error);
         return null;

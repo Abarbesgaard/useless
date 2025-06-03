@@ -2,17 +2,37 @@ import supabase from "@/lib/supabase";
 import { WorkExperience } from "../types/WorkExperience";
 export const addWorkExperience = async (
     userId: string,
-    experienceData: WorkExperience,
+    experienceData: Omit<WorkExperience, "id">, // Remove id from the type
 ): Promise<boolean> => {
     try {
-        const { error } = await supabase
+        // Create insert data without the id field - let database auto-generate it
+        const insertData = {
+            profile_id: userId,
+            company: experienceData.company,
+            position: experienceData.position,
+            period: experienceData.period,
+            description: experienceData.description || null,
+        };
+
+        console.log("Inserting work experience data:", insertData);
+
+        const { data, error } = await supabase
             .from("work_experience")
-            .insert({ profile_id: userId, ...experienceData });
+            .insert(insertData)
+            .select();
 
         if (error) {
             console.error("Error adding work experience:", error);
+            console.error(
+                "Error details:",
+                error.message,
+                error.details,
+                error.hint,
+            );
             return false;
         }
+
+        console.log("Successfully inserted work experience:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error adding work experience:", error);
@@ -25,15 +45,38 @@ export const updateWorkExperience = async (
     experienceData: WorkExperience,
 ): Promise<boolean> => {
     try {
-        const { error } = await supabase
+        // Remove id and profile_id from update data since they shouldn't be updated
+        const updateData = { ...experienceData };
+
+        const cleanUpdateData = {
+            company: updateData.company,
+            position: updateData.position,
+            period: updateData.period,
+            description: updateData.description || null,
+            updated_at: new Date().toISOString(), // Update the timestamp
+        };
+
+        console.log("Updating work experience with ID:", experienceId);
+        console.log("Update data:", cleanUpdateData);
+
+        const { data, error } = await supabase
             .from("work_experience")
-            .update(experienceData)
-            .eq("id", experienceId);
+            .update(cleanUpdateData)
+            .eq("id", experienceId)
+            .select(); // Return updated data
 
         if (error) {
             console.error("Error updating work experience:", error);
+            console.error(
+                "Error details:",
+                error.message,
+                error.details,
+                error.hint,
+            );
             return false;
         }
+
+        console.log("Successfully updated work experience:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error updating work experience:", error);
@@ -58,5 +101,27 @@ export const deleteWorkExperience = async (
     } catch (error) {
         console.error("Unexpected error deleting work experience:", error);
         return false;
+    }
+};
+
+export const getWorkExperiences = async (
+    userId: string,
+): Promise<WorkExperience[]> => {
+    try {
+        const { data, error } = await supabase
+            .from("work_experience")
+            .select("*")
+            .eq("profile_id", userId)
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching work experiences:", error);
+            return [];
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error("Unexpected error fetching work experiences:", error);
+        return [];
     }
 };

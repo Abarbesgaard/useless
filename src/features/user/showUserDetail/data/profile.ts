@@ -98,9 +98,9 @@ export const createProfile = async (userId: string): Promise<boolean> => {
     try {
         const { error } = await supabase
             .from("profile")
-            .insert({ 
+            .insert({
                 id: userId,
-                user_id: userId // Add this line
+                user_id: userId, // Add this line
             });
 
         if (error) {
@@ -144,7 +144,7 @@ export const updatePersonalInfo = async (
                 user_id: userId,
                 updated_at: new Date().toISOString(),
             }, {
-                onConflict: 'id'
+                onConflict: "id",
             });
 
         if (profileError) {
@@ -213,11 +213,11 @@ export const getPersonalInfo = async (
         const { data, error } = await supabase
             .from("personal_info")
             .select("*")
-            .eq("profile_id", userId) // Changed from user_id to profile_id to be consistent
+            .eq("profile_id", userId)
             .single();
 
         if (error) {
-            if (error.code === "PGRST116") {
+            if (error.code === "PGRST116") { // No rows returned
                 return null;
             }
             console.error("Error fetching personal info:", error);
