@@ -7,14 +7,26 @@ export const addEducation = async (
     educationData: Education,
 ): Promise<boolean> => {
     try {
-        const { error } = await supabase
+        console.log("Adding education to DB:", { userId, educationData });
+
+        // Don't include the local ID when inserting
+        //eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...dataToInsert } = educationData;
+
+        const { data, error } = await supabase
             .from("education")
-            .insert({ profile_id: userId, ...educationData });
+            .insert({
+                profile_id: userId,
+                ...dataToInsert,
+            })
+            .select(); // Add select to get the inserted data back
 
         if (error) {
             console.error("Error adding education:", error);
             return false;
         }
+
+        console.log("Successfully added education:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error adding education:", error);
@@ -60,5 +72,25 @@ export const deleteEducation = async (
     } catch (error) {
         console.error("Unexpected error deleting education:", error);
         return false;
+    }
+};
+
+export const getEducation = async (userId: string): Promise<Education[]> => {
+    try {
+        const { data, error } = await supabase
+            .from("education")
+            .select("*")
+            .eq("profile_id", userId)
+            .order("id", { ascending: false });
+
+        if (error) {
+            console.error("Error fetching education:", error);
+            return [];
+        }
+
+        return data || [];
+    } catch (error) {
+        console.error("Unexpected error fetching education:", error);
+        return [];
     }
 };

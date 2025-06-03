@@ -21,12 +21,26 @@ import { getTechnicalSkill } from "../data/technicalSkill";
 import { PersonalInfo } from "../types/PersonalInfo";
 import { ProfessionalInfo } from "../types/ProfessionalInfo";
 import { Education } from "../types/Education";
+import { WorkExperience } from "../types/WorkExperience"; // Import the actual type
 import { getSoftSkill } from "../data/softSkill";
 import { getInterest } from "../data/interests";
 import { getLanguage } from "../data/language";
-
-// Add this import
 import { getPersonalInfo } from "../data/profile";
+import {
+  getWorkArrangements,
+  updateWorkArrangements,
+} from "../data/workArrangement";
+import { getPreferredRoles, updatePreferredRoles } from "../data/preferredRole";
+import {
+  getPreferredCompanySizes,
+  updatePreferredCompanySizes,
+} from "../data/preferredCompanySize";
+import { getIndustries, updateIndustries } from "../data/industry";
+import {
+  addEducation as addEducationToDB,
+  updateEducation as updateEducationInDB,
+} from "../data/education";
+import { getEducation } from "../data/education"; // You'll need to create this function
 
 export default function UserProfilePage() {
   const { user } = useAuth();
@@ -66,14 +80,6 @@ export default function UserProfilePage() {
         ).filter((_, i) => i !== index),
       }));
     }
-  };
-  // Define a type for work experience
-  type WorkExperience = {
-    id: number;
-    company: string;
-    position: string;
-    period: string;
-    description: string;
   };
 
   const [formData, setFormData] = useState<{
@@ -146,6 +152,11 @@ export default function UserProfilePage() {
 
   // Add state to track which experiences are new vs existing
   const [experienceState, setExperienceState] = useState<{
+    [key: number]: "new" | "existing" | "deleted";
+  }>({});
+
+  // Add state to track which education entries are new vs existing
+  const [educationState, setEducationState] = useState<{
     [key: number]: "new" | "existing" | "deleted";
   }>({});
 
@@ -356,6 +367,148 @@ export default function UserProfilePage() {
             [section as keyof typeof isEditing]: true,
           }));
         }
+      } else if (section === "preferences") {
+        console.log("Saving preferences data START:", {
+          userId: user.id,
+          preferredRoles: formData.preferredRoles,
+          preferredCompanySize: formData.preferredCompanySize,
+          workArrangement: formData.workArrangement,
+          industries: formData.industries,
+        });
+
+        // Save preferences with individual error handling
+        console.log("Starting preferred roles update...");
+        const rolesSuccess = await updatePreferredRoles(
+          user.id,
+          formData.preferredRoles
+        );
+        console.log("Preferred roles result:", rolesSuccess);
+
+        console.log("Starting company size update...");
+        const companySizeSuccess = await updatePreferredCompanySizes(
+          user.id,
+          formData.preferredCompanySize
+        );
+        console.log("Company size result:", companySizeSuccess);
+
+        console.log("Starting work arrangement update...");
+        const workArrangementSuccess = await updateWorkArrangements(
+          user.id,
+          formData.workArrangement
+        );
+        console.log("Work arrangement result:", workArrangementSuccess);
+
+        console.log("Starting industries update...");
+        const industriesSuccess = await updateIndustries(
+          user.id,
+          formData.industries
+        );
+        console.log("Industries result:", industriesSuccess);
+
+        console.log("All preference updates completed:", {
+          rolesSuccess,
+          companySizeSuccess,
+          workArrangementSuccess,
+          industriesSuccess,
+        });
+
+        if (
+          rolesSuccess &&
+          companySizeSuccess &&
+          workArrangementSuccess &&
+          industriesSuccess
+        ) {
+          toast.success("Jobpræferencer gemt");
+        } else {
+          toast.error("Fejl ved gem af jobpræferencer");
+          console.error("Some preference updates failed:", {
+            rolesSuccess,
+            companySizeSuccess,
+            workArrangementSuccess,
+            industriesSuccess,
+          });
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
+      } else if (section === "education") {
+        console.log("Saving education data:", formData.education);
+        console.log("User ID:", user.id);
+
+        let allSuccessful = true;
+        const savedEducation: typeof formData.education = [];
+
+        for (const education of formData.education) {
+          // Skip empty education entries
+          if (!education.institution && !education.degree) {
+            console.log("Skipping empty education:", education);
+            continue;
+          }
+
+          const state = educationState[education.id] || "new";
+          console.log(
+            `Processing education ${education.id} with state: ${state}`
+          );
+
+          try {
+            if (state === "new") {
+              console.log("Adding new education:", education);
+              // Create a clean education object
+              const cleanEducation = {
+                id: education.id,
+                institution: education.institution,
+                degree: education.degree,
+                period: education.period,
+                grade: education.grade,
+              };
+
+              const success = await addEducationToDB(user.id, cleanEducation);
+              if (success) {
+                savedEducation.push(education);
+                // Mark as existing now that it's saved
+                setEducationState((prev) => ({
+                  ...prev,
+                  [education.id]: "existing",
+                }));
+              } else {
+                allSuccessful = false;
+                console.error("Failed to add education:", education);
+              }
+            } else if (state === "existing") {
+              console.log("Updating existing education:", education);
+              const success = await updateEducationInDB(
+                education.id.toString(),
+                education
+              );
+              if (success) {
+                savedEducation.push(education);
+              } else {
+                allSuccessful = false;
+                console.error("Failed to update education:", education);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to save education:", education, error);
+            allSuccessful = false;
+          }
+        }
+
+        console.log("Saved education:", savedEducation);
+
+        if (allSuccessful && savedEducation.length > 0) {
+          toast.success(`${savedEducation.length} uddannelser gemt`);
+        } else if (savedEducation.length > 0) {
+          toast.warning(
+            `${savedEducation.length} uddannelser gemt, men nogle fejlede`
+          );
+        } else {
+          toast.error("Ingen uddannelser blev gemt");
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
       } else {
         console.log(`Saving ${section} data:`, formData);
         toast.success(`${section} oplysninger gemt`);
@@ -483,8 +636,9 @@ export default function UserProfilePage() {
   };
 
   const addEducation = () => {
+    const newId = Date.now();
     const newEdu = {
-      id: Date.now(),
+      id: newId,
       institution: "",
       degree: "",
       period: "",
@@ -493,6 +647,12 @@ export default function UserProfilePage() {
     setFormData((prev) => ({
       ...prev,
       education: [...prev.education, newEdu],
+    }));
+
+    // Mark as new
+    setEducationState((prev) => ({
+      ...prev,
+      [newId]: "new",
     }));
   };
 
@@ -510,6 +670,19 @@ export default function UserProfilePage() {
       ...prev,
       education: prev.education.filter((edu) => edu.id !== id),
     }));
+
+    // If it was an existing education, you could mark for deletion
+    if (educationState[id] === "existing") {
+      // Call deleteEducation here for existing records if needed
+      // deleteEducation(id.toString());
+    }
+
+    // Remove from state tracking
+    setEducationState((prev) => {
+      const newState = { ...prev };
+      delete newState[id];
+      return newState;
+    });
   };
 
   const getInitials = () => {
@@ -567,32 +740,29 @@ export default function UserProfilePage() {
           interests,
           languages,
           workExperiences,
-          // Add other data calls here as needed
+          education, // Add this
+          workArrangements,
+          preferredRoles,
+          preferredCompanySizes,
+          industries,
         ] = await Promise.all([
-          getPersonalInfo(user.id), // Changed from getProfile to getPersonalInfo
+          getPersonalInfo(user.id),
           getProfessionalInfo(user.id),
           getTechnicalSkill(user.id),
           getSoftSkill(user.id),
           getInterest(user.id),
           getLanguage(user.id),
           getWorkExperiences(user.id),
-          // Add other data calls here
+          getEducation(user.id), // Add this function call
+          getWorkArrangements(user.id),
+          getPreferredRoles(user.id),
+          getPreferredCompanySizes(user.id),
+          getIndustries(user.id),
         ]);
-
-        console.log("Loaded data:", {
-          personalInfo,
-          professionalInfo,
-          technicalSkills,
-          softSkills,
-          interests,
-          languages,
-          workExperiences,
-        });
-
         // Update formData with all loaded data
         setFormData((prev) => ({
           ...prev,
-          // Personal Information - data comes from PersonalInfo type
+          // Personal Information
           firstName:
             personalInfo?.firstName || user?.user_metadata?.first_name || "",
           lastName:
@@ -602,7 +772,7 @@ export default function UserProfilePage() {
           location: personalInfo?.location || "",
           bio: personalInfo?.bio || "",
 
-          // Professional Information - data comes from ProfessionalInfo type
+          // Professional Information
           currentTitle: professionalInfo?.currentTitle || "",
           yearsExperience: professionalInfo?.yearsExperience || "",
           salaryExpectation: professionalInfo?.salaryExpectation || "",
@@ -612,29 +782,45 @@ export default function UserProfilePage() {
           githubUrl: professionalInfo?.links?.github || "",
           cvUrl: professionalInfo?.links?.cv || "",
 
-          // Skills & Interests - arrays come directly from the get functions
+          // Skills & Interests
           technicalSkills: technicalSkills || [],
           softSkills: softSkills || [],
           interests: interests || [],
           languages: languages || [],
 
-          // Work Experience - array comes directly from getWorkExperiences
+          // Work Experience
           workExperience:
-            workExperiences.map((exp) => ({
+            workExperiences.map((exp: WorkExperience) => ({
               ...exp,
-              description: exp.description || "",
+              description: exp.description ?? "",
             })) || [],
 
-          // You can add more data loading here for education, preferences, etc.
+          // Education - now loaded from database
+          education: education || [],
+
+          // Job Preferences - now loaded from database
+          workArrangement: workArrangements || [],
+          preferredRoles: preferredRoles || [],
+          preferredCompanySize: preferredCompanySizes || [],
+          industries: industries || [],
         }));
 
         // Mark all loaded work experiences as existing
         if (workExperiences.length > 0) {
           const existingState: { [key: number]: "existing" } = {};
-          workExperiences.forEach((exp) => {
+          workExperiences.forEach((exp: WorkExperience) => {
             existingState[exp.id] = "existing";
           });
           setExperienceState(existingState);
+        }
+
+        // Mark all loaded education as existing
+        if (education && education.length > 0) {
+          const existingEducationState: { [key: number]: "existing" } = {};
+          education.forEach((edu: Education) => {
+            existingEducationState[edu.id] = "existing";
+          });
+          setEducationState(existingEducationState);
         }
 
         console.log("Profile data loaded successfully");
