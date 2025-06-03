@@ -1,13 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { toast } from "sonner";
 import useAuth from "@/hooks/useAuth";
 import Header from "../components/header";
 import ProfileTabs from "../components/profileTabs";
+import { getProfile, updatePersonalInfo } from "../data/profile";
+import { updateProfessionalInfo } from "../data/professionalInfo";
+import { PersonalInfo } from "../types/PersonalInfo";
+import { ProfessionalInfo } from "../types/ProfessionalInfo";
+
+interface ProfileWithPersonalInfo {
+  personal_info?: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    bio?: string;
+  };
+}
 
 export default function UserProfilePage() {
   const { user } = useAuth();
+  const [, setIsLoading] = useState(false);
 
   const [isEditing, setIsEditing] = useState({
     personal: false,
@@ -138,19 +154,119 @@ export default function UserProfilePage() {
         !prev[section as keyof typeof isEditing],
     }));
   };
-
   const handleSave = async (section: string) => {
+    console.log("handleSave called with section:", section);
+
+    if (!user?.id) {
+      toast.error("Bruger ikke fundet");
+      return;
+    }
+
     try {
       setIsEditing((prev) => ({
         ...prev,
         [section as keyof typeof isEditing]: false,
       }));
-      // Here you would typically save to your backend/Supabase
-      console.log(`Saving ${section} data:`, formData);
-      toast.success(`${section} oplysninger gemt`);
+
+      if (section === "personal") {
+        console.log("Saving personal data:", formData);
+
+        const personalData: PersonalInfo = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          location: formData.location,
+          bio: formData.bio,
+        };
+
+        console.log("Calling updatePersonalInfo with:", personalData);
+
+        const success = await updatePersonalInfo(user.id, personalData);
+
+        console.log("updatePersonalInfo result:", success);
+
+        if (success) {
+          toast.success("Personlige oplysninger gemt");
+        } else {
+          toast.error("Fejl ved gem af personlige oplysninger");
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
+      } else if (section === "professional") {
+        console.log("Saving professional data:", formData);
+
+        const professionalData: ProfessionalInfo = {
+          currentTitle: formData.currentTitle,
+          yearsExperience: formData.yearsExperience,
+          salaryExpectation: formData.salaryExpectation,
+          availableFrom: formData.availableFrom,
+          links: {
+            portfolio: formData.portfolioUrl,
+            linkedin: formData.linkedinUrl,
+            github: formData.githubUrl,
+            cv: formData.cvUrl,
+          },
+        };
+
+        console.log("Calling updateProfessionalInfo with:", professionalData);
+
+        const success = await updateProfessionalInfo(user.id, professionalData);
+
+        console.log("updateProfessionalInfo result:", success);
+
+        if (success) {
+          toast.success("Professionelle oplysninger gemt");
+        } else {
+          toast.error("Fejl ved gem af professionelle oplysninger");
+          setIsEditing((prev) => ({
+            ...prev,
+            [section as keyof typeof isEditing]: true,
+          }));
+        }
+      } else {
+        console.log(`Saving ${section} data:`, formData);
+        toast.success(`${section} oplysninger gemt`);
+      }
     } catch (error) {
       console.error(`Error saving ${section}:`, error);
       toast.error(`Fejl ved gem af ${section} oplysninger`);
+      setIsEditing((prev) => ({
+        ...prev,
+        [section as keyof typeof isEditing]: true,
+      }));
+    }
+  };
+  const handleSaveAll = async () => {
+    const sectionsToSave = [
+      "personal",
+      "professional",
+      "skills",
+      "experience",
+      "education",
+      "preferences",
+    ];
+    let allSuccessful = true;
+    let savedCount = 0;
+
+    for (const section of sectionsToSave) {
+      try {
+        await handleSave(section);
+        savedCount++;
+      } catch (error) {
+        console.error(`Failed to save ${section}:`, error);
+        allSuccessful = false;
+      }
+    }
+
+    if (allSuccessful) {
+      toast.success(`Alle ${savedCount} sektioner blev gemt succesfuldt!`);
+    } else {
+      toast.warning(
+        `${savedCount} af ${sectionsToSave.length} sektioner blev gemt. Se konsollen for fejldetaljer.`
+      );
     }
   };
 
@@ -249,6 +365,48 @@ export default function UserProfilePage() {
     return `${formData.firstName?.[0] || ""}${formData.lastName?.[0] || ""}`;
   };
 
+  /* useEffect(() => {
+    const loadProfileData = async () => {
+      if (!user?.id) return;
+
+      setIsLoading(true);
+      try {
+        const profile = (await getProfile(
+          user.id
+        )) as ProfileWithPersonalInfo | null;
+
+        if (profile?.personal_info) {
+          const personalInfo = profile.personal_info;
+          setFormData((prev) => ({
+            ...prev,
+            firstName:
+              personalInfo?.first_name ||
+              user?.user_metadata?.first_name ||
+              "Anders",
+            lastName:
+              personalInfo?.last_name ||
+              user?.user_metadata?.last_name ||
+              "Nielsen",
+            email:
+              personalInfo?.email || user?.email || "anders.nielsen@email.com",
+            phone: personalInfo?.phone || "+45 12 34 56 78",
+            location: personalInfo?.location || "København, Danmark",
+            bio:
+              personalInfo?.bio ||
+              "Erfaren softwareudvikler med passion for moderne webudvikling og brugeroplevelse.",
+          }));
+        }
+      } catch (error) {
+        console.error("Error loading profile data:", error);
+        toast.error("Fejl ved indlæsning af profil data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProfileData();
+  }, [user]); */
+
   return (
     <SidebarInset>
       <div className="p-6">
@@ -294,7 +452,7 @@ export default function UserProfilePage() {
             <div className="flex gap-3">
               <Button variant="outline">Eksporter Profil</Button>
               <Button variant="outline">Se AI Forslag</Button>
-              <Button>Gem Alle Ændringer</Button>
+              <Button onClick={handleSaveAll}>Gem Alle Ændringer</Button>
             </div>
           </div>
         </div>
