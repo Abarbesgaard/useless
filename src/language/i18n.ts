@@ -6,6 +6,8 @@ import enLanding from "../features/landing/showLanding/language/locale/en.json";
 import daLanding from "../features/landing/showLanding/language/locale/da.json";
 import enSidebar from "./locale/en.json";
 import daSidebar from "./locale/da.json";
+import enApplication from "../features/application/showMain/language/locale/en.json";
+import daApplication from "../features/application/showMain/language/locale/da.json";
 // Add more feature translations as needed
 
 i18n.use(initReactI18next).init({
@@ -13,11 +15,13 @@ i18n.use(initReactI18next).init({
         en: {
             landing: enLanding,
             sidebar: enSidebar,
+            application: enApplication,
             // Add more namespaces
         },
         da: {
             landing: daLanding,
             sidebar: daSidebar,
+            application: daApplication,
             // Add more namespaces
         },
     },

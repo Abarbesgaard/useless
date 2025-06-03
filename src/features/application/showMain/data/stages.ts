@@ -24,6 +24,16 @@ const getIconName = (
 };
 
 // Create Stage
+const getDisplayName = (
+  name: string | { displayName?: string } | unknown,
+): string => {
+  if (typeof name === "string") return name;
+  if (typeof name === "object" && name !== null && "displayName" in name) {
+    return (name as { displayName?: string }).displayName || "Unknown Stage";
+  }
+  return "Unknown Stage";
+};
+
 export const addStage = async (
   stage: Stage,
   applicationId: string,
@@ -34,7 +44,9 @@ export const addStage = async (
     error: userError,
   } = await supabase.auth.getUser();
   if (userError || !user) return null;
+
   const iconName = getIconName(stage.icon);
+  const displayName = getDisplayName(stage.name);
 
   const { data, error } = await supabase
     .from("application_stages")
@@ -46,6 +58,7 @@ export const addStage = async (
       auth_user: user.id,
       is_active: false,
       note: note || null,
+      name: displayName,
     }])
     .select()
     .single();
