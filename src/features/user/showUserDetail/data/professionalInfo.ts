@@ -6,24 +6,30 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        // First ensure a profile exists - use upsert with proper conflict handling
-        const { data: profileData, error: profileError } = await supabase
+        // First ensure a profile exists - create it if it doesn't exist
+        const { data: existingProfile } = await supabase
             .from("profile")
-            .upsert({
-                id: userId,
-                user_id: userId,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            }, {
-                onConflict: "id",
-                ignoreDuplicates: false,
-            })
-            .select()
-            .single();
+            .select("id")
+            .eq("id", userId)
+            .maybeSingle();
 
-        if (profileError) {
-            console.error("Error creating/updating profile:", profileError);
-            return false;
+        if (!existingProfile) {
+            // Create the profile first
+            const { error: profileCreateError } = await supabase
+                .from("profile")
+                .insert({
+                    id: userId,
+                    user_id: userId,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                })
+                .select()
+                .single();
+
+            if (profileCreateError) {
+                console.error("Error creating profile:", profileCreateError);
+                return false;
+            }
         }
 
         // Check if professional_info record exists first
@@ -51,11 +57,11 @@ export const updateProfessionalInfo = async (
                 return false;
             }
         } else {
-            // Use the profile ID from the upsert result
+            // Insert new record with the confirmed profile ID
             const { error } = await supabase
                 .from("professional_info")
                 .insert({
-                    profile_id: profileData.id, // Use the confirmed profile ID
+                    profile_id: userId,
                     current_title: professionalData.currentTitle,
                     years_experience: professionalData.yearsExperience,
                     salary_expectation: professionalData.salaryExpectation,
