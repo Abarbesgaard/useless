@@ -40,10 +40,11 @@ export const updateProfessionalInfo = async (
         }
 
         // Step 4: Check if professional_info record exists
+        // Fix: Use 'id' instead of 'profile_id' to match the foreign key constraint
         const { data: existingRecord, error: recordCheckError } = await supabase
             .from("professional_info")
-            .select("profile_id")
-            .eq("profile_id", userId)
+            .select("id")
+            .eq("id", userId) // Changed from profile_id to id
             .maybeSingle();
 
         console.log("Professional info check:", {
@@ -73,7 +74,7 @@ export const updateProfessionalInfo = async (
                     links: professionalData.links,
                     updated_at: new Date().toISOString(),
                 })
-                .eq("profile_id", userId)
+                .eq("id", userId) // Changed from profile_id to id
                 .select("*");
 
             console.log("Update result:", { updateResult, updateError });
@@ -86,7 +87,7 @@ export const updateProfessionalInfo = async (
             console.log("Inserting new professional info");
 
             const insertData = {
-                profile_id: userId,
+                id: userId, // Changed from profile_id to id to match foreign key constraint
                 current_title: professionalData.currentTitle,
                 years_experience: professionalData.yearsExperience,
                 salary_expectation: professionalData.salaryExpectation,
@@ -129,7 +130,7 @@ export const getProfessionalInfo = async (
         const { data, error } = await supabase
             .from("professional_info")
             .select("*")
-            .eq("profile_id", userId)
+            .eq("id", userId) // Changed from profile_id to id
             .single();
 
         if (error && error.code !== "PGRST116") {
