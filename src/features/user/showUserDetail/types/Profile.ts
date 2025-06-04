@@ -29,7 +29,7 @@ export interface ComprehensiveProfile {
     work_experience?: Array<WorkExperience>;
     education?: Array<Education>;
     preferred_roles?: Array<PreferredRole>;
-    preferred_company_size?: Array<PreferredCompanySize>;
-    work_arrangement?: Array<WorkArrangement>;
+    preferred_company_sizes?: Array<PreferredCompanySize>;
+    work_arrangements?: Array<WorkArrangement>;
     industries?: Array<Industry>;
 }

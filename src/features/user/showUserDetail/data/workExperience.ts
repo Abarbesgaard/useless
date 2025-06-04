@@ -14,9 +14,7 @@ export const addWorkExperience = async (
             description: experienceData.description || null,
         };
 
-        console.log("Inserting work experience data:", insertData);
-
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from("work_experience")
             .insert(insertData)
             .select();
@@ -32,7 +30,6 @@ export const addWorkExperience = async (
             return false;
         }
 
-        console.log("Successfully inserted work experience:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error adding work experience:", error);
@@ -56,10 +53,7 @@ export const updateWorkExperience = async (
             updated_at: new Date().toISOString(), // Update the timestamp
         };
 
-        console.log("Updating work experience with ID:", experienceId);
-        console.log("Update data:", cleanUpdateData);
-
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from("work_experience")
             .update(cleanUpdateData)
             .eq("id", experienceId)
@@ -76,7 +70,6 @@ export const updateWorkExperience = async (
             return false;
         }
 
-        console.log("Successfully updated work experience:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error updating work experience:", error);

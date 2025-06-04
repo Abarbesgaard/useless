@@ -16,8 +16,10 @@ import useAuth from "@/hooks/useAuth";
 import { Link, useLocation } from "react-router";
 import { ModeToggle } from "./ModeToggle";
 import i18n from "../../../src/language/i18n";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getPersonalInfo } from "@/data/personalInfo";
+import { PersonalInfo } from "@/types/PersonalInfo";
 
 export default function AppSidebar() {
   const { user, signOut } = useAuth();
@@ -25,6 +27,7 @@ export default function AppSidebar() {
   const currentPath = location.pathname;
   const { t } = useTranslation("sidebar");
   const [currentLang, setCurrentLang] = useState(i18n.language);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo | null>(null);
 
   const items = [
     {
@@ -43,7 +46,18 @@ export default function AppSidebar() {
       icon: Archive,
     },
   ];
+  useEffect(() => {
+    const fetchPersonalInfo = async () => {
+      if (user?.id) {
+        const info = await getPersonalInfo(user.id);
+        setPersonalInfo(info);
+      }
+    };
 
+    fetchPersonalInfo();
+  }, [user?.id]);
+
+  const displayName = personalInfo?.firstName || user?.email || "User";
   const toggleLanguage = () => {
     const newLang = i18n.language === "en" ? "da" : "en";
     i18n.changeLanguage(newLang);
@@ -52,11 +66,18 @@ export default function AppSidebar() {
   return (
     <Sidebar className=" h-full">
       <SidebarHeader>
-        <h1 className="text-lg font-bold">{t("appName", "Strackly")}</h1>
-        <p className="text-sm ">{t("appDescription", "Job Search Tracker")}</p>
-        <p className="text-xl font-semibold">
-          {t("hello", "Hello")}, {user?.email}
-        </p>
+        <Link
+          to="/app/profile"
+          className="block hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md p-2 transition-colors cursor-pointer"
+        >
+          <h1 className="text-lg font-bold">{t("appName", "Strackly")}</h1>
+          <p className="text-sm ">
+            {t("appDescription", "Job Search Tracker")}
+          </p>
+          <p className="text-xl font-semibold">
+            {t("hello", "Hello")}, {displayName}!
+          </p>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

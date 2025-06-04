@@ -67,43 +67,32 @@ export const updateWorkArrangements = async (
     userId: string,
     arrangements: string[],
 ): Promise<boolean> => {
-    console.log("updateWorkArrangements called with:", {
-        userId,
-        arrangements,
-    });
-
     try {
         // Check if profile exists first
-        console.log("Checking if profile exists for userId:", userId);
         const { data: existingProfile, error: profileCheckError } =
             await supabase
                 .from("profile")
                 .select("id")
                 .eq("id", userId)
                 .single();
-
-        console.log("Profile check result:", {
-            existingProfile,
-            profileCheckError,
-        });
+        if (profileCheckError) {
+            console.error(
+                "Error checking profile existence:",
+                profileCheckError,
+            );
+            return false;
+        }
 
         // If profile doesn't exist, create it
         if (!existingProfile) {
-            console.log("Creating new profile for userId:", userId);
-            const { data: newProfile, error: profileCreateError } =
-                await supabase
-                    .from("profile")
-                    .insert({
-                        id: userId,
-                        updated_at: new Date().toISOString(),
-                    })
-                    .select()
-                    .single();
-
-            console.log("Profile creation result:", {
-                newProfile,
-                profileCreateError,
-            });
+            const { error: profileCreateError } = await supabase
+                .from("profile")
+                .insert({
+                    id: userId,
+                    updated_at: new Date().toISOString(),
+                })
+                .select()
+                .single();
 
             if (profileCreateError) {
                 console.error("Error creating profile:", profileCreateError);
@@ -111,31 +100,29 @@ export const updateWorkArrangements = async (
             }
         }
 
-        // Delete existing work arrangements
-        console.log("Deleting existing work arrangements for userId:", userId);
         const { error: deleteError } = await supabase
             .from("work_arrangement")
             .delete()
             .eq("profile_id", userId);
-
-        console.log("Delete result:", { deleteError });
+        if (deleteError) {
+            console.error(
+                "Error deleting existing work arrangements:",
+                deleteError,
+            );
+            return false;
+        }
 
         // Insert new arrangements
         if (arrangements.length > 0) {
-            console.log("Inserting new arrangements:", arrangements);
             const arrangementsData = arrangements.map((arrangement) => ({
                 profile_id: userId,
                 arrangement_type: arrangement,
             }));
 
-            console.log("Arrangements data to insert:", arrangementsData);
-
-            const { data: insertData, error: insertError } = await supabase
+            const { error: insertError } = await supabase
                 .from("work_arrangement")
                 .insert(arrangementsData)
                 .select();
-
-            console.log("Insert result:", { insertData, insertError });
 
             if (insertError) {
                 console.error(
@@ -146,7 +133,6 @@ export const updateWorkArrangements = async (
             }
         }
 
-        console.log("updateWorkArrangements completed successfully");
         return true;
     } catch (error) {
         console.error("Unexpected error updating work arrangements:", error);

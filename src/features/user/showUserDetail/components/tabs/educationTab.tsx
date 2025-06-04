@@ -7,7 +7,7 @@ import { Save, Edit, Plus, X, GraduationCap } from "lucide-react";
 interface EducationTabProps {
   formData: {
     education: Array<{
-      id: number;
+      id: string;
       institution: string;
       degree: string;
       period: string;
@@ -20,8 +20,8 @@ interface EducationTabProps {
   handleEdit: (section: string) => void;
   handleSave: (section: string) => void;
   addEducation: () => void;
-  removeEducation: (id: number) => void;
-  updateEducation: (id: number, field: string, value: string) => void;
+  removeEducation: (id: string) => void;
+  updateEducation: (id: string, field: string, value: string) => void;
 }
 
 export default function EducationTab({
@@ -73,7 +73,7 @@ export default function EducationTab({
             <div key={edu.id} className="border rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-5 w-5 text-green-600" />
+                  <GraduationCap className="h-5 w-5 text-chart-2" />
                   <span className="font-medium">
                     {edu.degree || `Uddannelse ${index + 1}`}
                   </span>
@@ -91,47 +91,59 @@ export default function EducationTab({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <Label>Institution</Label>
+                  <Label htmlFor={`institution-${edu.id}`}>Institution</Label>
                   <Input
-                    value={edu.institution}
-                    onChange={(e) =>
-                      updateEducation(edu.id, "institution", e.target.value)
-                    }
+                    id={`institution-${edu.id}`}
+                    name={`institution-${edu.id}`}
+                    value={edu.institution || ""}
+                    onChange={(e) => {
+                      updateEducation(edu.id, "institution", e.target.value);
+                    }}
                     disabled={!isEditing.education}
                     placeholder="Universitet/Skole"
+                    autoComplete="organization"
                   />
                 </div>
                 <div>
-                  <Label>Grad/Uddannelse</Label>
+                  <Label htmlFor={`degree-${edu.id}`}>Grad/Uddannelse</Label>
                   <Input
-                    value={edu.degree}
-                    onChange={(e) =>
-                      updateEducation(edu.id, "degree", e.target.value)
-                    }
+                    id={`degree-${edu.id}`}
+                    name={`degree-${edu.id}`}
+                    value={edu.degree || ""}
+                    onChange={(e) => {
+                      updateEducation(edu.id, "degree", e.target.value);
+                    }}
                     disabled={!isEditing.education}
                     placeholder="Kandidat, Bachelor, etc."
+                    autoComplete="off"
                   />
                 </div>
                 <div>
-                  <Label>Periode</Label>
+                  <Label htmlFor={`period-${edu.id}`}>Periode</Label>
                   <Input
-                    value={edu.period}
-                    onChange={(e) =>
-                      updateEducation(edu.id, "period", e.target.value)
-                    }
+                    id={`period-${edu.id}`}
+                    name={`period-${edu.id}`}
+                    value={edu.period || ""}
+                    onChange={(e) => {
+                      updateEducation(edu.id, "period", e.target.value);
+                    }}
                     disabled={!isEditing.education}
                     placeholder="eks. 2018 - 2020"
+                    autoComplete="off"
                   />
                 </div>
                 <div>
-                  <Label>Karakter/GPA</Label>
+                  <Label htmlFor={`grade-${edu.id}`}>Karakter/GPA</Label>
                   <Input
-                    value={edu.grade}
-                    onChange={(e) =>
-                      updateEducation(edu.id, "grade", e.target.value)
-                    }
+                    id={`grade-${edu.id}`}
+                    name={`grade-${edu.id}`}
+                    value={edu.grade || ""}
+                    onChange={(e) => {
+                      updateEducation(edu.id, "grade", e.target.value);
+                    }}
                     disabled={!isEditing.education}
                     placeholder="eks. 10.2"
+                    autoComplete="off"
                   />
                 </div>
               </div>

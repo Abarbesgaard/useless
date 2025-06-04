@@ -45,8 +45,8 @@ interface TabsProps {
   removeExperience: (id: number) => void;
   updateExperience: (id: number, field: string, value: string) => void;
   addEducation: () => void;
-  removeEducation: (id: number) => void;
-  updateEducation: (id: number, field: string, value: string) => void;
+  removeEducation: (id: string) => void;
+  updateEducation: (id: string, field: string, value: string) => void;
   addPreference: (preferenceType: string) => void;
   removePreference: (preferenceType: string, index: number) => void;
   newPreference: string;
@@ -225,7 +225,12 @@ export default function ProfileTabs({
           formData={{
             education: Array.isArray(formData.education)
               ? formData.education.map((edu) => ({
-                  id: typeof edu.id === "number" ? edu.id : 0,
+                  id:
+                    typeof edu.id === "string"
+                      ? edu.id
+                      : typeof edu.id === "number"
+                      ? String(edu.id)
+                      : "",
                   institution:
                     typeof edu.institution === "string" ? edu.institution : "",
                   degree: typeof edu.degree === "string" ? edu.degree : "",

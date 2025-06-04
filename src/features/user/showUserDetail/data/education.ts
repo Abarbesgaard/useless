@@ -1,7 +1,6 @@
 import supabase from "@/lib/supabase";
 import { Education } from "../types/Education";
 
-// Education CRUD
 export const addEducation = async (
     userId: string,
     educationData: Education,

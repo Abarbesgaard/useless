@@ -11,13 +11,19 @@ import { LandingPage } from "../features/landing/showLanding/view/view";
 import { NotFoundPage } from "../features/errors/view/view";
 import Main from "../features/application/showMain/view/main";
 import UserProfilePage from "../features/user/showUserDetail/view/details";
+import PublicSharedProfile from "../features/user/showUserDetail/components/PublicSharedProfile";
 
 export default function AppLayout() {
+  console.log("AppLayout rendering");
   return (
     <div className="w-full min-h-screen">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/app/*" element={<AuthenticatedApp />} />
+        <Route
+          path="/shared-profile/:shareId"
+          element={<PublicSharedProfile />}
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
@@ -36,7 +42,7 @@ function AuthenticatedApp() {
   }
 
   return (
-    <div className="flex w-screen h-screen overflow-hidden">
+    <div className="flex w-screen h-screen ">
       {/* Sidebar */}
       <AppSidebar />
 

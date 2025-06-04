@@ -6,13 +6,7 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        console.log("=== DEBUGGING PROFESSIONAL INFO ===");
-        console.log("userId:", userId);
-        console.log("professionalData:", professionalData);
-
-        // First ensure a profile exists
-        console.log("Creating/updating profile...");
-        const { data: profileData, error: profileError } = await supabase
+        const { error: profileError } = await supabase
             .from("profile")
             .upsert({
                 id: userId,
@@ -22,8 +16,6 @@ export const updateProfessionalInfo = async (
                 onConflict: "id",
             })
             .select();
-
-        console.log("Profile upsert result:", { profileData, profileError });
 
         if (profileError) {
             console.error("Error creating/updating profile:", profileError);
@@ -37,11 +29,7 @@ export const updateProfessionalInfo = async (
             .eq("profile_id", userId)
             .maybeSingle();
 
-        console.log("Existing professional record:", existingRecord);
-
         if (existingRecord) {
-            // Update existing record
-            console.log("Updating existing professional info...");
             const { error } = await supabase
                 .from("professional_info")
                 .update({
@@ -59,8 +47,6 @@ export const updateProfessionalInfo = async (
                 return false;
             }
         } else {
-            // Insert new record
-            console.log("Inserting new professional info...");
             const { error } = await supabase
                 .from("professional_info")
                 .insert({
@@ -79,7 +65,6 @@ export const updateProfessionalInfo = async (
             }
         }
 
-        console.log("=== SUCCESS ===");
         return true;
     } catch (error) {
         console.error("Unexpected error updating professional info:", error);
@@ -97,12 +82,18 @@ export const getProfessionalInfo = async (
             .eq("profile_id", userId)
             .single();
 
-        if (error && error.code !== "PGRST116") { // PGRST116 is "no rows returned"
+        if (error && error.code !== "PGRST116") {
             console.error("Error fetching professional info:", error);
             return null;
         }
 
-        return data;
+        return {
+            currentTitle: data.current_title,
+            yearsExperience: data.years_experience,
+            salaryExpectation: data.salary_expectation,
+            availableFrom: data.available_from,
+            links: data.links,
+        };
     } catch (error) {
         console.error("Unexpected error fetching professional info:", error);
         return null;

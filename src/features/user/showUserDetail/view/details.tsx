@@ -41,6 +41,7 @@ import {
   updateEducation as updateEducationInDB,
 } from "../data/education";
 import { getEducation } from "../data/education"; // You'll need to create this function
+import ShareProfileDialog from "../components/ShareProfileDialog";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
@@ -170,8 +171,6 @@ export default function UserProfilePage() {
     }));
   };
   const handleSave = async (section: string) => {
-    console.log("handleSave called with section:", section);
-
     if (!user?.id) {
       toast.error("Bruger ikke fundet");
       return;
@@ -184,8 +183,6 @@ export default function UserProfilePage() {
       }));
 
       if (section === "personal") {
-        console.log("Saving personal data:", formData);
-
         const personalData: PersonalInfo = {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -195,11 +192,7 @@ export default function UserProfilePage() {
           bio: formData.bio,
         };
 
-        console.log("Calling updatePersonalInfo with:", personalData);
-
         const success = await updatePersonalInfo(user.id, personalData);
-
-        console.log("updatePersonalInfo result:", success);
 
         if (success) {
           toast.success("Personlige oplysninger gemt");
@@ -211,26 +204,20 @@ export default function UserProfilePage() {
           }));
         }
       } else if (section === "professional") {
-        console.log("Saving professional data:", formData);
-
         const professionalData: ProfessionalInfo = {
           currentTitle: formData.currentTitle,
           yearsExperience: formData.yearsExperience,
           salaryExpectation: formData.salaryExpectation,
           availableFrom: formData.availableFrom,
           links: {
-            portfolio: formData.portfolioUrl,
-            linkedin: formData.linkedinUrl,
-            github: formData.githubUrl,
-            cv: formData.cvUrl,
+            portfolio: formData.portfolioUrl || undefined,
+            linkedin: formData.linkedinUrl || undefined,
+            github: formData.githubUrl || undefined,
+            cv: formData.cvUrl || undefined,
           },
         };
 
-        console.log("Calling updateProfessionalInfo with:", professionalData);
-
         const success = await updateProfessionalInfo(user.id, professionalData);
-
-        console.log("updateProfessionalInfo result:", success);
 
         if (success) {
           toast.success("Professionelle oplysninger gemt");
@@ -242,27 +229,19 @@ export default function UserProfilePage() {
           }));
         }
       } else if (section === "experience") {
-        console.log("Saving work experience data:", formData.workExperience);
-        console.log("User ID:", user.id);
-
         let allSuccessful = true;
         const savedExperiences: typeof formData.workExperience = [];
 
         for (const experience of formData.workExperience) {
           // Skip empty experiences
           if (!experience.company || !experience.position) {
-            console.log("Skipping empty experience:", experience);
             continue;
           }
 
           const state = experienceState[experience.id] || "new";
-          console.log(
-            `Processing experience ${experience.id} with state: ${state}`
-          );
 
           try {
             if (state === "new") {
-              console.log("Adding new experience:", experience);
               // Create a clean experience object including the required id
               const cleanExperience = {
                 id: experience.id,
@@ -277,10 +256,8 @@ export default function UserProfilePage() {
                 savedExperiences.push(experience);
               } else {
                 allSuccessful = false;
-                console.error("Failed to add experience:", experience);
               }
             } else if (state === "existing") {
-              console.log("Updating existing experience:", experience);
               const success = await updateWorkExperience(
                 experience.id.toString(),
                 experience
@@ -289,7 +266,6 @@ export default function UserProfilePage() {
                 savedExperiences.push(experience);
               } else {
                 allSuccessful = false;
-                console.error("Failed to update experience:", experience);
               }
             }
           } catch (error) {
@@ -297,8 +273,6 @@ export default function UserProfilePage() {
             allSuccessful = false;
           }
         }
-
-        console.log("Saved experiences:", savedExperiences);
 
         if (allSuccessful && savedExperiences.length > 0) {
           toast.success(`${savedExperiences.length} arbejdserfaringer gemt`);
@@ -314,45 +288,22 @@ export default function UserProfilePage() {
           }));
         }
       } else if (section === "skills") {
-        console.log("Saving skills data:", {
-          technicalSkills: formData.technicalSkills,
-          softSkills: formData.softSkills,
-          interests: formData.interests,
-          languages: formData.languages,
-        });
-
-        // Save technical skills
-        console.log("Saving technical skills...");
         const techSuccess = await updateTechnicalSkills(
           user.id,
           formData.technicalSkills
         );
-        console.log("Technical skills result:", techSuccess);
-
-        // Save soft skills
-        console.log("Saving soft skills...");
         const softSuccess = await updateSoftSkills(
           user.id,
           formData.softSkills
         );
-        console.log("Soft skills result:", softSuccess);
-
-        // Save interests
-        console.log("Saving interests...");
         const interestsSuccess = await updateInterests(
           user.id,
           formData.interests
         );
-        console.log("Interests result:", interestsSuccess);
-
-        // Save languages
-        console.log("Saving languages...");
         const languagesSuccess = await updateLanguages(
           user.id,
           formData.languages
         );
-        console.log("Languages result:", languagesSuccess);
-
         if (
           techSuccess &&
           softSuccess &&
@@ -368,50 +319,22 @@ export default function UserProfilePage() {
           }));
         }
       } else if (section === "preferences") {
-        console.log("Saving preferences data START:", {
-          userId: user.id,
-          preferredRoles: formData.preferredRoles,
-          preferredCompanySize: formData.preferredCompanySize,
-          workArrangement: formData.workArrangement,
-          industries: formData.industries,
-        });
-
-        // Save preferences with individual error handling
-        console.log("Starting preferred roles update...");
         const rolesSuccess = await updatePreferredRoles(
           user.id,
           formData.preferredRoles
         );
-        console.log("Preferred roles result:", rolesSuccess);
-
-        console.log("Starting company size update...");
         const companySizeSuccess = await updatePreferredCompanySizes(
           user.id,
           formData.preferredCompanySize
         );
-        console.log("Company size result:", companySizeSuccess);
-
-        console.log("Starting work arrangement update...");
         const workArrangementSuccess = await updateWorkArrangements(
           user.id,
           formData.workArrangement
         );
-        console.log("Work arrangement result:", workArrangementSuccess);
-
-        console.log("Starting industries update...");
         const industriesSuccess = await updateIndustries(
           user.id,
           formData.industries
         );
-        console.log("Industries result:", industriesSuccess);
-
-        console.log("All preference updates completed:", {
-          rolesSuccess,
-          companySizeSuccess,
-          workArrangementSuccess,
-          industriesSuccess,
-        });
-
         if (
           rolesSuccess &&
           companySizeSuccess &&
@@ -433,28 +356,19 @@ export default function UserProfilePage() {
           }));
         }
       } else if (section === "education") {
-        console.log("Saving education data:", formData.education);
-        console.log("User ID:", user.id);
-
         let allSuccessful = true;
         const savedEducation: typeof formData.education = [];
 
         for (const education of formData.education) {
           // Skip empty education entries
           if (!education.institution && !education.degree) {
-            console.log("Skipping empty education:", education);
             continue;
           }
 
           const state = educationState[education.id] || "new";
-          console.log(
-            `Processing education ${education.id} with state: ${state}`
-          );
 
           try {
             if (state === "new") {
-              console.log("Adding new education:", education);
-              // Create a clean education object
               const cleanEducation = {
                 id: education.id,
                 institution: education.institution,
@@ -476,7 +390,6 @@ export default function UserProfilePage() {
                 console.error("Failed to add education:", education);
               }
             } else if (state === "existing") {
-              console.log("Updating existing education:", education);
               const success = await updateEducationInDB(
                 education.id.toString(),
                 education
@@ -494,8 +407,6 @@ export default function UserProfilePage() {
           }
         }
 
-        console.log("Saved education:", savedEducation);
-
         if (allSuccessful && savedEducation.length > 0) {
           toast.success(`${savedEducation.length} uddannelser gemt`);
         } else if (savedEducation.length > 0) {
@@ -510,7 +421,6 @@ export default function UserProfilePage() {
           }));
         }
       } else {
-        console.log(`Saving ${section} data:`, formData);
         toast.success(`${section} oplysninger gemt`);
       }
     } catch (error) {
@@ -656,31 +566,31 @@ export default function UserProfilePage() {
     }));
   };
 
-  const updateEducation = (id: number, field: string, value: string) => {
+  const updateEducation = (id: string, field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      education: prev.education.map((edu) =>
-        edu.id === id ? { ...edu, [field]: value } : edu
-      ),
+      education: prev.education.map((edu) => {
+        return String(edu.id) === String(id) ? { ...edu, [field]: value } : edu;
+      }),
     }));
   };
 
-  const removeEducation = (id: number) => {
+  const removeEducation = (id: string) => {
     setFormData((prev) => ({
       ...prev,
-      education: prev.education.filter((edu) => edu.id !== id),
+      education: prev.education.filter((edu) => String(edu.id) !== id),
     }));
 
     // If it was an existing education, you could mark for deletion
-    if (educationState[id] === "existing") {
+    if (educationState[id as unknown as number] === "existing") {
       // Call deleteEducation here for existing records if needed
-      // deleteEducation(id.toString());
+      // deleteEducation(id);
     }
 
     // Remove from state tracking
     setEducationState((prev) => {
       const newState = { ...prev };
-      delete newState[id];
+      delete newState[id as unknown as number];
       return newState;
     });
   };
@@ -822,8 +732,6 @@ export default function UserProfilePage() {
           });
           setEducationState(existingEducationState);
         }
-
-        console.log("Profile data loaded successfully");
       } catch (error) {
         console.error("Error loading profile data:", error);
         toast.error("Fejl ved indlæsning af profil data");
@@ -885,6 +793,7 @@ export default function UserProfilePage() {
             <div className="flex gap-3">
               <Button variant="outline">Eksporter Profil</Button>
               <Button variant="outline">Se AI Forslag</Button>
+              <ShareProfileDialog userId={user?.id ?? ""} formData={formData} />
               <Button onClick={handleSaveAll}>Gem Alle Ændringer</Button>
             </div>
           </div>
