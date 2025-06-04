@@ -6,13 +6,11 @@ export const addEducation = async (
     educationData: Education,
 ): Promise<boolean> => {
     try {
-        console.log("Adding education to DB:", { userId, educationData });
-
         // Don't include the local ID when inserting
         //eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...dataToInsert } = educationData;
 
-        const { data, error } = await supabase
+        const { error } = await supabase
             .from("education")
             .insert({
                 profile_id: userId,
@@ -25,7 +23,6 @@ export const addEducation = async (
             return false;
         }
 
-        console.log("Successfully added education:", data);
         return true;
     } catch (error) {
         console.error("Unexpected error adding education:", error);

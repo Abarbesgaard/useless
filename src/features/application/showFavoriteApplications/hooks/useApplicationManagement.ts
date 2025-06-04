@@ -405,18 +405,7 @@ export function useApplicationManagement() {
         if (!user || !app) return;
 
         try {
-            console.log("User:", user);
-            console.log("App being archived:", app);
-            console.log(
-                "Toggling archive status for app:",
-                app.id,
-                "Current status:",
-                app.is_archived,
-            );
-
             const updatedApp = await updateArchiveStatus(app);
-
-            console.log("Update result:", updatedApp);
 
             if (!updatedApp) {
                 throw new Error("updateArchiveStatus returned null/undefined");

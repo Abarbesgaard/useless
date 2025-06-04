@@ -14,7 +14,6 @@ import UserProfilePage from "../features/user/showUserDetail/view/details";
 import PublicSharedProfile from "../features/user/showUserDetail/components/PublicSharedProfile";
 
 export default function AppLayout() {
-  console.log("AppLayout rendering");
   return (
     <div className="w-full min-h-screen">
       <Routes>

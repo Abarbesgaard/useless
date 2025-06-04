@@ -61,7 +61,6 @@ function EditApplication() {
         const result = await getApplicationWithDetails(id);
 
         if (!result || !result.application) {
-          console.log("No application found, redirecting to home");
           navigate("/");
           return;
         }
@@ -262,8 +261,6 @@ function EditApplication() {
         created_at: application.created_at,
         updated_at: application.updated_at,
       };
-
-      console.log("Updating application with data:", applicationUpdate);
 
       await updateApplication(applicationUpdate);
       navigate("/app/");

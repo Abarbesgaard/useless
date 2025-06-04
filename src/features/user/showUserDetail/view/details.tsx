@@ -650,7 +650,6 @@ export default function UserProfilePage() {
       if (!user?.id) return;
 
       setIsLoading(true);
-      console.log("Loading all profile data for user:", user.id);
 
       try {
         // Load all data in parallel with proper error handling

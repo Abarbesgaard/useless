@@ -39,10 +39,6 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        console.log("=== UPDATING PROFESSIONAL INFO ===");
-        console.log("User ID:", userId);
-        console.log("Professional data:", professionalData);
-
         // Step 1: Ensure profile exists
         const profileExists = await ensureProfileExists(userId);
         if (!profileExists) {
@@ -62,11 +58,6 @@ export const updateProfessionalInfo = async (
             .eq("id", userId)
             .single();
 
-        console.log("Final profile check:", {
-            profileCheck,
-            profileCheckError,
-        });
-
         if (profileCheckError || !profileCheck) {
             console.error("Profile still doesn't exist after creation attempt");
             return false;
@@ -79,11 +70,6 @@ export const updateProfessionalInfo = async (
             .eq("profile_id", userId) // Back to profile_id
             .maybeSingle();
 
-        console.log("Professional info check:", {
-            existingRecord,
-            recordCheckError,
-        });
-
         if (recordCheckError && recordCheckError.code !== "PGRST116") {
             console.error(
                 "Error checking for existing professional info:",
@@ -94,9 +80,7 @@ export const updateProfessionalInfo = async (
 
         // Step 5: Update or insert
         if (existingRecord) {
-            console.log("Updating existing professional info");
-
-            const { data: updateResult, error: updateError } = await supabase
+            const { error: updateError } = await supabase
                 .from("professional_info")
                 .update({
                     current_title: professionalData.currentTitle,
@@ -109,15 +93,11 @@ export const updateProfessionalInfo = async (
                 .eq("profile_id", userId) // Back to profile_id
                 .select("*");
 
-            console.log("Update result:", { updateResult, updateError });
-
             if (updateError) {
                 console.error("Error updating professional info:", updateError);
                 return false;
             }
         } else {
-            console.log("Inserting new professional info");
-
             const insertData = {
                 profile_id: userId, // Back to profile_id
                 current_title: professionalData.currentTitle,
@@ -129,18 +109,14 @@ export const updateProfessionalInfo = async (
                 updated_at: new Date().toISOString(),
             };
 
-            console.log("Insert data:", insertData);
-
             // Try insert with upsert to handle potential race conditions
-            const { data: insertResult, error: insertError } = await supabase
+            const { error: insertError } = await supabase
                 .from("professional_info")
                 .upsert(insertData, {
                     onConflict: "profile_id",
                     ignoreDuplicates: false,
                 })
                 .select("*");
-
-            console.log("Insert result:", { insertResult, insertError });
 
             if (insertError) {
                 console.error(
@@ -151,7 +127,6 @@ export const updateProfessionalInfo = async (
             }
         }
 
-        console.log("Professional info update completed successfully");
         return true;
     } catch (error) {
         console.error("Unexpected error updating professional info:", error);
@@ -161,9 +136,6 @@ export const updateProfessionalInfo = async (
 
 const ensureProfileExists = async (userId: string): Promise<boolean> => {
     try {
-        console.log("=== ENSURING PROFILE EXISTS ===");
-        console.log("User ID:", userId);
-
         // Check if profile already exists
         const { data: existingProfile, error: checkError } = await supabase
             .from("profile")
@@ -171,30 +143,23 @@ const ensureProfileExists = async (userId: string): Promise<boolean> => {
             .eq("id", userId)
             .maybeSingle();
 
-        console.log("Profile check result:", { existingProfile, checkError });
-
         if (checkError && checkError.code !== "PGRST116") {
             console.error("Error checking for profile:", checkError);
             return false;
         }
 
         if (existingProfile) {
-            console.log("Profile already exists:", existingProfile);
             return true;
         }
 
         // Get current user to ensure we have the right data
         const { data: { user }, error: userError } = await supabase.auth
             .getUser();
-        console.log("Current user data:", { user, userError });
 
         if (userError || !user) {
             console.error("No authenticated user found:", userError);
             return false;
         }
-
-        // Try different approaches for profile creation
-        console.log("Creating new profile - Attempt 1: Basic insert");
 
         const profileData = {
             id: userId,
@@ -203,23 +168,16 @@ const ensureProfileExists = async (userId: string): Promise<boolean> => {
             updated_at: new Date().toISOString(),
         };
 
-        console.log("Profile data to insert:", profileData);
-
-        const { data: newProfile, error: insertError } = await supabase
+        const { error: insertError } = await supabase
             .from("profile")
             .insert(profileData)
             .select("*")
             .single();
 
-        console.log("Insert result:", { newProfile, insertError });
-
         if (insertError) {
             console.error("Profile creation failed with error:", insertError);
 
-            // Try with upsert instead
-            console.log("Trying with upsert instead...");
-
-            const { data: upsertProfile, error: upsertError } = await supabase
+            const { error: upsertError } = await supabase
                 .from("profile")
                 .upsert(profileData, {
                     onConflict: "id",
@@ -227,8 +185,6 @@ const ensureProfileExists = async (userId: string): Promise<boolean> => {
                 })
                 .select("*")
                 .single();
-
-            console.log("Upsert result:", { upsertProfile, upsertError });
 
             if (upsertError) {
                 console.error("Upsert also failed:", upsertError);
@@ -242,8 +198,6 @@ const ensureProfileExists = async (userId: string): Promise<boolean> => {
             .select("*")
             .eq("id", userId)
             .single();
-
-        console.log("Profile verification:", { verifyProfile, verifyError });
 
         return !!verifyProfile && !verifyError;
     } catch (error) {

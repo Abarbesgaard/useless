@@ -32,12 +32,9 @@ export default function PublicSharedProfile() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect triggered - shareId:", shareId);
-
     if (shareId) {
       loadProfile(shareId);
     } else {
-      console.log("No shareId found");
       setError(true);
       setLoading(false);
     }
@@ -70,7 +67,6 @@ export default function PublicSharedProfile() {
   };
 
   if (loading) {
-    console.log("Rendering loading state");
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
@@ -82,7 +78,6 @@ export default function PublicSharedProfile() {
   }
 
   if (error || !profile) {
-    console.log("Rendering error state");
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-100 flex items-center justify-center">
         <div className="text-center max-w-md">
