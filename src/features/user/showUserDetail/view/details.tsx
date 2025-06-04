@@ -653,21 +653,8 @@ export default function UserProfilePage() {
       console.log("Loading all profile data for user:", user.id);
 
       try {
-        // Load all data in parallel for better performance
-        const [
-          personalInfo,
-          professionalInfo,
-          technicalSkills,
-          softSkills,
-          interests,
-          languages,
-          workExperiences,
-          education, // Add this
-          workArrangements,
-          preferredRoles,
-          preferredCompanySizes,
-          industries,
-        ] = await Promise.all([
+        // Load all data in parallel with proper error handling
+        const results = await Promise.allSettled([
           getPersonalInfo(user.id),
           getProfessionalInfo(user.id),
           getTechnicalSkill(user.id),
@@ -675,16 +662,83 @@ export default function UserProfilePage() {
           getInterest(user.id),
           getLanguage(user.id),
           getWorkExperiences(user.id),
-          getEducation(user.id), // Add this function call
+          getEducation(user.id),
           getWorkArrangements(user.id),
           getPreferredRoles(user.id),
           getPreferredCompanySizes(user.id),
           getIndustries(user.id),
         ]);
+
+        // Extract results with error handling
+        const [
+          personalInfoResult,
+          professionalInfoResult,
+          technicalSkillsResult,
+          softSkillsResult,
+          interestsResult,
+          languagesResult,
+          workExperiencesResult,
+          educationResult,
+          workArrangementsResult,
+          preferredRolesResult,
+          preferredCompanySizesResult,
+          industriesResult,
+        ] = results;
+
+        // Safe extraction with fallbacks
+        const personalInfo =
+          personalInfoResult.status === "fulfilled"
+            ? personalInfoResult.value
+            : null;
+        const professionalInfo =
+          professionalInfoResult.status === "fulfilled"
+            ? professionalInfoResult.value
+            : null;
+        const technicalSkills =
+          technicalSkillsResult.status === "fulfilled"
+            ? technicalSkillsResult.value
+            : [];
+        const softSkills =
+          softSkillsResult.status === "fulfilled" ? softSkillsResult.value : [];
+        const interests =
+          interestsResult.status === "fulfilled" ? interestsResult.value : [];
+        const languages =
+          languagesResult.status === "fulfilled" ? languagesResult.value : [];
+        const workExperiences =
+          workExperiencesResult.status === "fulfilled"
+            ? workExperiencesResult.value
+            : [];
+        const education =
+          educationResult.status === "fulfilled" ? educationResult.value : [];
+        const workArrangements =
+          workArrangementsResult.status === "fulfilled"
+            ? workArrangementsResult.value
+            : [];
+        const preferredRoles =
+          preferredRolesResult.status === "fulfilled"
+            ? preferredRolesResult.value
+            : [];
+        const preferredCompanySizes =
+          preferredCompanySizesResult.status === "fulfilled"
+            ? preferredCompanySizesResult.value
+            : [];
+        const industries =
+          industriesResult.status === "fulfilled" ? industriesResult.value : [];
+
+        // Log any failed operations
+        results.forEach((result, index) => {
+          if (result.status === "rejected") {
+            console.warn(
+              `Failed to load data at index ${index}:`,
+              result.reason
+            );
+          }
+        });
+
         // Update formData with all loaded data
         setFormData((prev) => ({
           ...prev,
-          // Personal Information
+          // Personal Information with safe fallbacks
           firstName:
             personalInfo?.firstName || user?.user_metadata?.first_name || "",
           lastName:
@@ -694,7 +748,7 @@ export default function UserProfilePage() {
           location: personalInfo?.location || "",
           bio: personalInfo?.bio || "",
 
-          // Professional Information
+          // Professional Information with safe fallbacks
           currentTitle: professionalInfo?.currentTitle || "",
           yearsExperience: professionalInfo?.yearsExperience || "",
           salaryExpectation: professionalInfo?.salaryExpectation || "",
@@ -717,17 +771,17 @@ export default function UserProfilePage() {
               description: exp.description ?? "",
             })) || [],
 
-          // Education - now loaded from database
+          // Education
           education: education || [],
 
-          // Job Preferences - now loaded from database
+          // Job Preferences
           workArrangement: workArrangements || [],
           preferredRoles: preferredRoles || [],
           preferredCompanySize: preferredCompanySizes || [],
           industries: industries || [],
         }));
 
-        // Mark all loaded work experiences as existing
+        // Mark loaded experiences and education as existing
         if (workExperiences.length > 0) {
           const existingState: { [key: number]: "existing" } = {};
           workExperiences.forEach((exp: WorkExperience) => {

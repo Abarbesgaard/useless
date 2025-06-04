@@ -6,16 +6,20 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        const { error: profileError } = await supabase
+        // First ensure a profile exists - use upsert with proper conflict handling
+        const { data: profileData, error: profileError } = await supabase
             .from("profile")
             .upsert({
                 id: userId,
                 user_id: userId,
+                created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             }, {
                 onConflict: "id",
+                ignoreDuplicates: false,
             })
-            .select();
+            .select()
+            .single();
 
         if (profileError) {
             console.error("Error creating/updating profile:", profileError);
@@ -47,15 +51,17 @@ export const updateProfessionalInfo = async (
                 return false;
             }
         } else {
+            // Use the profile ID from the upsert result
             const { error } = await supabase
                 .from("professional_info")
                 .insert({
-                    profile_id: userId,
+                    profile_id: profileData.id, // Use the confirmed profile ID
                     current_title: professionalData.currentTitle,
                     years_experience: professionalData.yearsExperience,
                     salary_expectation: professionalData.salaryExpectation,
                     available_from: professionalData.availableFrom,
                     links: professionalData.links,
+                    created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString(),
                 });
 
@@ -87,12 +93,17 @@ export const getProfessionalInfo = async (
             return null;
         }
 
+        // Add null check for data
+        if (!data) {
+            return null;
+        }
+
         return {
-            currentTitle: data.current_title,
-            yearsExperience: data.years_experience,
-            salaryExpectation: data.salary_expectation,
-            availableFrom: data.available_from,
-            links: data.links,
+            currentTitle: data.current_title || "",
+            yearsExperience: data.years_experience || "",
+            salaryExpectation: data.salary_expectation || "",
+            availableFrom: data.available_from || "",
+            links: data.links || null,
         };
     } catch (error) {
         console.error("Unexpected error fetching professional info:", error);
