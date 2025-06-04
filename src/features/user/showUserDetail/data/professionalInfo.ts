@@ -1,6 +1,39 @@
 import supabase from "@/lib/supabase";
 import { ProfessionalInfo } from "../types/ProfessionalInfo";
 
+export const getProfessionalInfo = async (
+    userId: string,
+): Promise<ProfessionalInfo | null> => {
+    try {
+        const { data, error } = await supabase
+            .from("professional_info")
+            .select("*")
+            .eq("profile_id", userId) // Back to profile_id
+            .single();
+
+        if (error && error.code !== "PGRST116") {
+            console.error("Error fetching professional info:", error);
+            return null;
+        }
+
+        // Add null check for data
+        if (!data) {
+            return null;
+        }
+
+        return {
+            currentTitle: data.current_title || "",
+            yearsExperience: data.years_experience || "",
+            salaryExpectation: data.salary_expectation || "",
+            availableFrom: data.available_from || "",
+            links: data.links || null,
+        };
+    } catch (error) {
+        console.error("Unexpected error fetching professional info:", error);
+        return null;
+    }
+};
+
 export const updateProfessionalInfo = async (
     userId: string,
     professionalData: ProfessionalInfo,
@@ -40,11 +73,10 @@ export const updateProfessionalInfo = async (
         }
 
         // Step 4: Check if professional_info record exists
-        // Fix: Use 'id' instead of 'profile_id' to match the foreign key constraint
         const { data: existingRecord, error: recordCheckError } = await supabase
             .from("professional_info")
             .select("id")
-            .eq("id", userId) // Changed from profile_id to id
+            .eq("profile_id", userId) // Back to profile_id
             .maybeSingle();
 
         console.log("Professional info check:", {
@@ -74,7 +106,7 @@ export const updateProfessionalInfo = async (
                     links: professionalData.links,
                     updated_at: new Date().toISOString(),
                 })
-                .eq("id", userId) // Changed from profile_id to id
+                .eq("profile_id", userId) // Back to profile_id
                 .select("*");
 
             console.log("Update result:", { updateResult, updateError });
@@ -87,7 +119,7 @@ export const updateProfessionalInfo = async (
             console.log("Inserting new professional info");
 
             const insertData = {
-                id: userId, // Changed from profile_id to id to match foreign key constraint
+                profile_id: userId, // Back to profile_id
                 current_title: professionalData.currentTitle,
                 years_experience: professionalData.yearsExperience,
                 salary_expectation: professionalData.salaryExpectation,
@@ -99,9 +131,13 @@ export const updateProfessionalInfo = async (
 
             console.log("Insert data:", insertData);
 
+            // Try insert with upsert to handle potential race conditions
             const { data: insertResult, error: insertError } = await supabase
                 .from("professional_info")
-                .insert(insertData)
+                .upsert(insertData, {
+                    onConflict: "profile_id",
+                    ignoreDuplicates: false,
+                })
                 .select("*");
 
             console.log("Insert result:", { insertResult, insertError });
@@ -123,38 +159,6 @@ export const updateProfessionalInfo = async (
     }
 };
 
-export const getProfessionalInfo = async (
-    userId: string,
-): Promise<ProfessionalInfo | null> => {
-    try {
-        const { data, error } = await supabase
-            .from("professional_info")
-            .select("*")
-            .eq("id", userId) // Changed from profile_id to id
-            .single();
-
-        if (error && error.code !== "PGRST116") {
-            console.error("Error fetching professional info:", error);
-            return null;
-        }
-
-        // Add null check for data
-        if (!data) {
-            return null;
-        }
-
-        return {
-            currentTitle: data.current_title || "",
-            yearsExperience: data.years_experience || "",
-            salaryExpectation: data.salary_expectation || "",
-            availableFrom: data.available_from || "",
-            links: data.links || null,
-        };
-    } catch (error) {
-        console.error("Unexpected error fetching professional info:", error);
-        return null;
-    }
-};
 const ensureProfileExists = async (userId: string): Promise<boolean> => {
     try {
         console.log("=== ENSURING PROFILE EXISTS ===");
