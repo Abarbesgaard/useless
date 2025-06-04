@@ -6,22 +6,64 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        // Ensure profile exists first
+        console.log("=== UPDATING PROFESSIONAL INFO ===");
+        console.log("User ID:", userId);
+        console.log("Professional data:", professionalData);
+
+        // Step 1: Ensure profile exists
         const profileExists = await ensureProfileExists(userId);
         if (!profileExists) {
-            console.error("Failed to ensure profile exists");
+            console.error(
+                "Failed to ensure profile exists - aborting professional info update",
+            );
             return false;
         }
 
-        // Check if professional_info record exists
-        const { data: existingRecord } = await supabase
+        // Step 2: Wait a bit to ensure profile creation is committed
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
+        // Step 3: Double-check profile exists
+        const { data: profileCheck, error: profileCheckError } = await supabase
+            .from("profile")
+            .select("id")
+            .eq("id", userId)
+            .single();
+
+        console.log("Final profile check:", {
+            profileCheck,
+            profileCheckError,
+        });
+
+        if (profileCheckError || !profileCheck) {
+            console.error("Profile still doesn't exist after creation attempt");
+            return false;
+        }
+
+        // Step 4: Check if professional_info record exists
+        const { data: existingRecord, error: recordCheckError } = await supabase
             .from("professional_info")
             .select("profile_id")
             .eq("profile_id", userId)
             .maybeSingle();
 
+        console.log("Professional info check:", {
+            existingRecord,
+            recordCheckError,
+        });
+
+        if (recordCheckError && recordCheckError.code !== "PGRST116") {
+            console.error(
+                "Error checking for existing professional info:",
+                recordCheckError,
+            );
+            return false;
+        }
+
+        // Step 5: Update or insert
         if (existingRecord) {
-            const { error } = await supabase
+            console.log("Updating existing professional info");
+
+            const { data: updateResult, error: updateError } = await supabase
                 .from("professional_info")
                 .update({
                     current_title: professionalData.currentTitle,
@@ -31,32 +73,48 @@ export const updateProfessionalInfo = async (
                     links: professionalData.links,
                     updated_at: new Date().toISOString(),
                 })
-                .eq("profile_id", userId);
+                .eq("profile_id", userId)
+                .select("*");
 
-            if (error) {
-                console.error("Error updating professional info:", error);
+            console.log("Update result:", { updateResult, updateError });
+
+            if (updateError) {
+                console.error("Error updating professional info:", updateError);
                 return false;
             }
         } else {
-            const { error } = await supabase
-                .from("professional_info")
-                .insert({
-                    profile_id: userId,
-                    current_title: professionalData.currentTitle,
-                    years_experience: professionalData.yearsExperience,
-                    salary_expectation: professionalData.salaryExpectation,
-                    available_from: professionalData.availableFrom,
-                    links: professionalData.links,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                });
+            console.log("Inserting new professional info");
 
-            if (error) {
-                console.error("Error inserting professional info:", error);
+            const insertData = {
+                profile_id: userId,
+                current_title: professionalData.currentTitle,
+                years_experience: professionalData.yearsExperience,
+                salary_expectation: professionalData.salaryExpectation,
+                available_from: professionalData.availableFrom,
+                links: professionalData.links,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            };
+
+            console.log("Insert data:", insertData);
+
+            const { data: insertResult, error: insertError } = await supabase
+                .from("professional_info")
+                .insert(insertData)
+                .select("*");
+
+            console.log("Insert result:", { insertResult, insertError });
+
+            if (insertError) {
+                console.error(
+                    "Error inserting professional info:",
+                    insertError,
+                );
                 return false;
             }
         }
 
+        console.log("Professional info update completed successfully");
         return true;
     } catch (error) {
         console.error("Unexpected error updating professional info:", error);
@@ -98,14 +156,17 @@ export const getProfessionalInfo = async (
 };
 const ensureProfileExists = async (userId: string): Promise<boolean> => {
     try {
-        console.log("Ensuring profile exists for user:", userId);
+        console.log("=== ENSURING PROFILE EXISTS ===");
+        console.log("User ID:", userId);
 
         // Check if profile already exists
         const { data: existingProfile, error: checkError } = await supabase
             .from("profile")
-            .select("id")
+            .select("*")
             .eq("id", userId)
             .maybeSingle();
+
+        console.log("Profile check result:", { existingProfile, checkError });
 
         if (checkError && checkError.code !== "PGRST116") {
             console.error("Error checking for profile:", checkError);
@@ -113,28 +174,73 @@ const ensureProfileExists = async (userId: string): Promise<boolean> => {
         }
 
         if (existingProfile) {
-            console.log("Profile already exists");
+            console.log("Profile already exists:", existingProfile);
             return true;
         }
 
-        // Create profile if it doesn't exist
-        console.log("Creating new profile");
-        const { error: insertError } = await supabase
-            .from("profile")
-            .insert({
-                id: userId,
-                user_id: userId,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            });
+        // Get current user to ensure we have the right data
+        const { data: { user }, error: userError } = await supabase.auth
+            .getUser();
+        console.log("Current user data:", { user, userError });
 
-        if (insertError) {
-            console.error("Error creating profile:", insertError);
+        if (userError || !user) {
+            console.error("No authenticated user found:", userError);
             return false;
         }
 
-        console.log("Profile created successfully");
-        return true;
+        // Try different approaches for profile creation
+        console.log("Creating new profile - Attempt 1: Basic insert");
+
+        const profileData = {
+            id: userId,
+            user_id: userId,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        };
+
+        console.log("Profile data to insert:", profileData);
+
+        const { data: newProfile, error: insertError } = await supabase
+            .from("profile")
+            .insert(profileData)
+            .select("*")
+            .single();
+
+        console.log("Insert result:", { newProfile, insertError });
+
+        if (insertError) {
+            console.error("Profile creation failed with error:", insertError);
+
+            // Try with upsert instead
+            console.log("Trying with upsert instead...");
+
+            const { data: upsertProfile, error: upsertError } = await supabase
+                .from("profile")
+                .upsert(profileData, {
+                    onConflict: "id",
+                    ignoreDuplicates: false,
+                })
+                .select("*")
+                .single();
+
+            console.log("Upsert result:", { upsertProfile, upsertError });
+
+            if (upsertError) {
+                console.error("Upsert also failed:", upsertError);
+                return false;
+            }
+        }
+
+        // Verify the profile was created
+        const { data: verifyProfile, error: verifyError } = await supabase
+            .from("profile")
+            .select("*")
+            .eq("id", userId)
+            .single();
+
+        console.log("Profile verification:", { verifyProfile, verifyError });
+
+        return !!verifyProfile && !verifyError;
     } catch (error) {
         console.error("Unexpected error ensuring profile exists:", error);
         return false;
