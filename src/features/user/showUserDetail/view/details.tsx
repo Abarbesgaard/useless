@@ -736,7 +736,6 @@ export default function UserProfilePage() {
           setExperienceState(existingState);
         }
 
-        // Mark all loaded education as existing
         if (education && education.length > 0) {
           const existingEducationState: { [key: number]: "existing" } = {};
           education.forEach((edu: Education) => {
@@ -758,7 +757,7 @@ export default function UserProfilePage() {
     user?.email,
     user?.user_metadata?.first_name,
     user?.user_metadata?.last_name,
-  ]); // Added missing dependencies
+  ]);
 
   return (
     <SidebarInset>
