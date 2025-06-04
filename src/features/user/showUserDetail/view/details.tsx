@@ -40,7 +40,7 @@ import {
   addEducation as addEducationToDB,
   updateEducation as updateEducationInDB,
 } from "../data/education";
-import { getEducation } from "../data/education"; // You'll need to create this function
+import { getEducation, deleteEducation } from "../data/education"; // You'll need to create this function
 import ShareProfileDialog from "../components/ShareProfileDialog";
 
 export default function UserProfilePage() {
@@ -158,7 +158,7 @@ export default function UserProfilePage() {
 
   // Add state to track which education entries are new vs existing
   const [educationState, setEducationState] = useState<{
-    [key: number]: "new" | "existing" | "deleted";
+    [key: string | number]: "new" | "existing" | "deleted";
   }>({});
 
   const [, setIsLoading] = useState(true);
@@ -575,22 +575,34 @@ export default function UserProfilePage() {
     }));
   };
 
-  const removeEducation = (id: string) => {
+  const removeEducation = async (id: string) => {
+    // Remove from local state immediately for UI responsiveness
     setFormData((prev) => ({
       ...prev,
       education: prev.education.filter((edu) => String(edu.id) !== id),
     }));
 
-    // If it was an existing education, you could mark for deletion
-    if (educationState[id as unknown as number] === "existing") {
-      // Call deleteEducation here for existing records if needed
-      // deleteEducation(id);
+    // If it was an existing education from the database, delete it
+    if (educationState[id] === "existing") {
+      try {
+        const success = await deleteEducation(id);
+        if (success) {
+          toast.success("Uddannelse slettet");
+        } else {
+          toast.error("Kunne ikke slette uddannelse");
+          // Optionally restore the item if deletion failed
+          // You'd need to keep a backup of the original data for this
+        }
+      } catch (error) {
+        console.error("Error deleting education:", error);
+        toast.error("Fejl ved sletning af uddannelse");
+      }
     }
 
     // Remove from state tracking
     setEducationState((prev) => {
       const newState = { ...prev };
-      delete newState[id as unknown as number];
+      delete newState[id];
       return newState;
     });
   };
