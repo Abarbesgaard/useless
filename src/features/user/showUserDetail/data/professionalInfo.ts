@@ -6,33 +6,14 @@ export const updateProfessionalInfo = async (
     professionalData: ProfessionalInfo,
 ): Promise<boolean> => {
     try {
-        // First ensure a profile exists - create it if it doesn't exist
-        const { data: existingProfile } = await supabase
-            .from("profile")
-            .select("id")
-            .eq("id", userId)
-            .maybeSingle();
-
-        if (!existingProfile) {
-            // Create the profile first
-            const { error: profileCreateError } = await supabase
-                .from("profile")
-                .insert({
-                    id: userId,
-                    user_id: userId,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                })
-                .select()
-                .single();
-
-            if (profileCreateError) {
-                console.error("Error creating profile:", profileCreateError);
-                return false;
-            }
+        // Ensure profile exists first
+        const profileExists = await ensureProfileExists(userId);
+        if (!profileExists) {
+            console.error("Failed to ensure profile exists");
+            return false;
         }
 
-        // Check if professional_info record exists first
+        // Check if professional_info record exists
         const { data: existingRecord } = await supabase
             .from("professional_info")
             .select("profile_id")
@@ -57,7 +38,6 @@ export const updateProfessionalInfo = async (
                 return false;
             }
         } else {
-            // Insert new record with the confirmed profile ID
             const { error } = await supabase
                 .from("professional_info")
                 .insert({
@@ -114,5 +94,49 @@ export const getProfessionalInfo = async (
     } catch (error) {
         console.error("Unexpected error fetching professional info:", error);
         return null;
+    }
+};
+const ensureProfileExists = async (userId: string): Promise<boolean> => {
+    try {
+        console.log("Ensuring profile exists for user:", userId);
+
+        // Check if profile already exists
+        const { data: existingProfile, error: checkError } = await supabase
+            .from("profile")
+            .select("id")
+            .eq("id", userId)
+            .maybeSingle();
+
+        if (checkError && checkError.code !== "PGRST116") {
+            console.error("Error checking for profile:", checkError);
+            return false;
+        }
+
+        if (existingProfile) {
+            console.log("Profile already exists");
+            return true;
+        }
+
+        // Create profile if it doesn't exist
+        console.log("Creating new profile");
+        const { error: insertError } = await supabase
+            .from("profile")
+            .insert({
+                id: userId,
+                user_id: userId,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString(),
+            });
+
+        if (insertError) {
+            console.error("Error creating profile:", insertError);
+            return false;
+        }
+
+        console.log("Profile created successfully");
+        return true;
+    } catch (error) {
+        console.error("Unexpected error ensuring profile exists:", error);
+        return false;
     }
 };
