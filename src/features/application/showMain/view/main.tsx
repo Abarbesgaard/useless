@@ -5,8 +5,6 @@ import { SidebarTrigger } from "../../../../components/ui/sidebar";
 import { availableStages } from "../constants/availableStages";
 import ApplicationHeader from "../components/ApplicationHeader";
 import { StageSelector } from "../components/StageSelector";
-import ApplicationEditor from "../components/ApplicationEditor";
-import { Application } from "../types/application";
 import StageToggle from "../components/StageToggle";
 import { useStageManagement } from "../hooks/useStageManagement";
 import { useApplicationManagement } from "../hooks/useApplicationManagement";
@@ -20,7 +18,6 @@ export default function Main() {
     applications,
     setApplications,
     deleteApplication,
-    updateApplication,
     toggleFavorite,
     toggleStageCompletion,
     toggleArchived,
@@ -34,9 +31,7 @@ export default function Main() {
     deleteStage,
   } = useStageManagement(applications, setApplications);
 
-  const handleApplicationUpdate = (updatedApp: Application) => {
-    updateApplication(updatedApp);
-  };
+
 
   return (
     <div className="flex h-screen w-screen overflow-hidden ">
@@ -74,12 +69,7 @@ export default function Main() {
                       handleDeleteApplication={deleteApplication}
                       toggleArchived={toggleArchived}
                     />
-                    <ApplicationEditor
-                      app={app}
-                      editingAppId={editingAppId}
-                      setEditingAppId={setEditingAppId}
-                      onApplicationUpdate={handleApplicationUpdate}
-                    />
+
                     <div className="flex flex-wrap items-center pl-6">
                       <StageToggle
                         app={app}

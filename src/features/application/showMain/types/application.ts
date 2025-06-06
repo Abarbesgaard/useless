@@ -24,12 +24,14 @@ export interface Application extends NewApp {
   contact_id?: string | null;
   updated_at?: string;
 }
+
 export interface ApplicationWithDetails extends Application {
   contact_name?: string | null;
   contact_email?: string | null;
   contact_phone?: string | null;
   updated_at?: string;
 }
+
 export type ApplicationResponse = {
   id: string;
   position: string;
