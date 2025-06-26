@@ -23,7 +23,6 @@ const getIconName = (
   return "FileText";
 };
 
-// Create Stage
 const getDisplayName = (
   name: string | { displayName?: string } | unknown,
 ): string => {
@@ -39,35 +38,38 @@ export const addStage = async (
   applicationId: string,
   note?: string,
 ) => {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-  if (userError || !user) return null;
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  const iconName = getIconName(stage.icon);
-  const displayName = getDisplayName(stage.name);
+  if (userError || !user) {
+    return null;
+  }
 
+  // Prepare stage data
+  const stageData = {
+    ...stage,
+    application_id: applicationId,
+    icon: getIconName(stage.icon),
+    name: getDisplayName(stage.name),
+    position: stage.position,
+    auth_user: user.id,
+    is_active: false,
+    note: note || null,
+  };
+
+  // Insert stage into database
   const { data, error } = await supabase
     .from("application_stages")
-    .insert([{
-      ...stage,
-      application_id: applicationId,
-      icon: iconName,
-      position: stage.position,
-      auth_user: user.id,
-      is_active: false,
-      note: note || null,
-      name: displayName,
-    }])
+    .insert([stageData])
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
+
   return data;
 };
 
-// Delete Stage (soft)
 export const softDeleteStage = async (stageId: string | undefined) => {
   try {
     if (!stageId) {
@@ -85,7 +87,6 @@ export const softDeleteStage = async (stageId: string | undefined) => {
       return { success: false, error: selectError.message };
     }
 
-    // Proceed with updating if the stage exists
     const { error: updateError } = await supabase
       .from("application_stages")
       .update({ is_deleted: true })
@@ -97,6 +98,7 @@ export const softDeleteStage = async (stageId: string | undefined) => {
     }
 
     return { success: true };
+
   } catch (error) {
     console.error("Error in softDeleteStage:", error);
     return { success: false };

@@ -25,11 +25,11 @@ export function useStageManagement(
      * @param stage - The stage object containing the details of the new stage.
      * @returns A promise that resolves when the stage is added.
      */
-    const addStageToApplication = async (
+    async function addStageToApplication(
         appId: string,
         stage: Stage,
         note?: string,
-    ) => {
+    ) {
         if (!user) return;
         const application = applications.find((app) => app.id === appId);
         if (!application) return;
@@ -84,7 +84,7 @@ export function useStageManagement(
             console.error("Failed to add stage:", error);
             toast.error("Failed to add stage. Please try again.");
         }
-    };
+    }
 
     /**
      * Deletes a stage from an application.

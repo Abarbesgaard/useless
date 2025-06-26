@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import useAuth from "./useAuth";
 import {
-  addApplicationWithCompanyAndContact,
   deleteApplication as deleteApplicationApi,
   getApplicationById,
   getApplicationsWithCompanies,
@@ -13,7 +12,6 @@ import {
 } from "../data/applications";
 import { toast } from "sonner";
 import { Application } from "../types/application";
-import { Company } from "../types/company";
 import { Contact } from "../types/contact";
 import supabase from "@/lib/supabase";
 import { sortAppsByFlag } from "./utils/sortByFlags";
@@ -27,7 +25,7 @@ const INITIAL_APP_STATE = {
   created_at: "",
   updated_at: "",
   date: Date.now(),
-}
+};
 /**
  *  Custom hook for managing job applications.
  * @returns An object containing application data and functions to manage applications.
@@ -90,7 +88,7 @@ export function useApplicationManagement() {
         };
       });
 
-      const sortedApps = sortAppsByFlag(transformedApps, "favorite")
+      const sortedApps = sortAppsByFlag(transformedApps, "favorite");
 
       setApplications(sortedApps);
     } catch (error) {
@@ -110,75 +108,7 @@ export function useApplicationManagement() {
     const { name, value } = e.target;
     setNewApp({ ...newApp, [name]: value });
   };
-  /**
-   *  Adds a new application to the list.
-   * @returns A promise that resolves when the application is added.
-   */
-  const addApplication = async (
-    companyInfo: Company,
-    contactPerson: Contact,
-  ) => {
-    if (!user) return;
-    try {
-      const newAppData = await addApplicationWithCompanyAndContact({
-        applicationData: {
-          company: newApp.company,
-          position: newApp.position,
-          notes: newApp.notes,
-          url: newApp.url || "",
-          date: newApp.date,
-          is_deleted: false,
-          is_archived: false,
-          currentStage: 0,
-          favorite: false,
-        },
-        companyData: {
-          name: companyInfo?.name || newApp.company,
-          phone: companyInfo?.phone || undefined,
-          email: companyInfo?.email || undefined,
-          website: companyInfo?.website || undefined,
-          notes: companyInfo?.notes || undefined,
-        },
-        contactData: contactPerson?.name
-          ? {
-            name: contactPerson.name,
-            email: contactPerson.email || undefined,
-            phone: contactPerson.phone || undefined,
-            position: contactPerson.position || undefined,
-            notes: contactPerson.notes || undefined,
-          }
-          : undefined,
-      });
 
-      if (newAppData) {
-        setApplications((prevApplications) => [
-          ...prevApplications,
-          {
-            ...newAppData,
-            date: new Date(newAppData.date).getTime(),
-            id: newAppData.id,
-            user_id: newAppData.user_id,
-            currentStage: newAppData.current_stage,
-            company_id: newAppData.company_id || "", // Convert null to empty string
-            contact_id: newAppData.contact_id || "", // Convert null to empty string
-            stages: newAppData.stages || [],
-          } as Application, // Type assertion to ensure it matches Application type
-        ]);
-
-        // Reset form and show success message
-        setNewApp({
-          ...INITIAL_APP_STATE,
-          date: Date.now(),
-        });
-
-        setShowAppForm(false);
-        toast.success("Application added successfully!");
-      }
-    } catch (err) {
-      console.error("Failed to add application:", err);
-      toast.error("Failed to add application. Please try again.");
-    }
-  };
   /**
    *  Deletes an application from the list.
    * @param appId  - The ID of the application to be deleted.
@@ -192,8 +122,7 @@ export function useApplicationManagement() {
       if (result && result.success) {
         setApplications(applications.filter((app) => app.id !== appId));
         toast("Application deleted successfully!", {
-          description:
-            "The application has been removed from your list.",
+          description: "The application has been removed from your list.",
         });
       }
     } catch (err) {
@@ -263,7 +192,7 @@ export function useApplicationManagement() {
           return updatedApp;
         }
         return app;
-      })
+      }),
     );
     // Re-sort the applications to keep the favorited ones at the top
     const sortedApps = sortAppsByFlag(updatedApps, "favorite");
@@ -273,9 +202,10 @@ export function useApplicationManagement() {
 
     // Show a toast to indicate success
     toast(
-      `Application ${updatedApps.find((app) => app.id === appId)?.favorite
-        ? "added to"
-        : "removed from"
+      `Application ${
+        updatedApps.find((app) => app.id === appId)?.favorite
+          ? "added to"
+          : "removed from"
       } favorites!`,
     );
   };
@@ -289,7 +219,9 @@ export function useApplicationManagement() {
     if (!user) return;
 
     // Find the current application
-    const currentApp = applications.find((app) => app.id === appId);
+    const currentApp = applications.find((app: Application) =>
+      app.id === appId
+    );
     if (!currentApp) return;
 
     // Calculate new currentStage value
@@ -396,11 +328,11 @@ export function useApplicationManagement() {
       );
 
       toast(
-        `Application ${updatedApp.is_archived ? "archived" : "unarchived"
-        }!`,
+        `Application ${updatedApp.is_archived ? "archived" : "unarchived"}!`,
         {
-          description: `The application has been ${updatedApp.is_archived ? "archived" : "unarchived"
-            } successfully.`,
+          description: `The application has been ${
+            updatedApp.is_archived ? "archived" : "unarchived"
+          } successfully.`,
         },
       );
     } catch (error) {
@@ -487,10 +419,10 @@ export function useApplicationManagement() {
    * @param applicationId - The application to update
    * @param updates - Object with company_id and/or contact_id
    */
-  const updateApplicationReferences = async (
+  async function updateApplicationReferences(
     applicationId: string,
     updates: { company_id?: string; contact_id?: string },
-  ) => {
+  ) {
     if (!user) return;
 
     try {
@@ -533,7 +465,7 @@ export function useApplicationManagement() {
       toast.error("Failed to link company/contact to application");
       return null;
     }
-  };
+  }
 
   return {
     applications,
@@ -545,7 +477,6 @@ export function useApplicationManagement() {
     updateApplicationReferences,
     handleInputChange,
     fetchSpecificApplication,
-    addApplication,
     deleteApplication,
     updateApplication,
     toggleFavorite,
